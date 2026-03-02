@@ -1,5 +1,5 @@
 import React from 'react';
-import logoIcon from '../assets/Logo.svg';
+import logoIcon from '../assets/Logo.png';
 
 export const LogoOne = ({ small = false }) => (
   <div className="flex items-center gap-1 select-none">
