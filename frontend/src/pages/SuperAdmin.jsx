@@ -4,7 +4,7 @@ import axios from 'axios';
 import { Building, Plus, LogOut, Save, X, Trash2, Folder, FileText, PlayCircle, Search, RefreshCw, Power, Edit2, Lock, User, Upload, ArrowLeft } from 'lucide-react';
 import { LogoOne } from '../components/Logo';
 
-const API_URL = 'http://127.0.0.1:8000';
+const API_URL = 'https://plataformaventas.onrender.com';
 
 export default function SuperAdmin() {
     const navigate = useNavigate();

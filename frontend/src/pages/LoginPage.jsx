@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { LogoOne } from '../components/Logo';
 
-const API_URL = 'http://127.0.0.1:8000';
+const API_URL = 'https://plataformaventas.onrender.com';
 const COLORS = { black: "#1a181d", pink: "#e17bd7", cyan: "#6be1e3" };
 
 export default function LoginPage() {

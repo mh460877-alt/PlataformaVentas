@@ -4,7 +4,7 @@ import axios from 'axios';
 import { LogoOne } from '../components/Logo';
 import { LayoutDashboard, Users, Package, PlayCircle, LogOut, Plus, Eye, BarChart, ChevronRight } from 'lucide-react';
 
-const API_URL = 'http://127.0.0.1:8000';
+const API_URL = 'https://plataformaventas.onrender.com';
 
 export default function CompanyDashboard() {
     const navigate = useNavigate();

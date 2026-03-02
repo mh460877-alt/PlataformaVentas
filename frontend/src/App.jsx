@@ -17,7 +17,7 @@ const COLORS = {
   cyan: "#6be1e3", gold: "#e4c76a", gray: "#a4a8c0",
   gradient_text: "bg-clip-text text-transparent bg-gradient-to-r from-[#6be1e3] via-[#e17bd7] to-[#e4c76a]"
 };
-const API_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000';
+const API_URL = 'https://plataformaventas.onrender.com';
 
 // --- COMPONENTE LOGO ---
 const LogoOne = ({ small }) => (
