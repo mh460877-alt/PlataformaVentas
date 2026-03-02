@@ -8,17 +8,9 @@ export const LogoOne = ({ small = false }) => (
       alt="ONE Logo"
       className={`${small ? 'h-10' : 'h-14'} w-auto object-contain`}
     />
-    <div className="flex items-baseline gap-2 leading-none">
-      <span
-        className={`font-sans font-bold text-white ${small ? 'text-xl' : 'text-3xl'}`}
-      >
-        NE
-      </span>
-      <span
-        className={`font-sans font-light text-white ${small ? 'text-sm' : 'text-xl'}`}
-      >
-        Commercial IA
-      </span>
-    </div>
+    <span className={`font-sans text-white ${small ? 'text-lg' : 'text-2xl'}`}>
+      <span className="font-bold">NE</span>{' '}
+      <span className="font-light">Commercial IA</span>
+    </span>
   </div>
 );
