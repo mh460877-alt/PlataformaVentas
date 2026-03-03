@@ -9,7 +9,8 @@ import {
   MessageSquare, Star, BarChart2, BookOpen, TrendingUp
 } from 'lucide-react';
 
-import logoIcon from './assets/Logo-blanco.png';
+import logoIconNegro from './assets/Logo-negro.png';
+import logoIconBlanco from './assets/Logo-blanco.png';
 
 const APP_NAME = "ONE Commercial AI";
 const COLORS = {
@@ -21,30 +22,22 @@ const API_URL = 'https://plataformaventas.onrender.com';
 
 // --- COMPONENTE LOGO ---
 const LogoOne = ({ small }) => (
-  <div className="flex items-center gap-2 select-none">
+  <div className="flex items-center select-none">
     <img
-      src={logoIcon}
-      alt="ONE Logo"
+      src={logoIconNegro}
+      alt="ONE Commercial IA"
       className={`${small ? 'h-14' : 'h-20'} w-auto object-contain`}
-      onError={(e) => { e.target.style.display = 'none'; }}
     />
-    <span className={`font-sans font-normal text-[#1a181d] ${small ? 'text-2xl' : 'text-4xl'} -ml-1`}>
-      Commercial IA
-    </span>
   </div>
 );
 
 const LogoOneWhite = ({ small }) => (
-  <div className="flex items-center gap-2 select-none">
+  <div className="flex items-center select-none">
     <img
-      src={logoIcon}
-      alt="ONE Logo"
-      className={`${small ? 'h-14' : 'h-20'} w-auto object-contain brightness-0 invert`}
-      onError={(e) => { e.target.style.display = 'none'; }}
+      src={logoIconBlanco}
+      alt="ONE Commercial IA"
+      className={`${small ? 'h-14' : 'h-20'} w-auto object-contain`}
     />
-    <span className={`font-sans font-normal text-white ${small ? 'text-2xl' : 'text-4xl'} -ml-1`}>
-      Commercial IA
-    </span>
   </div>
 );
 
