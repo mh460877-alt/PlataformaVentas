@@ -222,7 +222,7 @@ export default function SuperAdmin() {
     return (
         <div className="min-h-screen bg-[#1a181d] text-white flex font-sans">
             <aside className="w-80 p-10 border-r border-slate-800 bg-[#1a181d] flex flex-col fixed h-full z-10">
-                <div className="mb-12"><LogoOne/></div>
+                <div className="mb-12"><LogoOne dark={true} /></div>
                 <div className="mb-10"><p className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-1">Rol</p><h1 className="text-2xl font-bold text-white">Super Admin</h1></div>
                 <nav className="space-y-3 flex-1">
                     <button onClick={()=>setActiveTab('empresas')} className={`w-full text-left p-4 rounded-2xl transition-all duration-300 flex items-center ${activeTab==='empresas' ? 'bg-[#e17bd7] text-white font-bold shadow-lg shadow-[#e17bd7]/20 translate-x-2':'text-slate-400 hover:text-white hover:bg-white/5'}`}><Building className="mr-3 w-5 h-5"/> Clientes</button>
