@@ -25,6 +25,12 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen flex items-center justify-center p-4 bg-[#fefeff] relative">
       <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#6be1e3] via-[#e17bd7] to-[#e4c76a]"></div>
+<button
+  onClick={() => navigate('/')}
+  className="absolute top-6 left-6 text-slate-400 hover:text-[#1a181d] text-sm font-bold flex items-center gap-2 transition z-20"
+>
+  ← Volver
+</button>
       <div className="w-full max-w-md p-10 bg-white shadow-2xl rounded-3xl border border-slate-100 relative z-10">
         <div className="text-center mb-8 flex flex-col items-center justify-center">
             <LogoOne />
