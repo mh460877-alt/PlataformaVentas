@@ -9,7 +9,7 @@ import {
   MessageSquare, Star, BarChart2, BookOpen, TrendingUp
 } from 'lucide-react';
 
-import logoIcon from './assets/Logo.svg';
+import logoIcon from './assets/Logo-blanco.png';
 
 const APP_NAME = "ONE Commercial AI";
 const COLORS = {
