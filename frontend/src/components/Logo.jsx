@@ -7,7 +7,7 @@ export const LogoOne = ({ small = false, dark = false }) => (
     <img
       src={dark ? logoBlanco : logoNegro}
       alt="ONE Commercial IA"
-      className={`${small ? 'h-8' : 'h-10'} w-auto object-contain`}
+      className={`${small ? 'w-32' : 'w-48'} h-auto object-contain`}
     />
   </div>
 );
