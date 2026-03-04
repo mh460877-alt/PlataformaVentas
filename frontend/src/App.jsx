@@ -334,14 +334,23 @@ function SuperAdmin() {
 
   const CompaniesView = () => {
     const [showPass, setShowPass] = useState({});
+    const [searchEmpresa, setSearchEmpresa] = useState('');
+    const empresasFiltradas = empresas.filter(e => 
+      e.company_name.toLowerCase().includes(searchEmpresa.toLowerCase()) ||
+      e.email.toLowerCase().includes(searchEmpresa.toLowerCase())
+    );
     return (
       <div>
-        <header className="flex justify-between items-center mb-8">
-          <h2 className="text-2xl font-bold text-white">Gestión de Clientes</h2>
-          <button onClick={() => setShowModal(true)} className="bg-[#6be1e3] text-[#1a181d] px-6 py-2 rounded-xl font-bold flex items-center hover:opacity-90 transition shadow-lg">
-            <Plus className="mr-2 w-4 h-4" /> Nuevo Cliente
-          </button>
-        </header>
+        <header className="flex justify-between items-center mb-8 gap-4">
+  <h2 className="text-2xl font-bold text-white">Gestión de Clientes</h2>
+  <div className="flex gap-4 items-center bg-slate-800 p-2 rounded-xl px-4 border border-slate-700 flex-1 max-w-sm">
+    <Search size={20} className="text-slate-400" />
+    <input className="bg-transparent outline-none text-white w-full text-sm" placeholder="Buscar empresa..." value={searchEmpresa} onChange={e => setSearchEmpresa(e.target.value)} />
+  </div>
+  <button onClick={() => setShowModal(true)} className="bg-[#6be1e3] text-[#1a181d] px-6 py-2 rounded-xl font-bold flex items-center hover:opacity-90 transition shadow-lg">
+    <Plus className="mr-2 w-4 h-4" /> Nuevo Cliente
+  </button>
+</header>
         <div className="space-y-4">
           {empresas.map(emp => (
             <div key={emp.id} className={`p-6 rounded-3xl border flex justify-between items-center transition group shadow-md ${emp.is_active ? 'bg-slate-800 border-slate-700 hover:border-[#6be1e3]' : 'bg-slate-900 border-red-900 opacity-60'}`}>
@@ -571,7 +580,7 @@ function SuperAdmin() {
         <button onClick={() => navigate('/login')} className="mt-12 text-red-400 text-sm flex items-center font-bold px-4 py-3 rounded-xl hover:bg-white/5 transition"><LogOut className="w-4 h-4 mr-3" /> Cerrar Sesión</button>
       </aside>
       <main className="flex-1 ml-80 p-12">
-        <h2 className="text-4xl font-bold mb-10 tracking-tight">{activeTab === 'empresas' ? 'Gestión de Clientes SaaS' : 'Biblioteca Global'}</h2>
+        <h2 className="text-4xl font-bold mb-10 tracking-tight">{activeTab === 'empresas' ? 'Gestión de Clientes' : 'Biblioteca Global'}</h2>
         {activeTab === 'empresas' ? <CompaniesView /> : <CapsulesAdminView />}
       </main>
 
