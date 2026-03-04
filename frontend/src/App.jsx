@@ -342,7 +342,6 @@ function SuperAdmin() {
     return (
       <div>
         <header className="flex justify-between items-center mb-8 gap-4">
-  <h2 className="text-2xl font-bold text-white">Gestión de Clientes</h2>
   <div className="flex gap-4 items-center bg-slate-800 p-2 rounded-xl px-4 border border-slate-700 flex-1 max-w-sm">
     <Search size={20} className="text-slate-400" />
     <input className="bg-transparent outline-none text-white w-full text-sm" placeholder="Buscar empresa..." value={searchEmpresa} onChange={e => setSearchEmpresa(e.target.value)} />
