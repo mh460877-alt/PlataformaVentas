@@ -251,7 +251,7 @@ function SuperAdmin() {
   const [searchCapsule, setSearchCapsule] = useState('');
   const [modalCapsule, setModalCapsule] = useState(false);
   const [modalContent, setModalContent] = useState(false);
-  const [newCompany, setNewCompany] = useState({ company_name: '', email: '', password: '', phone: '' });
+  const [newCompany, setNewCompany] = useState({ company_name: '', email: '', password: '', phone: '', mission_values: '' });
   const [editingCompany, setEditingCompany] = useState({ id: 0, company_name: '', email: '', password: '', phone: '' });
   const [newCap, setNewCap] = useState({ title: '', description: '' });
   const [newContent, setNewContent] = useState({ title: '', url: '', type: 'video', capsule_id: '' });
@@ -273,7 +273,7 @@ function SuperAdmin() {
       await axios.post(`${API_URL}/register`, newCompany);
       setShowModal(false);
       loadData();
-      setNewCompany({ company_name: '', email: '', password: '', phone: '' });
+      setNewCompany({ company_name: '', email: '', password: '', phone: '', mission_values: '' });
     } catch (e) { alert("Error: " + (e.response?.data?.detail || "Error desconocido")); }
   };
 
@@ -595,6 +595,7 @@ function SuperAdmin() {
               <input className="w-full p-3 bg-white border border-slate-300 rounded-lg text-black focus:ring-2 focus:ring-cyan-500 outline-none" placeholder="Nombre Empresa *" onChange={e => setNewCompany({ ...newCompany, company_name: e.target.value })} />
               <input className="w-full p-3 bg-white border border-slate-300 rounded-lg text-black focus:ring-2 focus:ring-cyan-500 outline-none" placeholder="Email Admin *" onChange={e => setNewCompany({ ...newCompany, email: e.target.value })} />
               <input className="w-full p-3 bg-white border border-slate-300 rounded-lg text-black focus:ring-2 focus:ring-cyan-500 outline-none" placeholder="Teléfono" onChange={e => setNewCompany({ ...newCompany, phone: e.target.value })} />
+              <textarea className="w-full p-3 bg-white border border-slate-300 rounded-lg text-black focus:ring-2 focus:ring-cyan-500 outline-none resize-none" rows={3} placeholder="Misión y valores de la empresa (opcional)" onChange={e => setNewCompany({ ...newCompany, mission_values: e.target.value })} />
               <input className="w-full p-3 bg-white border border-slate-300 rounded-lg text-black focus:ring-2 focus:ring-cyan-500 outline-none" type="password" placeholder="Contraseña *" onChange={e => setNewCompany({ ...newCompany, password: e.target.value })} />
               <button onClick={handleCreateCompany} className="w-full bg-[#1a181d] text-white p-3 rounded-lg font-bold hover:opacity-90 mt-2">Guardar</button>
             </div>
@@ -611,6 +612,7 @@ function SuperAdmin() {
               <div><label className="text-xs font-bold text-slate-500 uppercase">Nombre</label><input className="w-full p-3 rounded-lg bg-white border border-slate-300 text-black mt-1 outline-none focus:ring-2 focus:ring-cyan-500" value={editingCompany.company_name} onChange={e => setEditingCompany({ ...editingCompany, company_name: e.target.value })} /></div>
               <div><label className="text-xs font-bold text-slate-500 uppercase">Email</label><input className="w-full p-3 rounded-lg bg-white border border-slate-300 text-black mt-1 outline-none focus:ring-2 focus:ring-cyan-500" value={editingCompany.email} onChange={e => setEditingCompany({ ...editingCompany, email: e.target.value })} /></div>
               <div><label className="text-xs font-bold text-slate-500 uppercase">Teléfono</label><input className="w-full p-3 rounded-lg bg-white border border-slate-300 text-black mt-1 outline-none focus:ring-2 focus:ring-cyan-500" value={editingCompany.phone || ''} onChange={e => setEditingCompany({ ...editingCompany, phone: e.target.value })} /></div>
+              <div><label className="text-xs font-bold text-slate-500 uppercase">Misión y Valores</label><textarea className="w-full p-3 rounded-lg bg-white border border-slate-300 text-black mt-1 outline-none focus:ring-2 focus:ring-cyan-500 resize-none" rows={3} value={editingCompany.mission_values || ''} onChange={e => setEditingCompany({ ...editingCompany, mission_values: e.target.value })} /></div>
               <div><label className="text-xs font-bold text-slate-500 uppercase">Nueva Clave (dejar vacío para no cambiar)</label><input className="w-full p-3 rounded-lg bg-white border border-slate-300 text-black mt-1 outline-none focus:ring-2 focus:ring-cyan-500" type="password" placeholder="••••••" onChange={e => setEditingCompany({ ...editingCompany, password: e.target.value })} /></div>
               <button onClick={handleUpdateCompany} className="w-full bg-[#6be1e3] text-[#1a181d] p-3 rounded-lg font-bold hover:opacity-90 mt-2">Actualizar Datos</button>
             </div>
