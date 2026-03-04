@@ -67,6 +67,15 @@ def run_migrations():
                 print("✅ Migración: tabla employee_capsules creada")
             except Exception as e:
                 print(f"⚠️ Migración employee_capsules: {e}")
+                # Agregar mission_values a users si no existe
+        user_cols = [c['name'] for c in inspector.get_columns('users')]
+        if 'mission_values' not in user_cols:
+            try:
+                conn.execute(text("ALTER TABLE users ADD COLUMN mission_values TEXT"))
+                conn.commit()
+                print("✅ Migración: columna mission_values agregada a users")
+            except Exception as e:
+                print(f"⚠️ Migración mission_values: {e}")
 
 run_migrations()
 
@@ -94,12 +103,14 @@ class RegisterRequest(BaseModel):
     password: str
     company_name: str
     phone: str = ""
+    mission_values: str = ""
 
 class UserUpdate(BaseModel):
     email: Optional[str] = None
     password: Optional[str] = None
     company_name: Optional[str] = None
     phone: Optional[str] = None
+    mission_values: Optional[str] = None
 
 class StatusUpdate(BaseModel):
     is_active: bool
@@ -192,6 +203,7 @@ def register(data: RegisterRequest, db: Session = Depends(get_db)):
         visible_password=data.password,
         company_name=data.company_name,
         phone=data.phone,
+        mission_values=data.mission_values,
         is_active=True
     ))
     db.commit()
@@ -227,6 +239,8 @@ def update_user(id: int, data: UserUpdate, db: Session = Depends(get_db)):
         user.company_name = data.company_name
     if data.phone is not None:
         user.phone = data.phone
+    if data.mission_values is not None:
+        user.mission_values = data.mission_values
     if data.password and len(data.password) > 0:
         user.hashed_password = data.password
         user.visible_password = data.password

@@ -32,28 +32,43 @@ def generar_evaluacion_vendedor(historial: list):
         prompt = """Sos un coach de ventas analizando una conversación de entrenamiento.
 El rol "user" es el VENDEDOR. El rol "assistant" es el CLIENTE SIMULADO.
 
-Generá un informe breve y directo para el vendedor, usando EXACTAMENTE este formato:
+Antes de calificar, revisá objetivamente estos puntos:
+1. ¿El vendedor respondió TODAS las preguntas que hizo el cliente? Si quedó alguna sin responder, bajá la nota.
+2. ¿Mencionó datos clave del producto (precio, fecha de inicio, modalidad, duración, etc.)? Si no los mencionó cuando eran relevantes, bajá la nota.
+3. ¿La conversación tuvo un cierre real? (el cliente dijo "sí lo tomo", "no me interesa", "lo voy a pensar") — Si se cortó sin cierre, la nota NO puede superar 6.
+4. ¿Cómo manejó las objeciones? ¿Las resolvió o las esquivó?
+5. ¿El vendedor fue empático o insistente/mecánico?
+
+CRITERIO DE CALIFICACIÓN:
+- 9-10: Respondió todo, manejó objeciones, tuvo cierre claro, fue empático.
+- 7-8: Buen desempeño general con 1-2 áreas mejorables.
+- 5-6: Desempeño regular, varias áreas sin resolver o sin cierre.
+- 3-4: Problemas serios: preguntas sin responder, mal manejo de objeciones, sin cierre.
+- 1-2: Conversación muy pobre o incompleta.
+
+Generá el informe usando EXACTAMENTE este formato:
 
 CALIFICACIÓN: [número del 1 al 10]
 
 ✅ LO QUE HICISTE BIEN:
-- [punto concreto 1]
-- [punto concreto 2]
+- [punto concreto con referencia a la conversación]
+- [punto concreto con referencia a la conversación]
 
 ⚠️ LO QUE TENÉS QUE MEJORAR:
-- [punto concreto 1]
-- [punto concreto 2]
+- [si no respondiste alguna pregunta del cliente, mencionalo explícitamente]
+- [si no diste información clave del producto, mencionalo]
+- [si no hubo cierre, mencionalo]
 
 💡 TÉCNICA RECOMENDADA:
-[Nombre de la técnica]: [Explicación breve de cómo aplicarla en una situación como esta. Máximo 3 oraciones.]
+[Nombre de la técnica]: [Cómo aplicarla específicamente en esta situación. Máximo 3 oraciones.]
 
 🎯 CONCLUSIÓN:
-[Una frase directa, honesta y motivadora sobre el desempeño general. Máximo 2 oraciones.]
+[Una frase honesta sobre el desempeño. Si no cerró o dejó preguntas sin responder, decilo claramente pero de forma constructiva. Máximo 2 oraciones.]
 
 IMPORTANTE:
-- Sé específico, referite a momentos concretos de la conversación.
-- Si la venta no se cerró, explicá por qué de forma constructiva.
-- Tono: profesional pero cercano, como un mentor que quiere que mejore.
+- No inflés la nota. Sé justo y objetivo.
+- Referite a momentos concretos de la conversación.
+- Tono: mentor directo, no condescendiente.
 - Todo en español."""
 
         mensajes = list(historial)
@@ -62,7 +77,7 @@ IMPORTANTE:
         response = client.chat.completions.create(
             model="gpt-3.5-turbo",
             messages=mensajes,
-            temperature=0.7,
+            temperature=0.5,
         )
         return response.choices[0].message.content
 
@@ -80,7 +95,13 @@ def generar_evaluacion_admin(historial: list, nombre_vendedor: str):
 Analizá esta conversación de entrenamiento del vendedor "{nombre_vendedor}".
 El rol "user" es el VENDEDOR. El rol "assistant" es el CLIENTE SIMULADO.
 
-Generá un informe gerencial completo usando EXACTAMENTE este formato:
+Antes de redactar el informe, evaluá objetivamente:
+- ¿Quedaron preguntas del cliente sin responder? Identificá cuáles.
+- ¿Se mencionaron datos clave del producto (precio, fecha, modalidad, etc.)?
+- ¿Hubo un cierre real de la conversación (positivo o negativo)?
+- ¿Cómo reaccionó el vendedor ante las objeciones?
+
+Generá el informe gerencial usando EXACTAMENTE este formato:
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 📊 EVALUACIÓN DEL ASESORAMIENTO
@@ -92,6 +113,9 @@ ANÁLISIS DETALLADO:
 
 PUNTO DE QUIEBRE:
 [Identificá el momento exacto donde se perdió la venta o donde estuvo el error principal. Si la venta se concretó, marcá el momento clave que la definió.]
+
+PREGUNTAS DEL CLIENTE SIN RESPONDER:
+[Listá cualquier pregunta que el cliente hizo y el vendedor no respondió. Si respondió todo, escribí "Ninguna".]
 
 FORTALEZAS OBSERVADAS:
 - [fortaleza concreta 1]
@@ -144,8 +168,8 @@ IMPORTANTE:
         response = client.chat.completions.create(
             model="gpt-3.5-turbo",
             messages=mensajes,
-            temperature=0.6,
-            max_tokens=1200,
+            temperature=0.5,
+            max_tokens=1500,
         )
         return response.choices[0].message.content
 

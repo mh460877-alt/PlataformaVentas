@@ -12,6 +12,7 @@ class User(Base):
     visible_password = Column(String)
     company_name = Column(String)
     phone = Column(String, nullable=True)
+    mission_values = Column(Text, nullable=True)   # Misión y valores de la empresa
     is_active = Column(Boolean, default=True)
     is_super_admin = Column(Boolean, default=False)
 
