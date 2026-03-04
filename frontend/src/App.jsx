@@ -47,6 +47,7 @@ const LogoOneWhite = ({ small }) => (
 // ============================================================
 function LandingPage() {
   const navigate = useNavigate();
+  useEffect(() => { document.title = 'ONE Commercial IA'; }, []);
   return (
     <div className="min-h-screen font-sans relative overflow-x-hidden flex flex-col" style={{ backgroundColor: COLORS.white }}>
       {/* Gradientes decorativos de fondo */}
@@ -168,6 +169,7 @@ function LandingPage() {
 // ============================================================
 function LoginPage() {
   const navigate = useNavigate();
+  useEffect(() => { document.title = 'Login | ONE Commercial IA'; }, []);
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -239,6 +241,7 @@ function LoginPage() {
 // ============================================================
 function SuperAdmin() {
   const navigate = useNavigate();
+  useEffect(() => { document.title = 'Super Admin | ONE Commercial IA'; }, []);
   const [activeTab, setActiveTab] = useState('empresas');
   const [showModal, setShowModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
@@ -1156,6 +1159,7 @@ function ProductsView({ products, newProd, setNewProd, addProduct, deleteProduct
 // ============================================================
 function CompanyDashboard() {
   const navigate = useNavigate();
+  useEffect(() => { document.title = 'Dashboard | ONE Commercial IA'; }, []);
   const user = JSON.parse(localStorage.getItem('user') || '{}');
   const [tab, setTab] = useState('employees');
   const [employees, setEmployees] = useState([]);
@@ -1567,6 +1571,7 @@ function CompanyDashboard() {
 // ============================================================
 function EmployeePortal() {
   const navigate = useNavigate();
+  useEffect(() => { document.title = 'Portal | ONE Commercial IA'; }, []);
   const user = JSON.parse(localStorage.getItem('user') || '{}');
   const [view, setView] = useState('select'); // 'select' | 'chat' | 'feedback'
   const [products, setProducts] = useState([]);
