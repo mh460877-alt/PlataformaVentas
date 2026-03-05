@@ -1156,7 +1156,7 @@ function ProductsView({ products, newProd, setNewProd, addProduct, deleteProduct
                         <div>
                           <p className="font-bold text-slate-800">{p.name}</p>
                           {p.info
-                            ? <p className="text-xs text-slate-400 mt-0.5 truncate max-w-[260px]">{p.info}</p>
+                            ? <p className="text-xs text-slate-400 mt-0.5 truncate max-w-[260px]">{p.info.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').trim()}</p>
                             : <p className="text-xs text-slate-300 italic mt-0.5">Sin información del producto</p>
                           }
                         </div>
