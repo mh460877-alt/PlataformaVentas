@@ -1223,14 +1223,14 @@ function ProductsView({ products, newProd, setNewProd, addProduct, deleteProduct
               {p.info && (
                 <button
                   onClick={() => setShowInfoModal(true)}
-                  className="text-xs text-slate-400 hover:text-[#6be1e3] flex items-center gap-1 transition"
+                  className="flex items-center gap-1.5 bg-[#6be1e3]/10 text-[#3abfc1] hover:bg-[#6be1e3] hover:text-black px-3 py-1.5 rounded-lg text-xs font-bold transition"
                 >
                   <Eye size={13} /> Ver
                 </button>
               )}
               <button
                 onClick={() => { setEditingInfo(true); setInfoText(p.info || ''); }}
-                className="text-xs text-slate-400 hover:text-[#e17bd7] flex items-center gap-1 transition"
+                className="flex items-center gap-1.5 bg-[#e17bd7]/10 text-[#e17bd7] hover:bg-[#e17bd7] hover:text-white px-3 py-1.5 rounded-lg text-xs font-bold transition"
               >
                 <Edit2 size={13} /> Editar
               </button>
@@ -1238,7 +1238,7 @@ function ProductsView({ products, newProd, setNewProd, addProduct, deleteProduct
           )}
         </div>
         <p className="text-xs text-slate-400 mb-3">
-          Esta información será usada por el agente de IA para hacer preguntas técnicas y responder dudas específicas del producto durante el entrenamiento.
+          Esta información será usada por el agente de IA para conocer el producto y simular preguntas reales que haría un cliente durante el entrenamiento.
         </p>
         {editingInfo ? (
           <div>
@@ -1369,8 +1369,9 @@ function ProductsView({ products, newProd, setNewProd, addProduct, deleteProduct
             </div>
             <div className="flex-1 overflow-y-auto p-6">
               <div
-                className="text-sm text-slate-700 leading-relaxed"
+                className="text-sm text-slate-700 leading-relaxed rich-content"
                 dangerouslySetInnerHTML={{ __html: openProduct.info }}
+                style={{ lineHeight: '1.8' }}
               />
             </div>
           </div>
