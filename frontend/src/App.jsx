@@ -1066,6 +1066,7 @@ function ProductsView({ products, newProd, setNewProd, addProduct, deleteProduct
   const [openProduct, setOpenProduct] = useState(null);
   const [showProtoForm, setShowProtoForm] = useState(false);
   const [editingInfo, setEditingInfo] = useState(false);
+  const [showInfoModal, setShowInfoModal] = useState(false);
   const [infoText, setInfoText] = useState('');
 
   // Cuando se abre un producto, sincronizar la info local
@@ -1218,12 +1219,22 @@ function ProductsView({ products, newProd, setNewProd, addProduct, deleteProduct
             <FileText size={16} className="text-[#e17bd7]" /> Información del Producto
           </h3>
           {!editingInfo && (
-            <button
-              onClick={() => { setEditingInfo(true); setInfoText(p.info || ''); }}
-              className="text-xs text-slate-400 hover:text-[#e17bd7] flex items-center gap-1 transition"
-            >
-              <Edit2 size={13} /> Editar
-            </button>
+            <div className="flex items-center gap-2">
+              {p.info && (
+                <button
+                  onClick={() => setShowInfoModal(true)}
+                  className="text-xs text-slate-400 hover:text-[#6be1e3] flex items-center gap-1 transition"
+                >
+                  <Eye size={13} /> Ver
+                </button>
+              )}
+              <button
+                onClick={() => { setEditingInfo(true); setInfoText(p.info || ''); }}
+                className="text-xs text-slate-400 hover:text-[#e17bd7] flex items-center gap-1 transition"
+              >
+                <Edit2 size={13} /> Editar
+              </button>
+            </div>
           )}
         </div>
         <p className="text-xs text-slate-400 mb-3">
@@ -1247,10 +1258,20 @@ function ProductsView({ products, newProd, setNewProd, addProduct, deleteProduct
             </div>
           </div>
         ) : (
-          <div
-            className={`text-sm rounded-xl p-3 min-h-[60px] leading-relaxed ${p.info ? 'bg-slate-50 text-slate-700' : 'text-slate-300 italic'}`}
-            dangerouslySetInnerHTML={{ __html: p.info || 'Sin información cargada. Hacé click en Editar para agregar.' }}
-          />
+          <div>
+            {p.info ? (
+              <div className="relative">
+                <div
+                  className="text-sm bg-slate-50 rounded-xl px-3 py-2 text-slate-700 overflow-hidden"
+                  style={{ maxHeight: '1.8em', WebkitLineClamp: 1, display: '-webkit-box', WebkitBoxOrient: 'vertical', overflow: 'hidden' }}
+                  dangerouslySetInnerHTML={{ __html: p.info }}
+                />
+                <div className="absolute inset-y-0 right-0 w-24 bg-gradient-to-l from-slate-50 to-transparent rounded-r-xl pointer-events-none" />
+              </div>
+            ) : (
+              <p className="text-sm text-slate-300 italic px-1">Sin información cargada.</p>
+            )}
+          </div>
         )}
       </div>
 
@@ -1335,6 +1356,26 @@ function ProductsView({ products, newProd, setNewProd, addProduct, deleteProduct
           </table>
         )}
       </div>
+      {/* Modal Ver Información del Producto */}
+      {showInfoModal && openProduct && (
+        <div className="fixed inset-0 bg-black/70 flex items-center justify-center p-4 z-[99999] backdrop-blur-sm" onClick={() => setShowInfoModal(false)}>
+          <div className="bg-white rounded-3xl w-full max-w-2xl max-h-[80vh] flex flex-col shadow-2xl overflow-hidden" onClick={e => e.stopPropagation()}>
+            <div className="bg-[#1a181d] px-6 py-4 flex justify-between items-center flex-shrink-0">
+              <div className="flex items-center gap-3">
+                <FileText size={18} className="text-[#e17bd7]" />
+                <h3 className="font-bold text-white">Información del Producto</h3>
+              </div>
+              <button onClick={() => setShowInfoModal(false)} className="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-white/10 transition"><X size={18} /></button>
+            </div>
+            <div className="flex-1 overflow-y-auto p-6">
+              <div
+                className="text-sm text-slate-700 leading-relaxed"
+                dangerouslySetInnerHTML={{ __html: openProduct.info }}
+              />
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
