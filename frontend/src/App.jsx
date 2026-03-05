@@ -43,6 +43,185 @@ const LogoOneWhite = ({ small }) => (
 
 
 // ============================================================
+// RICH TEXT EDITOR
+// ============================================================
+const EMOJI_LIST = [
+  '😀','😂','😊','😍','🤔','😎','👍','👋','🙌','💪',
+  '🔥','⭐','✅','❌','⚠️','💡','📌','🎯','📊','💰',
+  '🚀','💼','🏆','📋','🔑','💎','📈','🤝','👀','✨',
+  '1️⃣','2️⃣','3️⃣','4️⃣','5️⃣','6️⃣','7️⃣','🅰️','🅱️','©️'
+];
+const TEXT_COLORS = [
+  '#1a181d','#e17bd7','#6be1e3','#e4c76a',
+  '#ef4444','#3b82f6','#22c55e','#f97316',
+  '#8b5cf6','#64748b','#ffffff','#000000'
+];
+const HIGHLIGHT_COLORS = [
+  '#fef08a','#bbf7d0','#bfdbfe','#fecaca',
+  '#e9d5ff','#fed7aa','#c7f2f3','#f5d0f0'
+];
+
+function RichTextEditor({ value, onChange, placeholder, minHeight = '120px' }) {
+  const editorRef = useRef(null);
+  const [showEmoji, setShowEmoji] = useState(false);
+  const [showTextColor, setShowTextColor] = useState(false);
+  const [showHighlight, setShowHighlight] = useState(false);
+  const savedRange = useRef(null);
+  const initialized = useRef(false);
+
+  useEffect(() => {
+    if (editorRef.current && !initialized.current) {
+      editorRef.current.innerHTML = value || '';
+      initialized.current = true;
+    }
+  }, []);
+
+  useEffect(() => {
+    const close = () => { setShowEmoji(false); setShowTextColor(false); setShowHighlight(false); };
+    document.addEventListener('mousedown', close);
+    return () => document.removeEventListener('mousedown', close);
+  }, []);
+
+  const saveSelection = () => {
+    const sel = window.getSelection();
+    if (sel && sel.rangeCount > 0) savedRange.current = sel.getRangeAt(0).cloneRange();
+  };
+
+  const restoreSelection = () => {
+    if (savedRange.current) {
+      const sel = window.getSelection();
+      sel.removeAllRanges();
+      sel.addRange(savedRange.current);
+    }
+  };
+
+  const exec = (cmd, val = null) => {
+    editorRef.current.focus();
+    document.execCommand(cmd, false, val);
+    onChange(editorRef.current.innerHTML);
+  };
+
+  const applyTextColor = (color) => { restoreSelection(); exec('foreColor', color); setShowTextColor(false); };
+  const applyHighlight = (color) => { restoreSelection(); exec('hiliteColor', color); setShowHighlight(false); };
+
+  const insertEmoji = (emoji) => {
+    restoreSelection();
+    editorRef.current.focus();
+    document.execCommand('insertText', false, emoji);
+    onChange(editorRef.current.innerHTML);
+    setShowEmoji(false);
+  };
+
+  const ToolBtn = ({ onAction, title, children }) => (
+    <button
+      type="button"
+      onMouseDown={e => { e.preventDefault(); e.stopPropagation(); saveSelection(); onAction(); }}
+      title={title}
+      className="w-8 h-8 rounded-lg flex items-center justify-center text-sm font-bold transition hover:bg-slate-200 text-slate-600 hover:text-slate-900"
+    >{children}</button>
+  );
+
+  return (
+    <div className="border rounded-xl overflow-visible bg-white focus-within:ring-2 focus-within:ring-[#e17bd7] transition" style={{ position: 'relative' }}>
+      {/* Toolbar */}
+      <div className="flex items-center gap-0.5 px-2 py-2 border-b bg-slate-50 rounded-t-xl flex-wrap">
+        <ToolBtn onAction={() => exec('bold')} title="Negrita"><b>B</b></ToolBtn>
+        <ToolBtn onAction={() => exec('italic')} title="Cursiva"><i className="not-italic font-serif">I</i></ToolBtn>
+        <ToolBtn onAction={() => exec('underline')} title="Subrayado"><u>S</u></ToolBtn>
+        <div className="w-px h-5 bg-slate-200 mx-1" />
+
+        {/* Color de texto */}
+        <div style={{ position: 'relative' }} onMouseDown={e => e.stopPropagation()}>
+          <button type="button"
+            onMouseDown={e => { e.preventDefault(); e.stopPropagation(); saveSelection(); setShowTextColor(v => !v); setShowHighlight(false); setShowEmoji(false); }}
+            title="Color de texto"
+            className="w-8 h-8 rounded-lg flex flex-col items-center justify-center gap-0.5 hover:bg-slate-200 transition">
+            <span className="text-xs font-extrabold text-slate-700 leading-none">A</span>
+            <span className="w-4 h-1 rounded-sm" style={{ backgroundColor: '#e17bd7' }}></span>
+          </button>
+          {showTextColor && (
+            <div style={{ position: 'absolute', top: '36px', left: 0, zIndex: 9999 }}
+              className="bg-white border rounded-xl shadow-2xl p-2 grid grid-cols-4 gap-1 w-28"
+              onMouseDown={e => e.stopPropagation()}>
+              {TEXT_COLORS.map(c => (
+                <button key={c} type="button"
+                  className="w-5 h-5 rounded-md border border-slate-200 hover:scale-125 transition"
+                  style={{ backgroundColor: c }}
+                  onMouseDown={e => { e.preventDefault(); e.stopPropagation(); applyTextColor(c); }} />
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Resaltado */}
+        <div style={{ position: 'relative' }} onMouseDown={e => e.stopPropagation()}>
+          <button type="button"
+            onMouseDown={e => { e.preventDefault(); e.stopPropagation(); saveSelection(); setShowHighlight(v => !v); setShowTextColor(false); setShowEmoji(false); }}
+            title="Resaltar texto"
+            className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-slate-200 transition text-base">
+            🖊
+          </button>
+          {showHighlight && (
+            <div style={{ position: 'absolute', top: '36px', left: 0, zIndex: 9999 }}
+              className="bg-white border rounded-xl shadow-2xl p-2 grid grid-cols-4 gap-1 w-24"
+              onMouseDown={e => e.stopPropagation()}>
+              {HIGHLIGHT_COLORS.map(c => (
+                <button key={c} type="button"
+                  className="w-5 h-5 rounded-md border border-slate-200 hover:scale-125 transition"
+                  style={{ backgroundColor: c }}
+                  onMouseDown={e => { e.preventDefault(); e.stopPropagation(); applyHighlight(c); }} />
+              ))}
+            </div>
+          )}
+        </div>
+
+        <div className="w-px h-5 bg-slate-200 mx-1" />
+
+        {/* Emojis */}
+        <div style={{ position: 'relative' }} onMouseDown={e => e.stopPropagation()}>
+          <button type="button"
+            onMouseDown={e => { e.preventDefault(); e.stopPropagation(); saveSelection(); setShowEmoji(v => !v); setShowTextColor(false); setShowHighlight(false); }}
+            title="Insertar emoji"
+            className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-slate-200 transition text-base">
+            😊
+          </button>
+          {showEmoji && (
+            <div style={{ position: 'absolute', top: '36px', left: 0, zIndex: 9999 }}
+              className="bg-white border rounded-xl shadow-2xl p-3 grid grid-cols-8 gap-1 w-56"
+              onMouseDown={e => e.stopPropagation()}>
+              {EMOJI_LIST.map((em, i) => (
+                <button key={i} type="button"
+                  className="w-6 h-6 text-sm hover:scale-125 transition flex items-center justify-center rounded"
+                  onMouseDown={e => { e.preventDefault(); e.stopPropagation(); insertEmoji(em); }}>
+                  {em}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+
+        <div className="w-px h-5 bg-slate-200 mx-1" />
+        <ToolBtn onAction={() => exec('insertUnorderedList')} title="Lista con viñetas"><span className="text-xs">≡</span></ToolBtn>
+        <ToolBtn onAction={() => exec('removeFormat')} title="Quitar formato"><span className="text-xs">✕</span></ToolBtn>
+      </div>
+
+      {/* Área editable */}
+      <div
+        ref={editorRef}
+        contentEditable
+        suppressContentEditableWarning
+        onInput={() => onChange(editorRef.current.innerHTML)}
+        onBlur={() => onChange(editorRef.current.innerHTML)}
+        className="p-4 text-sm text-slate-700 outline-none leading-relaxed"
+        style={{ minHeight, whiteSpace: 'pre-wrap' }}
+        data-placeholder={placeholder}
+      />
+      <style>{`[contenteditable]:empty:before{content:attr(data-placeholder);color:#94a3b8;pointer-events:none;}`}</style>
+    </div>
+  );
+}
+
+// ============================================================
 // LANDING PAGE
 // ============================================================
 function LandingPage() {
@@ -595,7 +774,12 @@ function SuperAdmin() {
               <input className="w-full p-3 bg-white border border-slate-300 rounded-lg text-black focus:ring-2 focus:ring-cyan-500 outline-none" placeholder="Nombre Empresa *" onChange={e => setNewCompany({ ...newCompany, company_name: e.target.value })} />
               <input className="w-full p-3 bg-white border border-slate-300 rounded-lg text-black focus:ring-2 focus:ring-cyan-500 outline-none" placeholder="Email Admin *" onChange={e => setNewCompany({ ...newCompany, email: e.target.value })} />
               <input className="w-full p-3 bg-white border border-slate-300 rounded-lg text-black focus:ring-2 focus:ring-cyan-500 outline-none" placeholder="Teléfono" onChange={e => setNewCompany({ ...newCompany, phone: e.target.value })} />
-              <textarea className="w-full p-3 bg-white border border-slate-300 rounded-lg text-black focus:ring-2 focus:ring-cyan-500 outline-none resize-none" rows={3} placeholder="Misión y valores de la empresa (opcional)" onChange={e => setNewCompany({ ...newCompany, mission_values: e.target.value })} />
+            <RichTextEditor
+              value={newCompany.mission_values}
+              onChange={val => setNewCompany({ ...newCompany, mission_values: val })}
+              placeholder="Misión y valores de la empresa (opcional)"
+              minHeight="80px"
+            />
               <input className="w-full p-3 bg-white border border-slate-300 rounded-lg text-black focus:ring-2 focus:ring-cyan-500 outline-none" type="password" placeholder="Contraseña *" onChange={e => setNewCompany({ ...newCompany, password: e.target.value })} />
               <button onClick={handleCreateCompany} className="w-full bg-[#1a181d] text-white p-3 rounded-lg font-bold hover:opacity-90 mt-2">Guardar</button>
             </div>
@@ -612,7 +796,7 @@ function SuperAdmin() {
               <div><label className="text-xs font-bold text-slate-500 uppercase">Nombre</label><input className="w-full p-3 rounded-lg bg-white border border-slate-300 text-black mt-1 outline-none focus:ring-2 focus:ring-cyan-500" value={editingCompany.company_name} onChange={e => setEditingCompany({ ...editingCompany, company_name: e.target.value })} /></div>
               <div><label className="text-xs font-bold text-slate-500 uppercase">Email</label><input className="w-full p-3 rounded-lg bg-white border border-slate-300 text-black mt-1 outline-none focus:ring-2 focus:ring-cyan-500" value={editingCompany.email} onChange={e => setEditingCompany({ ...editingCompany, email: e.target.value })} /></div>
               <div><label className="text-xs font-bold text-slate-500 uppercase">Teléfono</label><input className="w-full p-3 rounded-lg bg-white border border-slate-300 text-black mt-1 outline-none focus:ring-2 focus:ring-cyan-500" value={editingCompany.phone || ''} onChange={e => setEditingCompany({ ...editingCompany, phone: e.target.value })} /></div>
-              <div><label className="text-xs font-bold text-slate-500 uppercase">Misión y Valores</label><textarea className="w-full p-3 rounded-lg bg-white border border-slate-300 text-black mt-1 outline-none focus:ring-2 focus:ring-cyan-500 resize-none" rows={3} value={editingCompany.mission_values || ''} onChange={e => setEditingCompany({ ...editingCompany, mission_values: e.target.value })} /></div>
+              <div><label className="text-xs font-bold text-slate-500 uppercase">Misión y Valores</label><RichTextEditor value={editingCompany.mission_values || ''} onChange={val => setEditingCompany({ ...editingCompany, mission_values: val })} placeholder="Misión y valores..." minHeight="80px" /></div>
               <div><label className="text-xs font-bold text-slate-500 uppercase">Nueva Clave (dejar vacío para no cambiar)</label><input className="w-full p-3 rounded-lg bg-white border border-slate-300 text-black mt-1 outline-none focus:ring-2 focus:ring-cyan-500" type="password" placeholder="••••••" onChange={e => setEditingCompany({ ...editingCompany, password: e.target.value })} /></div>
               <button onClick={handleUpdateCompany} className="w-full bg-[#6be1e3] text-[#1a181d] p-3 rounded-lg font-bold hover:opacity-90 mt-2">Actualizar Datos</button>
             </div>
@@ -1047,12 +1231,11 @@ function ProductsView({ products, newProd, setNewProd, addProduct, deleteProduct
         </p>
         {editingInfo ? (
           <div>
-            <textarea
-              className="w-full border rounded-xl p-3 text-sm outline-none focus:ring-2 focus:ring-[#e17bd7] resize-none bg-slate-50"
-              rows={5}
-              placeholder="Ej: Precio: $1200. Características: X, Y, Z. Beneficios: A, B. Garantía: 12 meses..."
+            <RichTextEditor
               value={infoText}
-              onChange={e => setInfoText(e.target.value)}
+              onChange={setInfoText}
+              placeholder="Ej: 1️⃣ Precio: $1200  2️⃣ Características: X, Y, Z  3️⃣ Garantía: 12 meses..."
+              minHeight="150px"
             />
             <div className="flex gap-2 mt-2">
               <button onClick={saveInfo} className="bg-[#1a181d] text-white px-4 py-2 rounded-lg text-sm font-bold hover:opacity-90 flex items-center gap-2">
@@ -1064,9 +1247,10 @@ function ProductsView({ products, newProd, setNewProd, addProduct, deleteProduct
             </div>
           </div>
         ) : (
-          <div className={`text-sm rounded-xl p-3 min-h-[60px] ${p.info ? 'bg-slate-50 text-slate-700 leading-relaxed' : 'text-slate-300 italic'}`}>
-            {p.info || 'Sin información cargada. Hacé click en Editar para agregar.'}
-          </div>
+          <div
+            className={`text-sm rounded-xl p-3 min-h-[60px] leading-relaxed ${p.info ? 'bg-slate-50 text-slate-700' : 'text-slate-300 italic'}`}
+            dangerouslySetInnerHTML={{ __html: p.info || 'Sin información cargada. Hacé click en Editar para agregar.' }}
+          />
         )}
       </div>
 
