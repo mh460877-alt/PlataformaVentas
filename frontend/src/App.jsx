@@ -1806,6 +1806,61 @@ function CompanyDashboard() {
 // ============================================================
 function ProductList({ products, onStartChat }) {
   const [openProductId, setOpenProductId] = useState(null);
+
+  // Vista tablero de prototipos
+  if (openProductId !== null) {
+    const product = products.find(p => p.id === openProductId);
+    return (
+      <div>
+        {/* Header */}
+        <div className="flex items-center gap-4 mb-8">
+          <button
+            onClick={() => setOpenProductId(null)}
+            className="p-2.5 bg-white border rounded-xl hover:bg-slate-50 transition shadow-sm"
+          >
+            <ArrowLeft size={18} />
+          </button>
+          <div>
+            <p className="text-xs text-slate-400 uppercase tracking-widest font-bold">Simulación de Ventas</p>
+            <h2 className="text-2xl font-bold text-[#1a181d] flex items-center gap-2">
+              <Package size={20} className="text-[#e17bd7]" /> {product.name}
+            </h2>
+          </div>
+          <span className="ml-auto text-xs bg-[#e17bd7]/10 text-[#e17bd7] px-3 py-1.5 rounded-full font-bold">
+            {product.prototypes.length} perfil{product.prototypes.length !== 1 ? 'es' : ''} disponible{product.prototypes.length !== 1 ? 's' : ''}
+          </span>
+        </div>
+
+        <p className="text-slate-500 mb-6">Seleccioná con qué perfil de cliente querés entrenar.</p>
+
+        {/* Tablero de cards */}
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
+          {product.prototypes.map(pr => (
+            <button
+              key={pr.id}
+              onClick={() => onStartChat(pr.id)}
+              className="group text-left bg-white border border-slate-200 rounded-2xl p-6 hover:border-[#e17bd7] hover:shadow-lg transition-all duration-200"
+            >
+              <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#e17bd7]/20 to-[#6be1e3]/20 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                <span className="text-xl">👤</span>
+              </div>
+              <h3 className="font-bold text-slate-800 text-lg mb-2 group-hover:text-[#e17bd7] transition-colors">
+                {pr.name}
+              </h3>
+              <p className="text-sm text-slate-500 leading-relaxed line-clamp-3">
+                {pr.description}
+              </p>
+              <div className="mt-5 flex items-center gap-2 text-xs font-bold text-[#e17bd7] opacity-0 group-hover:opacity-100 transition-opacity">
+                Comenzar entrenamiento <ArrowRight size={13} />
+              </div>
+            </button>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  // Vista lista de productos
   return (
     <div className="bg-white rounded-2xl border shadow-sm overflow-hidden">
       <table className="w-full text-left">
@@ -1819,51 +1874,31 @@ function ProductList({ products, onStartChat }) {
         </thead>
         <tbody className="divide-y divide-slate-100">
           {products.map((p, i) => (
-            <React.Fragment key={p.id}>
-              <tr className="hover:bg-slate-50 transition">
-                <td className="px-6 py-4 text-slate-300 font-mono text-sm font-bold">{i + 1}</td>
-                <td className="px-6 py-4">
-                  <div className="flex items-center gap-3">
-                    <div className="w-9 h-9 rounded-xl bg-[#e17bd7]/10 flex items-center justify-center flex-shrink-0">
-                      <Package size={17} className="text-[#e17bd7]" />
-                    </div>
-                    <p className="font-bold text-slate-800">{p.name}</p>
+            <tr key={p.id} className="hover:bg-slate-50 transition">
+              <td className="px-6 py-4 text-slate-300 font-mono text-sm font-bold">{i + 1}</td>
+              <td className="px-6 py-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-9 h-9 rounded-xl bg-[#e17bd7]/10 flex items-center justify-center flex-shrink-0">
+                    <Package size={17} className="text-[#e17bd7]" />
                   </div>
-                </td>
-                <td className="px-6 py-4 text-center">
-                  <span className={`text-xs font-bold px-3 py-1 rounded-full ${p.prototypes.length > 0 ? 'bg-[#e17bd7]/10 text-[#e17bd7]' : 'bg-slate-100 text-slate-400'}`}>
-                    {p.prototypes.length} cliente{p.prototypes.length !== 1 ? 's' : ''}
-                  </span>
-                </td>
-                <td className="px-6 py-4 text-center">
-                  <button
-                    onClick={() => setOpenProductId(openProductId === p.id ? null : p.id)}
-                    disabled={p.prototypes.length === 0}
-                    className="inline-flex items-center gap-2 bg-[#1a181d] text-white text-xs font-bold px-4 py-2 rounded-lg hover:bg-[#e17bd7] transition disabled:opacity-40 disabled:cursor-not-allowed"
-                  >
-                    Clientes <ChevronRight size={14} className={`transition-transform ${openProductId === p.id ? 'rotate-90' : ''}`} />
-                  </button>
-                </td>
-              </tr>
-              {openProductId === p.id && (
-                <tr>
-                  <td colSpan={4} className="px-6 pb-4 pt-0 bg-slate-50">
-                    <div className="space-y-2 pt-2">
-                      {p.prototypes.map(pr => (
-                        <button key={pr.id} onClick={() => onStartChat(pr.id)}
-                          className="w-full text-left p-3 bg-white border rounded-xl hover:border-[#e17bd7] flex justify-between items-center group transition shadow-sm">
-                          <div>
-                            <p className="font-bold text-sm text-slate-800">{pr.name}</p>
-                            <p className="text-xs text-slate-400 mt-0.5">{pr.description}</p>
-                          </div>
-                          <ChevronRight size={16} className="text-slate-300 group-hover:text-[#e17bd7] group-hover:translate-x-1 transition" />
-                        </button>
-                      ))}
-                    </div>
-                  </td>
-                </tr>
-              )}
-            </React.Fragment>
+                  <p className="font-bold text-slate-800">{p.name}</p>
+                </div>
+              </td>
+              <td className="px-6 py-4 text-center">
+                <span className={`text-xs font-bold px-3 py-1 rounded-full ${p.prototypes.length > 0 ? 'bg-[#e17bd7]/10 text-[#e17bd7]' : 'bg-slate-100 text-slate-400'}`}>
+                  {p.prototypes.length} cliente{p.prototypes.length !== 1 ? 's' : ''}
+                </span>
+              </td>
+              <td className="px-6 py-4 text-center">
+                <button
+                  onClick={() => setOpenProductId(p.id)}
+                  disabled={p.prototypes.length === 0}
+                  className="inline-flex items-center gap-2 bg-[#1a181d] text-white text-xs font-bold px-4 py-2 rounded-lg hover:bg-[#e17bd7] transition disabled:opacity-40 disabled:cursor-not-allowed"
+                >
+                  Clientes <ChevronRight size={14} />
+                </button>
+              </td>
+            </tr>
           ))}
           {products.length === 0 && (
             <tr><td colSpan={4} className="px-6 py-12 text-center text-slate-400 italic">No hay productos disponibles.</td></tr>
