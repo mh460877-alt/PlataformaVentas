@@ -124,7 +124,7 @@ function RichTextEditor({ value, onChange, placeholder, minHeight = '120px' }) {
   return (
     <div className="border rounded-xl overflow-visible bg-white focus-within:ring-2 focus-within:ring-[#e17bd7] transition" style={{ position: 'relative' }}>
       {/* Toolbar */}
-      <div className="flex items-center gap-0.5 px-2 py-2 border-b bg-slate-50 rounded-t-xl flex-wrap">
+      <div className="flex items-center gap-0.5 px-2 py-2 border-b bg-slate-50 rounded-t-xl flex-wrap sticky top-0 z-50">
         <ToolBtn onAction={() => exec('bold')} title="Negrita"><b>B</b></ToolBtn>
         <ToolBtn onAction={() => exec('italic')} title="Cursiva"><i className="not-italic font-serif">I</i></ToolBtn>
         <ToolBtn onAction={() => exec('underline')} title="Subrayado"><u>S</u></ToolBtn>
@@ -212,6 +212,13 @@ function RichTextEditor({ value, onChange, placeholder, minHeight = '120px' }) {
         suppressContentEditableWarning
         onInput={() => onChange(editorRef.current.innerHTML)}
         onBlur={() => onChange(editorRef.current.innerHTML)}
+        onPaste={(e) => {
+        e.preventDefault();
+        const html = e.clipboardData.getData('text/html');
+        const text = e.clipboardData.getData('text/plain');
+        document.execCommand('insertHTML', false, html || text);
+        onChange(editorRef.current.innerHTML);
+      }}
         className="p-4 text-sm text-slate-700 outline-none leading-relaxed"
         style={{ minHeight, whiteSpace: 'pre-wrap' }}
         data-placeholder={placeholder}
