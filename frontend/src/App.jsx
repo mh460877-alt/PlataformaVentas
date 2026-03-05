@@ -1908,6 +1908,20 @@ function ProductList({ products, onStartChat }) {
     </div>
   );
 }
+function ChatTimer() {
+  const [seconds, setSeconds] = useState(0);
+  useEffect(() => {
+    const interval = setInterval(() => setSeconds(s => s + 1), 1000);
+    return () => clearInterval(interval);
+  }, []);
+  const mins = String(Math.floor(seconds / 60)).padStart(2, '0');
+  const secs = String(seconds % 60).padStart(2, '0');
+  return (
+    <span className="ml-3 bg-slate-100 text-slate-600 font-mono font-bold text-sm px-3 py-1.5 rounded-xl">
+      ⏱ {mins}:{secs}
+    </span>
+  );
+}
 function EmployeePortal() {
   const navigate = useNavigate();
   useEffect(() => { document.title = 'Portal | ONE Commercial IA'; }, []);
@@ -2002,11 +2016,19 @@ function EmployeePortal() {
       <div className="h-screen bg-slate-100 flex flex-col">
         <header className="bg-white px-6 py-4 border-b flex justify-between items-center shadow-sm">
           <div className="flex items-center gap-3">
+            <button
+              onClick={() => { setView('select'); setMsgs([]); setSession(null); }}
+              className="p-2 bg-slate-100 rounded-xl hover:bg-slate-200 transition mr-2"
+              title="Volver sin guardar"
+            >
+              <ArrowLeft size={18} />
+            </button>
             <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
             <div>
               <p className="font-bold text-[#1a181d]">{agentName} — Cliente Virtual</p>
               <p className="text-xs text-slate-400">Simulación en curso • {msgs.length - 1} intercambios</p>
             </div>
+            <ChatTimer />
           </div>
           <button
             onClick={endSession}
