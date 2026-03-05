@@ -1804,6 +1804,75 @@ function CompanyDashboard() {
 // ============================================================
 // EMPLOYEE PORTAL (Vendedor) — COMPLETAMENTE FUNCIONAL
 // ============================================================
+function ProductList({ products, onStartChat }) {
+  const [openProductId, setOpenProductId] = useState(null);
+  return (
+    <div className="bg-white rounded-2xl border shadow-sm overflow-hidden">
+      <table className="w-full text-left">
+        <thead className="bg-slate-50 border-b text-xs uppercase font-bold text-slate-400 tracking-wider">
+          <tr>
+            <th className="px-6 py-4 w-10">#</th>
+            <th className="px-6 py-4">Producto</th>
+            <th className="px-6 py-4 text-center w-40">Prototipos</th>
+            <th className="px-6 py-4 text-center w-36">Acción</th>
+          </tr>
+        </thead>
+        <tbody className="divide-y divide-slate-100">
+          {products.map((p, i) => (
+            <React.Fragment key={p.id}>
+              <tr className="hover:bg-slate-50 transition">
+                <td className="px-6 py-4 text-slate-300 font-mono text-sm font-bold">{i + 1}</td>
+                <td className="px-6 py-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-9 h-9 rounded-xl bg-[#e17bd7]/10 flex items-center justify-center flex-shrink-0">
+                      <Package size={17} className="text-[#e17bd7]" />
+                    </div>
+                    <p className="font-bold text-slate-800">{p.name}</p>
+                  </div>
+                </td>
+                <td className="px-6 py-4 text-center">
+                  <span className={`text-xs font-bold px-3 py-1 rounded-full ${p.prototypes.length > 0 ? 'bg-[#e17bd7]/10 text-[#e17bd7]' : 'bg-slate-100 text-slate-400'}`}>
+                    {p.prototypes.length} cliente{p.prototypes.length !== 1 ? 's' : ''}
+                  </span>
+                </td>
+                <td className="px-6 py-4 text-center">
+                  <button
+                    onClick={() => setOpenProductId(openProductId === p.id ? null : p.id)}
+                    disabled={p.prototypes.length === 0}
+                    className="inline-flex items-center gap-2 bg-[#1a181d] text-white text-xs font-bold px-4 py-2 rounded-lg hover:bg-[#e17bd7] transition disabled:opacity-40 disabled:cursor-not-allowed"
+                  >
+                    Clientes <ChevronRight size={14} className={`transition-transform ${openProductId === p.id ? 'rotate-90' : ''}`} />
+                  </button>
+                </td>
+              </tr>
+              {openProductId === p.id && (
+                <tr>
+                  <td colSpan={4} className="px-6 pb-4 pt-0 bg-slate-50">
+                    <div className="space-y-2 pt-2">
+                      {p.prototypes.map(pr => (
+                        <button key={pr.id} onClick={() => onStartChat(pr.id)}
+                          className="w-full text-left p-3 bg-white border rounded-xl hover:border-[#e17bd7] flex justify-between items-center group transition shadow-sm">
+                          <div>
+                            <p className="font-bold text-sm text-slate-800">{pr.name}</p>
+                            <p className="text-xs text-slate-400 mt-0.5">{pr.description}</p>
+                          </div>
+                          <ChevronRight size={16} className="text-slate-300 group-hover:text-[#e17bd7] group-hover:translate-x-1 transition" />
+                        </button>
+                      ))}
+                    </div>
+                  </td>
+                </tr>
+              )}
+            </React.Fragment>
+          ))}
+          {products.length === 0 && (
+            <tr><td colSpan={4} className="px-6 py-12 text-center text-slate-400 italic">No hay productos disponibles.</td></tr>
+          )}
+        </tbody>
+      </table>
+    </div>
+  );
+}
 function EmployeePortal() {
   const navigate = useNavigate();
   useEffect(() => { document.title = 'Portal | ONE Commercial IA'; }, []);
@@ -2083,27 +2152,7 @@ function EmployeePortal() {
                 No hay productos disponibles. El administrador debe configurarlos.
               </div>
             )}
-            <div className="grid md:grid-cols-2 gap-6">
-              {products.map(p => (
-                <div key={p.id} className="bg-white p-6 rounded-2xl shadow-sm border hover:shadow-md transition">
-                  <h3 className="font-bold text-xl mb-1 text-[#e17bd7] flex items-center gap-2"><Package size={18} /> {p.name}</h3>
-                  <p className="text-xs text-slate-400 mb-4">{p.prototypes.length} prototipos de cliente disponibles</p>
-                  <div className="space-y-2">
-                    {p.prototypes.map(pr => (
-                      <button key={pr.id} onClick={() => startChat(pr.id)}
-                        className="w-full text-left p-3 border rounded-xl hover:bg-slate-50 flex justify-between items-center group transition">
-                        <div>
-                          <p className="font-bold text-sm">{pr.name}</p>
-                          <p className="text-xs text-slate-400 mt-0.5">{pr.description}</p>
-                        </div>
-                        <ChevronRight size={18} className="text-slate-400 group-hover:text-[#e17bd7] group-hover:translate-x-1 transition" />
-                      </button>
-                    ))}
-                    {p.prototypes.length === 0 && <p className="text-xs text-slate-400 italic px-2">Sin prototipos configurados.</p>}
-                  </div>
-                </div>
-              ))}
-            </div>
+            <ProductList products={products} onStartChat={startChat} />
           </div>
         )}
 
