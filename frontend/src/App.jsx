@@ -1988,29 +1988,34 @@ function EmployeePortal() {
     setInput('');
     setSending(true);
 
-    // Construir mensaje para mostrar en pantalla
-    const displayMsg = attachFile
-      ? (userMsg ? `${userMsg}\n${attachPreview}` : attachPreview)
-      : userMsg;
-
-    const newMsgs = [...msgs, { role: 'user', content: displayMsg }];
-    setMsgs(newMsgs);
-
-    // Construir mensaje para enviar al backend
-    let messageToSend = userMsg;
-    if (attachFile) {
-      if (attachFile.type === 'image') {
-        messageToSend = `[El vendedor compartió una imagen]\n${userMsg}`;
-      } else if (attachFile.type === 'pdf') {
-        messageToSend = `[El vendedor compartió un documento PDF con el siguiente contenido:\n${attachFile.text}]\n${userMsg}`;
-      }
+    // Construir mensaje visual para el chat
+    let displayContent = userMsg;
+    if (attachFile?.type === 'image') {
+      displayContent = { text: userMsg, imageB64: attachFile.b64, mediaType: attachFile.media_type };
+    } else if (attachFile?.type === 'pdf') {
+      displayContent = userMsg ? `📄 ${attachFile.text}\n${userMsg}` : `📄 PDF adjunto`;
     }
 
+    const newMsgs = [...msgs, { role: 'user', content: displayContent }];
+    setMsgs(newMsgs);
     setAttachFile(null);
     setAttachPreview(null);
 
     try {
-      const res = await axios.post(`${API_URL}/chat/message`, { session_id: session, message: messageToSend });
+      let res;
+      if (attachFile?.type === 'image') {
+        res = await axios.post(`${API_URL}/chat/message-with-image`, {
+          session_id: session,
+          message: userMsg || "[imagen compartida]",
+          image_b64: attachFile.b64,
+          media_type: attachFile.media_type
+        });
+      } else {
+        const messageToSend = attachFile?.type === 'pdf'
+          ? `[El vendedor compartió un PDF:\n${attachFile.text}]\n${userMsg}`
+          : userMsg;
+        res = await axios.post(`${API_URL}/chat/message`, { session_id: session, message: messageToSend });
+      }
       setMsgs([...newMsgs, { role: 'ai', content: res.data.response }]);
     } catch {
       setMsgs([...newMsgs, { role: 'ai', content: '⚠️ Error de conexión. Intentá de nuevo.' }]);
@@ -2110,7 +2115,14 @@ const stopRecording = () => {
           {msgs.map((m, i) => (
             <div key={i} className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}>
               <div className={`p-4 rounded-2xl max-w-[75%] text-sm leading-relaxed shadow-sm ${m.role === 'user' ? 'bg-[#1a181d] text-white rounded-br-sm' : 'bg-white text-slate-800 rounded-bl-sm border'}`}>
-                {m.content}
+                {typeof m.content === 'object' && m.content.imageB64 ? (
+                  <div>
+                    <img src={`data:${m.content.mediaType};base64,${m.content.imageB64}`} alt="imagen adjunta" className="rounded-xl max-w-full mb-2 max-h-60 object-contain" />
+                    {m.content.text && <p>{m.content.text}</p>}
+                  </div>
+                ) : (
+                  m.content
+                )}
               </div>
             </div>
           ))}
