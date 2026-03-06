@@ -1,4 +1,6 @@
-from fastapi import FastAPI, Depends, HTTPException
+from fastapi import FastAPI, Depends, HTTPException, UploadFile, File, Form
+import base64, fitz, tempfile, os
+from openai import OpenAI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import List, Optional
@@ -584,6 +586,52 @@ def get_feedback(data: FeedbackReq, db: Session = Depends(get_db)):
         "feedback_admin": feedback_admin,
         "score": score
     }
+
+
+# ============================================================
+# CHAT — ARCHIVOS Y AUDIO
+# ============================================================
+@app.post("/chat/image")
+async def chat_image(session_id: int = Form(...), file: UploadFile = File(...)):
+    contents = await file.read()
+    b64 = base64.b64encode(contents).decode("utf-8")
+    media_type = file.content_type or "image/jpeg"
+    return {"type": "image", "b64": b64, "media_type": media_type}
+
+@app.post("/chat/pdf")
+async def chat_pdf(file: UploadFile = File(...)):
+    contents = await file.read()
+    with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as tmp:
+        tmp.write(contents)
+        tmp_path = tmp.name
+    try:
+        doc = fitz.open(tmp_path)
+        text = "\n".join(page.get_text() for page in doc)
+        doc.close()
+    finally:
+        os.unlink(tmp_path)
+    if not text.strip():
+        raise HTTPException(400, "No se pudo extraer texto del PDF")
+    return {"type": "pdf", "text": text[:4000]}
+
+@app.post("/chat/audio")
+async def chat_audio(file: UploadFile = File(...)):
+    contents = await file.read()
+    with tempfile.NamedTemporaryFile(delete=False, suffix=".webm") as tmp:
+        tmp.write(contents)
+        tmp_path = tmp.name
+    try:
+        client = OpenAI()
+        with open(tmp_path, "rb") as audio_file:
+            transcript = client.audio.transcriptions.create(
+                model="whisper-1",
+                file=audio_file,
+                language="es"
+            )
+        text = transcript.text
+    finally:
+        os.unlink(tmp_path)
+    return {"type": "audio", "text": text}
 
 
 @app.delete("/sessions/{session_id}")
