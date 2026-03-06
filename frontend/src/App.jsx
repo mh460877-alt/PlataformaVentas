@@ -2022,7 +2022,7 @@ const startRecording = async () => {
   mr.onstop = async () => {
     const blob = new Blob(chunks, { type: 'audio/webm' });
     const formData = new FormData();
-    formData.append('file', blob, 'audio.mp4');
+    formData.append('file', blob, 'audio.webm');
     try {
       const res = await axios.post(`${API_URL}/chat/audio`, formData);
       setInput(res.data.text);
