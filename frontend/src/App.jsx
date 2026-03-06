@@ -1993,7 +1993,7 @@ function EmployeePortal() {
     if (attachFile?.type === 'image') {
       displayContent = { text: userMsg, imageB64: attachFile.b64, mediaType: attachFile.media_type };
     } else if (attachFile?.type === 'pdf') {
-      displayContent = userMsg ? `📄 ${attachFile.text}\n${userMsg}` : `📄 PDF adjunto`;
+      displayContent = userMsg ? `📄 documento.pdf\n${userMsg}` : `📄 documento.pdf`;
     }
 
     const newMsgs = [...msgs, { role: 'user', content: displayContent }];
