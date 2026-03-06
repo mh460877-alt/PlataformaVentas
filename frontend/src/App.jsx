@@ -1983,14 +1983,34 @@ function EmployeePortal() {
   };
 
   const sendMessage = async () => {
-    if (!input.trim() || sending) return;
+    if ((!input.trim() && !attachFile) || sending) return;
     const userMsg = input.trim();
     setInput('');
     setSending(true);
-    const newMsgs = [...msgs, { role: 'user', content: userMsg }];
+
+    // Construir mensaje para mostrar en pantalla
+    const displayMsg = attachFile
+      ? (userMsg ? `${userMsg}\n${attachPreview}` : attachPreview)
+      : userMsg;
+
+    const newMsgs = [...msgs, { role: 'user', content: displayMsg }];
     setMsgs(newMsgs);
+
+    // Construir mensaje para enviar al backend
+    let messageToSend = userMsg;
+    if (attachFile) {
+      if (attachFile.type === 'image') {
+        messageToSend = `[El vendedor compartió una imagen]\n${userMsg}`;
+      } else if (attachFile.type === 'pdf') {
+        messageToSend = `[El vendedor compartió un documento PDF con el siguiente contenido:\n${attachFile.text}]\n${userMsg}`;
+      }
+    }
+
+    setAttachFile(null);
+    setAttachPreview(null);
+
     try {
-      const res = await axios.post(`${API_URL}/chat/message`, { session_id: session, message: userMsg });
+      const res = await axios.post(`${API_URL}/chat/message`, { session_id: session, message: messageToSend });
       setMsgs([...newMsgs, { role: 'ai', content: res.data.response }]);
     } catch {
       setMsgs([...newMsgs, { role: 'ai', content: '⚠️ Error de conexión. Intentá de nuevo.' }]);
