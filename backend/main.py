@@ -617,7 +617,7 @@ async def chat_pdf(file: UploadFile = File(...)):
 @app.post("/chat/audio")
 async def chat_audio(file: UploadFile = File(...)):
     contents = await file.read()
-    with tempfile.NamedTemporaryFile(delete=False, suffix=".webm") as tmp:
+    with tempfile.NamedTemporaryFile(delete=False, suffix=".mp4") as tmp:
         tmp.write(contents)
         tmp_path = tmp.name
     try:
