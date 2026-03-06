@@ -177,6 +177,30 @@ IMPORTANTE:
         return f"Error generando evaluación: {str(e)}"
 
 
+def obtener_respuesta_coach_con_imagen(historial: list, configuracion_sistema: str, imagen_b64: str, media_type: str):
+    try:
+        mensajes_a_enviar = [{"role": "system", "content": configuracion_sistema}]
+        mensajes_a_enviar.extend(historial[:-1])
+        
+        ultimo_msg = historial[-1]["content"] if historial else ""
+        
+        mensajes_a_enviar.append({
+            "role": "user",
+            "content": [
+                {"type": "text", "text": ultimo_msg or "El vendedor compartió esta imagen."},
+                {"type": "image_url", "image_url": {"url": f"data:{media_type};base64,{imagen_b64}"}}
+            ]
+        })
+
+        response = client.chat.completions.create(
+            model="gpt-4o",
+            messages=mensajes_a_enviar,
+            temperature=0.85,
+        )
+        return response.choices[0].message.content
+    except Exception as e:
+        print(f"❌ Error OpenAI visión: {e}")
+        return "Error procesando la imagen."
 # Mantener compatibilidad con código existente
 def generar_evaluacion(historial: list):
     return generar_evaluacion_vendedor(historial)

@@ -8,7 +8,7 @@ from sqlalchemy.orm import Session
 
 from app.database import engine, SessionLocal, Base
 from app.models import User, Employee, Product, ClientPrototype, Capsule, CapsuleContent, ChatSession, ChatMessage, EmployeeCapsule
-from app.services.openai_service import obtener_respuesta_coach, generar_evaluacion, generar_evaluacion_vendedor, generar_evaluacion_admin
+from app.services.openai_service import obtener_respuesta_coach, generar_evaluacion, generar_evaluacion_vendedor, generar_evaluacion_admin, obtener_respuesta_coach_con_imagen
 
 # Crear tablas nuevas y migrar columnas faltantes de forma segura
 Base.metadata.create_all(bind=engine)
@@ -157,6 +157,12 @@ class ChatMsg(BaseModel):
 
 class FeedbackReq(BaseModel):
     session_id: int
+
+class ChatMsgConImagen(BaseModel):
+    session_id: int
+    message: str
+    image_b64: Optional[str] = None
+    media_type: Optional[str] = None
 
 
 # ============================================================
@@ -534,6 +540,39 @@ def send_message(data: ChatMsg, db: Session = Depends(get_db)):
 
     # Guardar ambos mensajes
     db.add(ChatMessage(session_id=data.session_id, role="user", content=data.message))
+    db.add(ChatMessage(session_id=data.session_id, role="assistant", content=response))
+    db.commit()
+
+    return {"response": response}
+
+@app.post("/chat/message-with-image")
+def send_message_with_image(data: ChatMsgConImagen, db: Session = Depends(get_db)):
+    session = db.query(ChatSession).filter(ChatSession.id == data.session_id).first()
+    if not session:
+        raise HTTPException(404, "Sesión no encontrada")
+
+    all_messages = db.query(ChatMessage).filter(
+        ChatMessage.session_id == data.session_id
+    ).order_by(ChatMessage.id).all()
+
+    system_prompt = ""
+    historial = []
+    for m in all_messages:
+        if m.role == "system":
+            system_prompt = m.content
+        else:
+            historial.append({"role": m.role, "content": m.content})
+
+    historial.append({"role": "user", "content": data.message or "[imagen compartida]"})
+
+    response = obtener_respuesta_coach_con_imagen(
+        historial=historial,
+        configuracion_sistema=system_prompt,
+        imagen_b64=data.image_b64,
+        media_type=data.media_type or "image/jpeg"
+    )
+
+    db.add(ChatMessage(session_id=data.session_id, role="user", content=data.message or "[imagen compartida]"))
     db.add(ChatMessage(session_id=data.session_id, role="assistant", content=response))
     db.commit()
 
