@@ -586,6 +586,16 @@ def get_feedback(data: FeedbackReq, db: Session = Depends(get_db)):
     }
 
 
+@app.delete("/sessions/{session_id}")
+def delete_session(session_id: int, db: Session = Depends(get_db)):
+    session = db.query(ChatSession).filter(ChatSession.id == session_id).first()
+    if not session:
+        raise HTTPException(404, "Sesión no encontrada")
+    db.query(ChatMessage).filter(ChatMessage.session_id == session_id).delete()
+    db.delete(session)
+    db.commit()
+    return {"status": "ok"}
+
 @app.get("/employees/{id}/stats")
 def get_employee_stats(id: int, db: Session = Depends(get_db)):
     sessions = db.query(ChatSession).filter(ChatSession.employee_id == id).all()

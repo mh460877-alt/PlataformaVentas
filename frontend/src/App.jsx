@@ -2017,7 +2017,12 @@ function EmployeePortal() {
         <header className="bg-white px-6 py-4 border-b flex justify-between items-center shadow-sm">
           <div className="flex items-center gap-3">
             <button
-              onClick={() => { setView('select'); setMsgs([]); setSession(null); }}
+              onClick={async () => {
+                if (session) {
+                  try { await axios.delete(`${API_URL}/sessions/${session}`); } catch (e) { console.error(e); }
+                }
+                setView('select'); setMsgs([]); setSession(null);
+              }}
               className="p-2 bg-slate-100 rounded-xl hover:bg-slate-200 transition mr-2"
               title="Volver sin guardar"
             >
