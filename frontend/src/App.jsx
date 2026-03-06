@@ -6,7 +6,7 @@ import {
   Settings, Save, Send, LogOut, Building, Plus, X, Trash2,
   Award, FileText, Zap, LayoutDashboard, Users, Package, PlayCircle, Folder, Eye, ChevronRight,
   BrainCircuit, Layers, Target, ArrowLeft, Upload, Search, RefreshCw, Power, Edit2, Phone, EyeOff,
-  MessageSquare, Star, BarChart2, BookOpen, TrendingUp
+  MessageSquare, Star, BarChart2, BookOpen, TrendingUp, Mic, Image as ImageIcon
 } from 'lucide-react';
 
 import logoIconNegro from './assets/Logo-negro.png';
@@ -1940,6 +1940,10 @@ function EmployeePortal() {
   const [loadingStart, setLoadingStart] = useState(false);
   const [history, setHistory] = useState([]);
   const messagesEndRef = useRef(null);
+  const [attachFile, setAttachFile] = useState(null);
+  const [attachPreview, setAttachPreview] = useState(null);
+  const [recording, setRecording] = useState(false);
+  const mediaRecorderRef = useRef(null);
 
   useEffect(() => {
     if (!user.id) { navigate('/login'); return; }
@@ -1994,6 +1998,44 @@ function EmployeePortal() {
       setSending(false);
     }
   };
+
+const handleFileSelect = async (e, type) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const formData = new FormData();
+  formData.append('file', file);
+  if (type === 'image') formData.append('session_id', session);
+  try {
+    const endpoint = type === 'image' ? '/chat/image' : '/chat/pdf';
+    const res = await axios.post(`${API_URL}${endpoint}`, formData);
+    setAttachFile(res.data);
+    setAttachPreview(type === 'image' ? `🖼 ${file.name}` : `📄 ${file.name}`);
+  } catch { alert('Error procesando el archivo'); }
+};
+
+const startRecording = async () => {
+  const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+  const mr = new MediaRecorder(stream);
+  mediaRecorderRef.current = mr;
+  const chunks = [];
+  mr.ondataavailable = e => chunks.push(e.data);
+  mr.onstop = async () => {
+    const blob = new Blob(chunks, { type: 'audio/webm' });
+    const formData = new FormData();
+    formData.append('file', blob, 'audio.webm');
+    try {
+      const res = await axios.post(`${API_URL}/chat/audio`, formData);
+      setInput(res.data.text);
+    } catch { alert('Error procesando el audio'); }
+  };
+  mr.start();
+  setRecording(true);
+};
+
+const stopRecording = () => {
+  mediaRecorderRef.current?.stop();
+  setRecording(false);
+};
 
   const endSession = async () => {
     setSending(true);
@@ -2067,19 +2109,44 @@ function EmployeePortal() {
         </div>
 
         <div className="bg-white border-t p-4 max-w-4xl mx-auto w-full">
-          <div className="flex gap-3">
+          {/* Preview de archivo adjunto */}
+          {attachPreview && (
+            <div className="mb-3 flex items-center gap-2 bg-slate-50 border rounded-xl px-4 py-2">
+              <span className="text-sm text-slate-600 flex-1">{attachPreview}</span>
+              <button onClick={() => { setAttachFile(null); setAttachPreview(null); }} className="text-slate-400 hover:text-red-500"><X size={16} /></button>
+            </div>
+          )}
+          <div className="flex gap-2 items-end">
+            {/* Botón imagen */}
+            <label className="cursor-pointer p-3 bg-slate-100 rounded-xl hover:bg-slate-200 transition flex-shrink-0" title="Adjuntar imagen">
+              <input type="file" accept="image/*" className="hidden" onChange={e => handleFileSelect(e, 'image')} />
+              <ImageIcon size={20} className="text-slate-500" />
+            </label>
+            {/* Botón PDF */}
+            <label className="cursor-pointer p-3 bg-slate-100 rounded-xl hover:bg-slate-200 transition flex-shrink-0" title="Adjuntar PDF">
+              <input type="file" accept=".pdf" className="hidden" onChange={e => handleFileSelect(e, 'pdf')} />
+              <FileText size={20} className="text-slate-500" />
+            </label>
+            {/* Botón audio */}
+            <button
+              onMouseDown={startRecording} onMouseUp={stopRecording} onTouchStart={startRecording} onTouchEnd={stopRecording}
+              className={`p-3 rounded-xl transition flex-shrink-0 ${recording ? 'bg-red-500 text-white animate-pulse' : 'bg-slate-100 text-slate-500 hover:bg-slate-200'}`}
+              title="Mantené presionado para grabar"
+            >
+              <Mic size={20} />
+            </button>
             <input
               className="flex-1 p-4 rounded-xl border bg-slate-50 outline-none focus:ring-2 focus:ring-[#6be1e3] text-sm"
               value={input}
-              placeholder="Escribí tu respuesta como vendedor..."
+              placeholder={recording ? '🎙 Grabando...' : 'Escribí tu respuesta como vendedor...'}
               onChange={e => setInput(e.target.value)}
               onKeyPress={e => e.key === 'Enter' && sendMessage()}
-              disabled={sending}
+              disabled={sending || recording}
             />
             <button
               onClick={sendMessage}
-              disabled={sending || !input.trim()}
-              className="bg-[#6be1e3] text-black p-4 rounded-xl font-bold hover:opacity-90 transition disabled:opacity-40"
+              disabled={sending || (!input.trim() && !attachFile)}
+              className="bg-[#6be1e3] text-black p-4 rounded-xl font-bold hover:opacity-90 transition disabled:opacity-40 flex-shrink-0"
             >
               <Send size={20} />
             </button>
