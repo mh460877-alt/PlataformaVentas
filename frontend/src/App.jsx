@@ -775,7 +775,7 @@ function SuperAdmin() {
       {/* MODAL CREAR EMPRESA */}
       {showModal && (
         <div className="fixed inset-0 bg-black/90 flex items-center justify-center p-4 z-[99999] backdrop-blur-md">
-          <div className="bg-white p-8 rounded-3xl w-full max-w-md shadow-2xl">
+          <div className="bg-white p-8 rounded-3xl w-full max-w-md shadow-2xl max-h-[90vh] overflow-y-auto">
             <div className="flex justify-between mb-6"><h3 className="font-bold text-xl text-[#1a181d]">Alta Cliente</h3><button onClick={() => setShowModal(false)} className="text-slate-400 hover:text-black"><X size={20} /></button></div>
             <div className="space-y-4">
               <input className="w-full p-3 bg-white border border-slate-300 rounded-lg text-black focus:ring-2 focus:ring-cyan-500 outline-none" placeholder="Nombre Empresa *" onChange={e => setNewCompany({ ...newCompany, company_name: e.target.value })} />
