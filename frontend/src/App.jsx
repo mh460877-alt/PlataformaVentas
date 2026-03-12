@@ -1746,10 +1746,61 @@ function CompanyDashboard() {
                       {selSession.vistaInicial !== 'chat' && (selSession.feedback_admin || selSession.feedback) && (
                         <div className="space-y-3">
                           {selSession.feedback_admin ? (
-                            <div className="bg-slate-50 border rounded-2xl p-5">
-                              <p className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-4">📊 Informe de Evaluación</p>
-                              <div className="text-sm text-slate-700 whitespace-pre-wrap leading-relaxed font-sans">
-                                {selSession.feedback_admin}
+                            <div>
+                              {/* Botón descargar PDF */}
+                              <div className="flex justify-end mb-3">
+                                <button
+                                  onClick={() => {
+                                    const el = document.getElementById('informe-pdf');
+                                    window.html2pdf().set({
+                                      margin: 10,
+                                      filename: `Informe_Sesion_${profileEmp.name.replace(/ /g,'_')}.pdf`,
+                                      image: { type: 'jpeg', quality: 0.98 },
+                                      html2canvas: { scale: 2 },
+                                      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+                                    }).from(el).save();
+                                  }}
+                                  className="flex items-center gap-2 bg-[#1a181d] text-white px-4 py-2 rounded-xl text-xs font-bold hover:opacity-80 transition"
+                                >
+                                  ⬇ Descargar PDF
+                                </button>
+                              </div>
+                              {/* Informe visual */}
+                              <div id="informe-pdf" className="bg-white border rounded-2xl overflow-hidden shadow-sm">
+                                {/* Header */}
+                                <div className="p-6" style={{ background: '#0f1923' }}>
+                                  <div className="h-1 rounded-full mb-4" style={{ background: 'linear-gradient(90deg, #6be1e3, #e17bd7, #e4c76a)' }}></div>
+                                  <p className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-1">ONE Commercial IA — Informe de Sesión</p>
+                                  <h2 className="text-xl font-extrabold text-white">{profileEmp.name}</h2>
+                                  <p className="text-slate-400 text-sm mt-1">{selSession.date ? new Date(selSession.date + 'Z').toLocaleDateString('es-AR', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '—'}</p>
+                                  {selSession.score && (
+                                    <div className="mt-3 inline-block px-4 py-1.5 rounded-full text-sm font-extrabold" style={{ background: selSession.score >= 8 ? '#22c55e22' : selSession.score >= 5 ? '#eab30822' : '#ef444422', color: selSession.score >= 8 ? '#22c55e' : selSession.score >= 5 ? '#eab308' : '#ef4444' }}>
+                                      Puntaje: {selSession.score}/10
+                                    </div>
+                                  )}
+                                </div>
+                                {/* Contenido del informe */}
+                                <div className="p-6">
+                                  {selSession.feedback_admin.split('\n').map((line, i) => {
+                                    const trimmed = line.trim();
+                                    if (!trimmed) return <div key={i} className="h-2" />;
+                                    if (trimmed.startsWith('📊') || trimmed.startsWith('⏱') || trimmed.startsWith('🏢') || trimmed.startsWith('🧠') || trimmed.startsWith('🛠') || trimmed.startsWith('📋')) {
+                                      return <h3 key={i} className="text-sm font-extrabold text-[#1a181d] uppercase tracking-wide mt-5 mb-2 pb-1 border-b border-slate-200">{trimmed}</h3>;
+                                    }
+                                    if (trimmed.match(/^[A-ZÁÉÍÓÚÑ\s]+:/) && trimmed.length < 60) {
+                                      return <p key={i} className="text-xs font-bold text-slate-500 uppercase tracking-wide mt-3 mb-0.5">{trimmed}</p>;
+                                    }
+                                    if (trimmed.match(/^\d\./)) {
+                                      return <p key={i} className="text-sm text-slate-700 ml-3 mt-1">• {trimmed.slice(2).trim()}</p>;
+                                    }
+                                    return <p key={i} className="text-sm text-slate-700 leading-relaxed mt-1">{trimmed}</p>;
+                                  })}
+                                </div>
+                                {/* Footer */}
+                                <div className="px-6 py-4 border-t border-slate-100 flex justify-between items-center">
+                                  <p className="text-xs text-slate-400">ONE Commercial IA — Sistema Integral de Entrenamiento Comercial</p>
+                                  <p className="text-xs text-slate-400">{new Date().getFullYear()}</p>
+                                </div>
                               </div>
                             </div>
                           ) : (
