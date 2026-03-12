@@ -1694,7 +1694,7 @@ function CompanyDashboard() {
                               <div>
                                 <p className="font-bold text-slate-800">Sesión #{profileEmp.sessions.length - i}</p>
                                 <p className="text-xs text-slate-400 mt-0.5">
-                                  {s.date ? new Date(s.date).toLocaleDateString('es-AR', { day: '2-digit', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '—'}
+                                  {s.date ? new Date(s.date + 'Z').toLocaleDateString('es-AR', { day: '2-digit', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '—'}
                                 </p>
                                 <p className="text-xs text-slate-400 mt-0.5">{s.messages.filter(m => m.role === 'user').length} intercambios</p>
                               </div>
@@ -2348,7 +2348,7 @@ const stopRecording = () => {
                     <div className="flex justify-between items-start">
                       <div>
                         <p className="font-bold text-lg">Sesión #{i + 1}</p>
-                        <p className="text-xs text-slate-400">{s.date ? new Date(s.date).toLocaleDateString('es-AR', { day: '2-digit', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'Fecha no disponible'}</p>
+                        <p className="text-xs text-slate-400">{s.date ? new Date(s.date + 'Z').toLocaleDateString('es-AR', { day: '2-digit', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'Fecha no disponible'}</p>
                       </div>
                       <div className="text-right">
                         {s.score ? <p className={`text-4xl font-extrabold ${scoreColor}`}>{s.score}<span className="text-lg text-slate-300">/10</span></p> : <p className="text-slate-400 text-sm">Sin evaluar</p>}
