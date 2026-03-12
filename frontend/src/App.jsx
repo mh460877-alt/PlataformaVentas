@@ -1908,12 +1908,7 @@ function ProductList({ products, onStartChat }) {
     </div>
   );
 }
-function ChatTimer() {
-  const [seconds, setSeconds] = useState(0);
-  useEffect(() => {
-    const interval = setInterval(() => setSeconds(s => s + 1), 1000);
-    return () => clearInterval(interval);
-  }, []);
+function ChatTimerDisplay({ seconds }) {
   const mins = String(Math.floor(seconds / 60)).padStart(2, '0');
   const secs = String(seconds % 60).padStart(2, '0');
   return (
@@ -1944,6 +1939,8 @@ function EmployeePortal() {
   const [attachPreview, setAttachPreview] = useState(null);
   const [recording, setRecording] = useState(false);
   const mediaRecorderRef = useRef(null);
+  const [elapsedSeconds, setElapsedSeconds] = useState(0);
+  const timerRef = useRef(null);
 
   useEffect(() => {
     if (!user.id) { navigate('/login'); return; }
@@ -1974,6 +1971,9 @@ function EmployeePortal() {
       setSession(res.data.session_id);
       setAgentName(res.data.agent_name);
       setMsgs([{ role: 'ai', content: res.data.initial_message }]);
+      // Arrancar timer
+      setElapsedSeconds(0);
+      timerRef.current = setInterval(() => setElapsedSeconds(s => s + 1), 1000);
       setView('chat');
     } catch (e) {
       alert("Error iniciando la simulación: " + (e.response?.data?.detail || e.message));
@@ -2063,9 +2063,17 @@ const stopRecording = () => {
 };
 
   const endSession = async () => {
+    // Detener timer y capturar duración ANTES de cualquier async
+    clearInterval(timerRef.current);
+    timerRef.current = null;
+    const duration = elapsedSeconds;
+
     setSending(true);
     try {
-      const res = await axios.post(`${API_URL}/chat/feedback`, { session_id: session });
+      const res = await axios.post(`${API_URL}/chat/feedback`, {
+        session_id: session,
+        duration_seconds: duration   // ✅ Ahora se envía correctamente
+      });
       setFeedback(res.data.feedback);
       setScore(res.data.score);
       setView('feedback');
@@ -2084,23 +2092,25 @@ const stopRecording = () => {
         <header className="bg-white px-6 py-4 border-b flex justify-between items-center shadow-sm">
           <div className="flex items-center gap-3">
             <button
-              onClick={async () => {
-                if (session) {
-                  try { await axios.delete(`${API_URL}/sessions/${session}`); } catch (e) { console.error(e); }
-                }
-                setView('select'); setMsgs([]); setSession(null);
-              }}
-              className="p-2 bg-slate-100 rounded-xl hover:bg-slate-200 transition mr-2"
-              title="Volver sin guardar"
+                onClick={async () => {
+                    clearInterval(timerRef.current);
+                    timerRef.current = null;
+                    if (session) {
+                        try { await axios.delete(`${API_URL}/sessions/${session}`); } catch (e) { console.error(e); }
+                    }
+                    setView('select'); setMsgs([]); setSession(null); setElapsedSeconds(0);
+                }}
+                className="p-2 bg-slate-100 rounded-xl hover:bg-slate-200 transition mr-2"
+                title="Volver sin guardar"
             >
-              <ArrowLeft size={18} />
+                <ArrowLeft size={18} />
             </button>
             <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
             <div>
               <p className="font-bold text-[#1a181d]">{agentName} — Cliente Virtual</p>
               <p className="text-xs text-slate-400">Simulación en curso • {msgs.length - 1} intercambios</p>
             </div>
-            <ChatTimer />
+            <ChatTimerDisplay seconds={elapsedSeconds} />
           </div>
           <button
             onClick={endSession}
