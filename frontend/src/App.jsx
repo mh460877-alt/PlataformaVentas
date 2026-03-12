@@ -1689,8 +1689,7 @@ function CompanyDashboard() {
                         {profileEmp.sessions.map((s, i) => {
                           const scoreColor = !s.score ? 'text-slate-400' : s.score >= 8 ? 'text-green-500' : s.score >= 5 ? 'text-yellow-500' : 'text-red-500';
                           return (
-                            <button key={s.id} onClick={() => setSelSession(s)}
-                              className="w-full text-left bg-slate-50 hover:bg-white border hover:border-[#e17bd7] p-4 rounded-xl transition flex justify-between items-center group">
+                            <div key={s.id} className="w-full bg-slate-50 border p-4 rounded-xl flex justify-between items-center">
                               <div>
                                 <p className="font-bold text-slate-800">Sesión #{profileEmp.sessions.length - i}</p>
                                 <p className="text-xs text-slate-400 mt-0.5">
@@ -1700,9 +1699,18 @@ function CompanyDashboard() {
                               </div>
                               <div className="text-right flex items-center gap-3">
                                 {s.score ? <span className={`text-3xl font-extrabold ${scoreColor}`}>{s.score}<span className="text-sm text-slate-300">/10</span></span> : <span className="text-xs text-slate-400 bg-slate-200 px-2 py-1 rounded">Sin evaluar</span>}
-                                <ChevronRight size={18} className="text-slate-300 group-hover:text-[#e17bd7] transition" />
+                                <button
+                                  onClick={() => setSelSession({ ...s, vistaInicial: 'chat' })}
+                                  className="bg-slate-200 text-slate-700 hover:bg-[#1a181d] hover:text-white px-3 py-1.5 rounded-lg text-xs font-bold transition">
+                                  Ver Chat
+                                </button>
+                                <button
+                                  onClick={() => setSelSession({ ...s, vistaInicial: 'informe' })}
+                                  className="bg-[#e17bd7]/20 text-[#e17bd7] hover:bg-[#e17bd7] hover:text-white px-3 py-1.5 rounded-lg text-xs font-bold transition">
+                                  Ver Informe
+                                </button>
                               </div>
-                            </button>
+                            </div>
                           );
                         })}
                       </div>
@@ -1721,25 +1729,22 @@ function CompanyDashboard() {
                           </span>
                         )}
                       </div>
-
-                      {/* Conversación */}
-                      <div className="space-y-3 mb-6">
-                        {selSession.messages.map((m, i) => (
-                          <div key={i} className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                            <div className={`max-w-[75%] p-3 rounded-2xl text-sm leading-relaxed ${m.role === 'user' ? 'bg-[#1a181d] text-white rounded-br-sm' : 'bg-slate-100 text-slate-800 rounded-bl-sm'}`}>
-                              <p className={`text-[10px] font-bold uppercase mb-1 ${m.role === 'user' ? 'text-slate-400' : 'text-slate-500'}`}>
-                                {m.role === 'user' ? '👤 Vendedor' : '🤖 Cliente IA'}
-                              </p>
-                              {m.content}
+                      {selSession.vistaInicial !== 'informe' && (
+                        <div className="space-y-3 mb-6">
+                          {selSession.messages.map((m, i) => (
+                            <div key={i} className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                              <div className={`max-w-[75%] p-3 rounded-2xl text-sm leading-relaxed ${m.role === 'user' ? 'bg-[#1a181d] text-white rounded-br-sm' : 'bg-slate-100 text-slate-800 rounded-bl-sm'}`}>
+                                <p className={`text-[10px] font-bold uppercase mb-1 ${m.role === 'user' ? 'text-slate-400' : 'text-slate-500'}`}>
+                                  {m.role === 'user' ? '👤 Vendedor' : '🤖 Cliente IA'}
+                                </p>
+                                {m.content}
+                              </div>
                             </div>
-                          </div>
-                        ))}
-                      </div>
-
-                      {/* Feedback */}
-                      {(selSession.feedback_admin || selSession.feedback) && (
+                          ))}
+                        </div>
+                      )}
+                      {selSession.vistaInicial !== 'chat' && (selSession.feedback_admin || selSession.feedback) && (
                         <div className="space-y-3">
-                          {/* Informe Admin (prioritario) */}
                           {selSession.feedback_admin ? (
                             <div className="bg-slate-50 border rounded-2xl p-5">
                               <p className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-4">📊 Informe de Evaluación</p>
