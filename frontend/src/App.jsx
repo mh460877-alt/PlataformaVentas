@@ -1747,17 +1747,17 @@ function CompanyDashboard() {
                         <div className="space-y-3">
                           {selSession.feedback_admin ? (
                             <div>
-                              {/* Botón descargar PDF */}
                               <div className="flex justify-end mb-3">
                                 <button
                                   onClick={() => {
                                     const el = document.getElementById('informe-pdf');
                                     window.html2pdf().set({
-                                      margin: 10,
+                                      margin: 0,
                                       filename: `Informe_Sesion_${profileEmp.name.replace(/ /g,'_')}.pdf`,
                                       image: { type: 'jpeg', quality: 0.98 },
-                                      html2canvas: { scale: 2 },
-                                      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+                                      html2canvas: { scale: 2, useCORS: true },
+                                      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+                                      pagebreak: { mode: ['avoid-all'] }
                                     }).from(el).save();
                                   }}
                                   className="flex items-center gap-2 bg-[#1a181d] text-white px-4 py-2 rounded-xl text-xs font-bold hover:opacity-80 transition"
@@ -1765,41 +1765,128 @@ function CompanyDashboard() {
                                   ⬇ Descargar PDF
                                 </button>
                               </div>
-                              {/* Informe visual */}
-                              <div id="informe-pdf" className="bg-white border rounded-2xl overflow-hidden shadow-sm">
-                                {/* Header */}
-                                <div className="p-6" style={{ background: '#0f1923' }}>
-                                  <div className="h-1 rounded-full mb-4" style={{ background: 'linear-gradient(90deg, #6be1e3, #e17bd7, #e4c76a)' }}></div>
-                                  <p className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-1">ONE Commercial IA — Informe de Sesión</p>
-                                  <h2 className="text-xl font-extrabold text-white">{profileEmp.name}</h2>
-                                  <p className="text-slate-400 text-sm mt-1">{selSession.date ? new Date(selSession.date + 'Z').toLocaleDateString('es-AR', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '—'}</p>
-                                  {selSession.score && (
-                                    <div className="mt-3 inline-block px-4 py-1.5 rounded-full text-sm font-extrabold" style={{ background: selSession.score >= 8 ? '#22c55e22' : selSession.score >= 5 ? '#eab30822' : '#ef444422', color: selSession.score >= 8 ? '#22c55e' : selSession.score >= 5 ? '#eab308' : '#ef4444' }}>
-                                      Puntaje: {selSession.score}/10
-                                    </div>
-                                  )}
+                              <div id="informe-pdf" style={{ fontFamily: 'sans-serif', maxWidth: '720px', margin: '0 auto', background: '#fff', borderRadius: '12px', overflow: 'hidden', border: '1px solid #e2e8f0' }}>
+                                {/* HEADER */}
+                                <div style={{ background: '#0f1923', padding: '2rem 2.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                                  <div>
+                                    <div style={{ fontSize: '11px', letterSpacing: '0.15em', color: '#6be1e3', fontWeight: 500, textTransform: 'uppercase', marginBottom: '8px' }}>Informe de Desempeño Comercial</div>
+                                    <div style={{ fontSize: '22px', fontWeight: 600, color: '#ffffff', marginBottom: '4px' }}>{profileEmp.name}</div>
+                                    <div style={{ fontSize: '13px', color: '#8892a0' }}>{profileEmp.email}</div>
+                                  </div>
+                                  <div style={{ textAlign: 'right' }}>
+                                    <div style={{ fontSize: '11px', color: '#8892a0', marginBottom: '4px' }}>{selSession.date ? new Date(selSession.date + 'Z').toLocaleDateString('es-AR', { day: '2-digit', month: 'long', year: 'numeric' }) : '—'}</div>
+                                    {selSession.score && (
+                                      <div style={{ marginTop: '12px', display: 'inline-block', background: 'rgba(107,225,227,0.12)', border: '1px solid #6be1e3', borderRadius: '6px', padding: '4px 14px' }}>
+                                        <span style={{ fontSize: '24px', fontWeight: 600, color: '#6be1e3' }}>{selSession.score}</span>
+                                        <span style={{ fontSize: '13px', color: '#4a6070' }}>/10</span>
+                                      </div>
+                                    )}
+                                  </div>
                                 </div>
-                                {/* Contenido del informe */}
-                                <div className="p-6">
-                                  {selSession.feedback_admin.split('\n').map((line, i) => {
-                                    const trimmed = line.trim();
-                                    if (!trimmed) return <div key={i} className="h-2" />;
-                                    if (trimmed.startsWith('📊') || trimmed.startsWith('⏱') || trimmed.startsWith('🏢') || trimmed.startsWith('🧠') || trimmed.startsWith('🛠') || trimmed.startsWith('📋')) {
-                                      return <h3 key={i} className="text-sm font-extrabold text-[#1a181d] uppercase tracking-wide mt-5 mb-2 pb-1 border-b border-slate-200">{trimmed}</h3>;
-                                    }
-                                    if (trimmed.match(/^[A-ZÁÉÍÓÚÑ\s]+:/) && trimmed.length < 60) {
-                                      return <p key={i} className="text-xs font-bold text-slate-500 uppercase tracking-wide mt-3 mb-0.5">{trimmed}</p>;
-                                    }
-                                    if (trimmed.match(/^\d\./)) {
-                                      return <p key={i} className="text-sm text-slate-700 ml-3 mt-1">• {trimmed.slice(2).trim()}</p>;
-                                    }
-                                    return <p key={i} className="text-sm text-slate-700 leading-relaxed mt-1">{trimmed}</p>;
-                                  })}
+                                {/* GRADIENTE */}
+                                <div style={{ height: '3px', background: 'linear-gradient(90deg, #6be1e3 0%, #e17bd7 50%, #e4c76a 100%)' }}></div>
+                                {/* BODY */}
+                                <div style={{ padding: '2rem 2.5rem', background: '#fff' }}>
+                                  {(() => {
+                                    const text = selSession.feedback_admin;
+                                    const getBlock = (emoji) => {
+                                      const regex = new RegExp(`${emoji}[^\n]*\n[━─=\\-]*\n?([\\s\\S]*?)(?=\n[📊⏱🏢🧠🛠📋]|$)`);
+                                      const m = text.match(regex);
+                                      return m ? m[1].trim() : '';
+                                    };
+                                    const getField = (block, label) => {
+                                      const regex = new RegExp(`${label}[:\\.]*\\s*([^\n]+(?:\n(?![A-ZÁÉÍÓÚÑ\\-─━].{0,40}:)[^\n]+)*)`,'i');
+                                      const m = block.match(regex);
+                                      return m ? m[1].trim() : '';
+                                    };
+                                    const getList = (block, label) => {
+                                      const regex = new RegExp(`${label}[:\\.]*\\s*\n([\\s\\S]*?)(?=\n[A-ZÁÉÍÓÚÑ]|$)`,'i');
+                                      const m = block.match(regex);
+                                      if (!m) return [];
+                                      return m[1].split('\n').map(l => l.replace(/^[-•]\s*/,'')).filter(l => l.trim());
+                                    };
+                                    const evalBlock = getBlock('📊');
+                                    const tiempoBlock = getBlock('⏱');
+                                    const culturaBlock = getBlock('🏢');
+                                    const estadoBlock = getBlock('🧠');
+                                    const skillsBlock = getBlock('🛠');
+                                    const resumenBlock = getBlock('📋');
+                                    const resultado = getField(evalBlock, 'RESULTADO DE LA CONVERSACIÓN');
+                                    const duracion = getField(tiempoBlock, 'DURACIÓN TOTAL');
+                                    const alineacion = getField(culturaBlock, 'NIVEL DE ALINEACIÓN');
+                                    const analisis = getField(evalBlock, 'ANÁLISIS DETALLADO');
+                                    const quiebre = getField(evalBlock, 'PUNTO DE QUIEBRE');
+                                    const fortalezas = getList(evalBlock, 'FORTALEZAS OBSERVADAS');
+                                    const areas = getList(evalBlock, 'ÁREAS CRÍTICAS A MEJORAR');
+                                    const perfilEmocional = getField(estadoBlock, 'PERFIL EMOCIONAL DETECTADO');
+                                    const recomBienestar = getList(estadoBlock, 'RECOMENDACIONES PARA EL BIENESTAR');
+                                    const skillLines = skillsBlock.split('\n').filter(l => l.match(/^\d\./)).map(l => l.replace(/^\d\.\s*/,''));
+                                    const resumen = resumenBlock;
+                                    return (
+                                      <>
+                                        {/* Tarjetas métricas */}
+                                        <div style={{ display: 'flex', gap: '1rem', marginBottom: '1.5rem' }}>
+                                          {[
+                                            { label: 'Resultado', value: resultado, color: '#6be1e3' },
+                                            { label: 'Duración', value: duracion, color: '#e4c76a' },
+                                            { label: 'Alineación cultural', value: alineacion, color: '#e17bd7' },
+                                          ].map((card, i) => (
+                                            <div key={i} style={{ flex: 1, background: '#f8f9fc', borderRadius: '8px', padding: '1rem 1.25rem', borderLeft: `3px solid ${card.color}` }}>
+                                              <div style={{ fontSize: '11px', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '4px' }}>{card.label}</div>
+                                              <div style={{ fontSize: '13px', fontWeight: 500, color: '#1a181d' }}>{card.value || '—'}</div>
+                                            </div>
+                                          ))}
+                                        </div>
+                                        {/* Análisis detallado */}
+                                        {analisis && <div style={{ marginBottom: '1.25rem' }}>
+                                          <div style={{ fontSize: '12px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.1em', color: '#64748b', marginBottom: '6px' }}>Análisis detallado</div>
+                                          <div style={{ fontSize: '13px', color: '#334155', lineHeight: '1.7' }}>{analisis}</div>
+                                        </div>}
+                                        {/* Punto de quiebre */}
+                                        {quiebre && <div style={{ marginBottom: '1.25rem' }}>
+                                          <div style={{ fontSize: '12px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.1em', color: '#64748b', marginBottom: '6px' }}>Punto de quiebre</div>
+                                          <div style={{ fontSize: '13px', color: '#334155', lineHeight: '1.7' }}>{quiebre}</div>
+                                        </div>}
+                                        {/* Fortalezas y áreas */}
+                                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1.25rem' }}>
+                                          <div style={{ background: '#f0fdf4', borderRadius: '8px', padding: '1rem 1.25rem' }}>
+                                            <div style={{ fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.1em', color: '#16a34a', marginBottom: '8px' }}>Fortalezas</div>
+                                            {fortalezas.map((f, i) => <div key={i} style={{ fontSize: '12px', color: '#334155', lineHeight: '1.8', display: 'flex', gap: '6px' }}><span style={{ color: '#16a34a' }}>▸</span>{f}</div>)}
+                                          </div>
+                                          <div style={{ background: '#fff7ed', borderRadius: '8px', padding: '1rem 1.25rem' }}>
+                                            <div style={{ fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.1em', color: '#ea580c', marginBottom: '8px' }}>Áreas a mejorar</div>
+                                            {areas.map((a, i) => <div key={i} style={{ fontSize: '12px', color: '#334155', lineHeight: '1.8', display: 'flex', gap: '6px' }}><span style={{ color: '#ea580c' }}>▸</span>{a}</div>)}
+                                          </div>
+                                        </div>
+                                        {/* Perfil emocional */}
+                                        {perfilEmocional && <div style={{ marginBottom: '1.25rem' }}>
+                                          <div style={{ fontSize: '12px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.1em', color: '#64748b', marginBottom: '6px' }}>Estado del vendedor</div>
+                                          <div style={{ fontSize: '13px', color: '#334155' }}><strong>Perfil emocional:</strong> {perfilEmocional}</div>
+                                          {recomBienestar.length > 0 && recomBienestar.map((r,i) => <div key={i} style={{ fontSize: '12px', color: '#334155', display: 'flex', gap: '6px', marginTop: '4px' }}><span style={{ color: '#6be1e3' }}>▸</span>{r}</div>)}
+                                        </div>}
+                                        {/* Hard skills */}
+                                        {skillLines.length > 0 && <div style={{ marginBottom: '1.25rem' }}>
+                                          <div style={{ fontSize: '12px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.1em', color: '#64748b', marginBottom: '8px' }}>Hard skills recomendadas</div>
+                                          {skillLines.map((s, i) => (
+                                            <div key={i} style={{ display: 'flex', gap: '10px', alignItems: 'flex-start', fontSize: '13px', color: '#334155', marginBottom: '6px' }}>
+                                              <span style={{ minWidth: '18px', height: '18px', background: '#0f1923', color: '#6be1e3', borderRadius: '4px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '10px', fontWeight: 600 }}>{i+1}</span>
+                                              <span>{s}</span>
+                                            </div>
+                                          ))}
+                                        </div>}
+                                        {/* Resumen ejecutivo */}
+                                        {resumen && <div style={{ border: '1px solid #e2e8f0', borderRadius: '8px', padding: '1rem 1.25rem', borderLeft: '3px solid #e17bd7' }}>
+                                          <div style={{ fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.1em', color: '#64748b', marginBottom: '6px' }}>Resumen ejecutivo</div>
+                                          <div style={{ fontSize: '13px', color: '#334155', lineHeight: '1.7' }}>{resumen}</div>
+                                        </div>}
+                                      </>
+                                    );
+                                  })()}
                                 </div>
-                                {/* Footer */}
-                                <div className="px-6 py-4 border-t border-slate-100 flex justify-between items-center">
-                                  <p className="text-xs text-slate-400">ONE Commercial IA — Sistema Integral de Entrenamiento Comercial</p>
-                                  <p className="text-xs text-slate-400">{new Date().getFullYear()}</p>
+                                {/* FOOTER */}
+                                <div style={{ background: '#f8f9fc', borderTop: '1px solid #e2e8f0', padding: '0.75rem 2.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                  <div style={{ fontSize: '11px', color: '#94a3b8' }}>ONE Commercial IA — Sistema de Entrenamiento Comercial</div>
+                                  <div style={{ fontSize: '11px', color: '#94a3b8' }}>Confidencial</div>
                                 </div>
                               </div>
                             </div>
