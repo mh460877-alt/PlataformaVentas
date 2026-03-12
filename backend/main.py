@@ -51,7 +51,7 @@ def run_migrations():
             except Exception as e:
                 print(f"⚠️ Migración feedback_admin: {e}")
 
-        # 2. Crear tabla employee_capsules si no existe
+        # 4. Crear tabla employee_capsules si no existe
         tables = inspector.get_table_names()
         if 'employee_capsules' not in tables:
             try:
@@ -69,7 +69,8 @@ def run_migrations():
                 print("✅ Migración: tabla employee_capsules creada")
             except Exception as e:
                 print(f"⚠️ Migración employee_capsules: {e}")
-                # Agregar mission_values a users si no existe
+
+        # 5. Agregar mission_values a users si no existe
         user_cols = [c['name'] for c in inspector.get_columns('users')]
         if 'mission_values' not in user_cols:
             try:
@@ -78,6 +79,16 @@ def run_migrations():
                 print("✅ Migración: columna mission_values agregada a users")
             except Exception as e:
                 print(f"⚠️ Migración mission_values: {e}")
+
+        # 6. Agregar duration_seconds a chat_sessions si no existe
+        ses_cols = [c['name'] for c in inspector.get_columns('chat_sessions')]
+        if 'duration_seconds' not in ses_cols:
+            try:
+                conn.execute(text("ALTER TABLE chat_sessions ADD COLUMN duration_seconds INTEGER DEFAULT 0"))
+                conn.commit()
+                print("✅ Migración: columna duration_seconds agregada a chat_sessions")
+            except Exception as e:
+                print(f"⚠️ Migración duration_seconds: {e}")
 
 run_migrations()
 
@@ -155,8 +166,10 @@ class ChatMsg(BaseModel):
     session_id: int
     message: str
 
+# ✅ FIX: FeedbackReq ahora incluye duration_seconds
 class FeedbackReq(BaseModel):
     session_id: int
+    duration_seconds: Optional[int] = 0
 
 class ChatMsgConImagen(BaseModel):
     session_id: int
@@ -170,11 +183,9 @@ class ChatMsgConImagen(BaseModel):
 # ============================================================
 @app.post("/login")
 def login(data: LoginRequest, db: Session = Depends(get_db)):
-    # SuperAdmin hardcoded
     if data.email == "admin@salesai.com" and data.password == "admin":
         return {"type": "super_admin", "id": 0, "name": "Super Admin", "is_super_admin": True}
 
-    # Admin Empresa
     company = db.query(User).filter(User.email == data.email).first()
     if company and company.hashed_password == data.password:
         if not company.is_active and not company.is_super_admin:
@@ -186,7 +197,6 @@ def login(data: LoginRequest, db: Session = Depends(get_db)):
             "is_super_admin": company.is_super_admin
         }
 
-    # Empleado / Vendedor
     emp = db.query(Employee).filter(Employee.email == data.email).first()
     if emp and emp.password == data.password:
         if not emp.company.is_active:
@@ -258,7 +268,6 @@ def update_user(id: int, data: UserUpdate, db: Session = Depends(get_db)):
 
 @app.delete("/users/{id}")
 def del_user(id: int, db: Session = Depends(get_db)):
-    # Borrado en cascada correcto
     employees = db.query(Employee).filter(Employee.company_id == id).all()
     for emp in employees:
         sessions = db.query(ChatSession).filter(ChatSession.employee_id == emp.id).all()
@@ -266,7 +275,6 @@ def del_user(id: int, db: Session = Depends(get_db)):
             db.query(ChatMessage).filter(ChatMessage.session_id == s.id).delete()
         db.query(ChatSession).filter(ChatSession.employee_id == emp.id).delete()
     db.query(Employee).filter(Employee.company_id == id).delete()
-    # Borrar prototipos de productos
     products = db.query(Product).filter(Product.company_id == id).all()
     for p in products:
         db.query(ClientPrototype).filter(ClientPrototype.product_id == p.id).delete()
@@ -419,7 +427,6 @@ def update_product(id: int, data: ProductUpdate, db: Session = Depends(get_db)):
         prod.info = data.info
     db.commit()
     return {"status": "ok"}
-    
 
 
 @app.delete("/company/{company_id}/products/{product_id}")
@@ -453,7 +460,7 @@ def delete_prototype(id: int, db: Session = Depends(get_db)):
 
 
 # ============================================================
-# CHAT CON IA — COMPLETAMENTE FUNCIONAL
+# CHAT CON IA
 # ============================================================
 @app.post("/chat/start")
 def start_chat(data: ChatInit, db: Session = Depends(get_db)):
@@ -463,79 +470,83 @@ def start_chat(data: ChatInit, db: Session = Depends(get_db)):
 
     product = db.query(Product).filter(Product.id == prototype.product_id).first()
 
-    # Crear sesión
     session = ChatSession(employee_id=data.employee_id)
     db.add(session)
     db.commit()
     db.refresh(session)
 
-    # Construir sistema del agente (cliente simulado)
     agent_name = prototype.name
     product_name = product.name if product else 'un producto'
     product_info_section = ""
     if product and product.info:
-        product_info_section = f"\nINFORMACIÓN TÉCNICA DEL PRODUCTO (usala para hacer preguntas o dudar sobre características específicas):\n{product.info}\n"
+        product_info_section = f"\nINFORMACIÓN DEL PRODUCTO (usala SOLO para hacer preguntas como cliente, NUNCA para explicarla):\n{product.info}\n"
 
-    system_prompt = f"""PROMPT INTERNO DEL AGENTE IA (SIMULADOR DE CLIENTE)
+    # ✅ FIX PRINCIPAL: System prompt reforzado para evitar que la IA asuma rol de vendedor
+    # y para que el cliente sea más realista (menos cortés, más directo)
+    system_prompt = f"""════════════════════════════════════════
+ROL ÚNICO E IRROMPIBLE: ERES EL CLIENTE
+════════════════════════════════════════
 
-Sos un cliente potencial llamado {agent_name}.
-Estás evaluando comprar: {product_name}.
-Tu perfil como cliente: {prototype.description}
+Tu nombre es {agent_name}. Estás evaluando comprar: {product_name}.
+Tu perfil: {prototype.description}
 Tu objeción principal: {prototype.objection}
 {product_info_section}
 
-REGLA PRINCIPAL DEL SISTEMA
-TÚ ERES EL CLIENTE. NUNCA eres el vendedor.
-NUNCA expliques el producto. NUNCA brindes información comercial que el vendedor debería proporcionar.
-Si conocés información del producto, solo podés usarla para formular preguntas más inteligentes, pero NUNCA para explicarla.
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+⛔ REGLA ABSOLUTA — NUNCA VIOLAR
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+TU ÚNICO ROL ES SER EL CLIENTE. No eres vendedor, no eres asistente, no eres coach.
+NUNCA preguntes "¿Te gustaría avanzar con la compra?" — eso lo pregunta el vendedor, NO el cliente.
+NUNCA ofrezcas ayuda. NUNCA resumas lo conversado. NUNCA cerrés la venta vos.
+NUNCA uses frases de vendedor: "Estoy aquí para ayudarte", "¿En qué más puedo asesorarte?", "Te puedo orientar".
 
-ROLE LOCK — REGLA CRÍTICA:
-Antes de responder, verificá mentalmente: ¿Estoy actuando como cliente o como vendedor?
-Si detectás que estás explicando el producto → detené esa respuesta y reformulá como cliente.
+Si en algún momento detectás que estás respondiendo como vendedor → DETENÉ esa respuesta y reescribila como cliente.
 
-COMPORTAMIENTO CORRECTO:
-✅ "¿Qué consumo tiene este modelo?"
-✅ "¿Tiene financiación?"
-✅ "¿Cuál es la diferencia con el Toyota Yaris?"
-✅ "¿Cuánto cuesta aproximadamente?"
-✅ "¿Qué garantía tiene?"
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+✅ LO QUE HACÉS COMO CLIENTE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+- Preguntás sobre el producto
+- Dudás, comparás, pedís aclaraciones
+- Reaccionás a lo que te dice el vendedor (con interés, escepticismo, dudas)
+- Podés decidir comprar, postergar o rechazar
 
-COMPORTAMIENTO PROHIBIDO:
-❌ "Este modelo tiene un motor 1.6 de 115 HP."
-❌ "Este auto consume 5 litros cada 100 km."
-❌ Explicar cualquier característica técnica del producto.
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🗣️ PERSONALIDAD REALISTA
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Sos una persona real, NO un asistente educado.
+- NO decís "¡Gracias por la información!" después de cada respuesta
+- NO repetís lo que el vendedor dijo antes de preguntar
+- Podés ser directo, impaciente, escéptico o indiferente según la situación
+- Si el vendedor no respondió bien, lo notás y lo presionás
+- Si el vendedor fue bueno, mostrás más interés
+- Respuestas cortas y directas: 1-3 oraciones máximo
+- Español rioplatense informal: "¿cuánto sale?", "¿tiene garantía?", "no entendí eso"
 
-PERSONALIDAD DEL CLIENTE:
-Comportate como una persona real. Podés tener dudas, comparar opciones, pedir aclaraciones, preguntar precios y financiación. También podés desconfiar, mostrar entusiasmo, estar indeciso o querer pensarlo.
+EJEMPLOS DE RESPUESTAS CORRECTAS:
+✅ "¿Y el precio cuál es?"
+✅ "No me convence eso, ¿tenés algo más concreto?"
+✅ "Está bien, pero necesito pensarlo."
+✅ "¿Me podés mandar algo por escrito?"
 
-DECISIÓN DE COMPRA:
-No siempre comprás. La conversación puede terminar en compra, duda, postergación o rechazo. Razones válidas para no comprar: no tenés dinero ahora, estás comparando, necesitás pensarlo, solo estabas investigando. Esto NO significa que el vendedor haya trabajado mal.
+EJEMPLOS PROHIBIDOS:
+❌ "¡Gracias por la información tan detallada!"
+❌ "Entiendo perfectamente lo que me explicás."
+❌ "¿Te gustaría avanzar con la compra?"
+❌ "Estoy aquí para ayudarte en lo que necesites."
 
-USO DE DOCUMENTOS E IMÁGENES:
-Si el vendedor envía un PDF o imagen, reaccioná como cliente.
-Ejemplos:
-- "Estoy viendo el documento que me enviaste, pero no entiendo bien la parte del consumo."
-- "En la imagen veo el interior, ¿es ese el equipamiento estándar?"
-NUNCA uses esa información para explicar el producto.
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🎯 OBJETIVO
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Poner a prueba al vendedor. Observar si explica bien, responde preguntas, maneja objeciones y genera confianza.
+La conversación puede terminar en compra, duda, postergación o rechazo. Cualquier resultado es válido."""
 
-ESTILO DE CONVERSACIÓN:
-Natural, realista, como una persona real. Respuestas cortas (2-4 oraciones). Hablá en español rioplatense informal. No hablés como un manual técnico.
-
-OBJETIVO:
-Poner a prueba al vendedor. Observar si explica bien, escucha, responde preguntas, genera confianza e intenta cerrar la venta.
-
-REGLA FINAL:
-TÚ ERES EL CLIENTE INTERESADO EN COMPRAR. Nada más."""
-
-    # Mensaje inicial: el cliente contacta al vendedor preguntando por el producto
-    initial_prompt = f"Iniciá la conversación como {agent_name}, un cliente que acaba de contactar al vendedor. Tu primer mensaje debe ser natural y breve, preguntando por información sobre {product_name}. Solo el mensaje del cliente, nada más."
+    initial_prompt = f"Iniciá la conversación como {agent_name}, un cliente que contacta al vendedor. Tu primer mensaje debe ser breve y directo, preguntando por información básica sobre {product_name}. Solo el mensaje del cliente, sin saludos elaborados."
 
     initial_msg = obtener_respuesta_coach(
         historial=[{"role": "user", "content": initial_prompt}],
         configuracion_sistema=system_prompt
     )
 
-    # Guardar el system prompt en la sesión (primer mensaje como system)
     db.add(ChatMessage(session_id=session.id, role="system", content=system_prompt))
     db.add(ChatMessage(session_id=session.id, role="assistant", content=initial_msg))
     db.commit()
@@ -553,7 +564,6 @@ def send_message(data: ChatMsg, db: Session = Depends(get_db)):
     if not session:
         raise HTTPException(404, "Sesión no encontrada")
 
-    # Recuperar historial completo
     all_messages = db.query(ChatMessage).filter(
         ChatMessage.session_id == data.session_id
     ).order_by(ChatMessage.id).all()
@@ -566,18 +576,16 @@ def send_message(data: ChatMsg, db: Session = Depends(get_db)):
         else:
             historial.append({"role": m.role, "content": m.content})
 
-    # Agregar mensaje del vendedor
     historial.append({"role": "user", "content": data.message})
 
-    # Obtener respuesta del cliente IA
     response = obtener_respuesta_coach(historial=historial, configuracion_sistema=system_prompt)
 
-    # Guardar ambos mensajes
     db.add(ChatMessage(session_id=data.session_id, role="user", content=data.message))
     db.add(ChatMessage(session_id=data.session_id, role="assistant", content=response))
     db.commit()
 
     return {"response": response}
+
 
 @app.post("/chat/message-with-image")
 def send_message_with_image(data: ChatMsgConImagen, db: Session = Depends(get_db)):
@@ -629,17 +637,22 @@ def get_feedback(data: FeedbackReq, db: Session = Depends(get_db)):
     if len(historial) < 2:
         return {"feedback": "La conversación fue muy corta para evaluarla.", "score": 0}
 
-    # Obtener el nombre del vendedor para el informe admin
     employee = db.query(Employee).filter(Employee.id == session.employee_id).first()
     nombre_vendedor = employee.name if employee else "el vendedor"
 
-    # Generar informe para el VENDEDOR (simple)
+    # ✅ Recuperar misión y valores de la empresa para el informe admin
+    mission_values = ""
+    if employee and employee.company_id:
+        company = db.query(User).filter(User.id == employee.company_id).first()
+        if company and company.mission_values:
+            mission_values = company.mission_values
+
+    # ✅ FIX: duration_seconds ahora se guarda en la sesión y se pasa al informe admin
+    duration_seconds = data.duration_seconds or 0
+
     feedback_vendedor = generar_evaluacion_vendedor(historial)
+    feedback_admin = generar_evaluacion_admin(historial, nombre_vendedor, duration_seconds, mission_values)
 
-    # Generar informe para el ADMIN (extendido) — en paralelo lógico
-    feedback_admin = generar_evaluacion_admin(historial, nombre_vendedor)
-
-    # Extraer puntaje del informe del vendedor
     score = 5
     for line in feedback_vendedor.split("\n"):
         if "CALIFICACIÓN:" in line or "CALIFICACION:" in line:
@@ -652,6 +665,9 @@ def get_feedback(data: FeedbackReq, db: Session = Depends(get_db)):
     session.feedback = feedback_vendedor
     session.feedback_admin = feedback_admin
     session.score = score
+    # ✅ Guardar duration_seconds en la sesión si el modelo lo tiene
+    if hasattr(session, 'duration_seconds'):
+        session.duration_seconds = duration_seconds
     db.commit()
 
     return {
@@ -671,6 +687,7 @@ async def chat_image(session_id: int = Form(...), file: UploadFile = File(...)):
     media_type = file.content_type or "image/jpeg"
     return {"type": "image", "b64": b64, "media_type": media_type}
 
+
 @app.post("/chat/pdf")
 async def chat_pdf(file: UploadFile = File(...)):
     contents = await file.read()
@@ -686,6 +703,7 @@ async def chat_pdf(file: UploadFile = File(...)):
     if not text.strip():
         raise HTTPException(400, "No se pudo extraer texto del PDF")
     return {"type": "pdf", "text": text[:4000]}
+
 
 @app.post("/chat/audio")
 async def chat_audio(file: UploadFile = File(...)):
@@ -719,6 +737,7 @@ def delete_session(session_id: int, db: Session = Depends(get_db)):
     db.commit()
     return {"status": "ok"}
 
+
 @app.get("/employees/{id}/stats")
 def get_employee_stats(id: int, db: Session = Depends(get_db)):
     sessions = db.query(ChatSession).filter(ChatSession.employee_id == id).all()
@@ -736,10 +755,8 @@ def get_employee_stats(id: int, db: Session = Depends(get_db)):
 # ============================================================
 # PERFIL DEL VENDEDOR — ADMIN EMPRESA
 # ============================================================
-
 @app.get("/employees/{id}/profile")
 def get_employee_profile(id: int, db: Session = Depends(get_db)):
-    """Devuelve datos completos del vendedor: info, sesiones con mensajes, cápsulas asignadas."""
     emp = db.query(Employee).filter(Employee.id == id).first()
     if not emp:
         raise HTTPException(404, "Empleado no encontrado")
@@ -757,6 +774,7 @@ def get_employee_profile(id: int, db: Session = Depends(get_db)):
             "score": s.score,
             "feedback": s.feedback,
             "feedback_admin": s.feedback_admin,
+            "duration_seconds": getattr(s, 'duration_seconds', 0),
             "messages": [{"role": m.role, "content": m.content} for m in messages]
         })
 
@@ -797,7 +815,7 @@ def update_employee(id: int, data: EmployeeUpdate, db: Session = Depends(get_db)
 
 class CapsuleAssignReq(BaseModel):
     capsule_id: int
-    assign: bool  # True = asignar, False = quitar
+    assign: bool
 
 
 @app.post("/employees/{id}/capsules")
@@ -819,7 +837,6 @@ def toggle_capsule_assignment(id: int, data: CapsuleAssignReq, db: Session = Dep
 
 @app.get("/employees/{id}/capsules")
 def get_employee_capsules(id: int, db: Session = Depends(get_db)):
-    """Para el portal del vendedor: solo las cápsulas que tiene habilitadas."""
     assignments = db.query(EmployeeCapsule).filter(EmployeeCapsule.employee_id == id).all()
     result = []
     for a in assignments:
