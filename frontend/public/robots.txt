@@ -1,0 +1,12 @@
+User-agent: *
+
+Disallow: /login/
+Disallow: /dashboard/
+Disallow: /evaluaciones/
+Disallow: /usuarios/
+Disallow: /admin/
+Disallow: /api/
+Disallow: /docs/
+Disallow: /redoc/
+
+Allow: /
