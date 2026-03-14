@@ -1810,96 +1810,261 @@ function CompanyDashboard() {
                                 <div style={{ padding: '2rem 2.5rem', background: '#fff' }}>
                                   {(() => {
                                     const text = selSession.feedback_admin;
-                                    const getBlock = (emoji) => {
-                                      const regex = new RegExp(`${emoji}[^\n]*\n[━─=\\-]*\n?([\\s\\S]*?)(?=\n[📊⏱🏢🧠🛠📋]|$)`);
+                                    const getIndicador = (text, label) => {
+                                      const regex = new RegExp(`${label}:\\s*([^\\n]+)`, 'i');
                                       const m = text.match(regex);
-                                      return m ? m[1].trim() : '';
+                                      return m ? m[1].trim() : '—';
                                     };
-                                    const getField = (block, label) => {
-                                      const regex = new RegExp(`${label}[:\\.]*\\s*([^\n]+(?:\n(?![A-ZÁÉÍÓÚÑ\\-─━].{0,40}:)[^\n]+)*)`,'i');
-                                      const m = block.match(regex);
-                                      return m ? m[1].trim() : '';
-                                    };
-                                    const getList = (block, label) => {
-                                      const regex = new RegExp(`${label}[:\\.]*\\s*\n([\\s\\S]*?)(?=\n[A-ZÁÉÍÓÚÑ]|$)`,'i');
-                                      const m = block.match(regex);
+
+                                    const encabezado_vendedor = getIndicador(text, 'VENDEDOR');
+                                    const encabezado_producto = getIndicador(text, 'PRODUCTO EVALUADO');
+                                    const encabezado_prototipo = getIndicador(text, 'CLIENTE SIMULADO');
+
+                                    const resultado = getIndicador(text, 'RESULTADO DE LA CONVERSACIÓN');
+                                    const duracion = getIndicador(text, 'DURACIÓN');
+                                    const alineacion = getIndicador(text, 'ALINEACIÓN CULTURAL');
+                                    const prob_cierre = getIndicador(text, 'PROBABILIDAD DE CIERRE DETECTADA');
+
+                                    const analisis_interaccion = getIndicador(text, 'ANÁLISIS DE LA INTERACCIÓN');
+                                    const motivo_resultado = getIndicador(text, 'MOTIVO PRINCIPAL DEL RESULTADO');
+
+                                    const momento_clave = getIndicador(text, 'MOMENTO CLAVE');
+                                    const impacto_quiebre = getIndicador(text, 'IMPACTO EN EL RESULTADO');
+
+                                    const nivel_objeciones = getIndicador(text, 'NIVEL DE MANEJO DE OBJECIONES');
+                                    const objeciones = (() => {
+                                      const m = text.match(/OBJECIONES DETECTADAS:\n([\s\S]*?)(?=\nNIVEL DE MANEJO)/i);
                                       if (!m) return [];
-                                      return m[1].split('\n').map(l => l.replace(/^[-•]\s*/,'')).filter(l => l.trim());
+                                      return m[1].split('\n').map(l => l.replace(/^-\s*/, '').trim()).filter(Boolean);
+                                    })();
+
+                                    const fortalezas = (() => {
+                                      const m = text.match(/✅ FORTALEZAS OBSERVADAS[\s\S]*?\n([\s\S]*?)(?=━)/i);
+                                      if (!m) return [];
+                                      return m[1].split('\n').map(l => l.replace(/^-\s*/, '').trim()).filter(Boolean);
+                                    })();
+
+                                    const mejoras = (() => {
+                                      const m = text.match(/⚠️ OPORTUNIDADES DE MEJORA[\s\S]*?\n([\s\S]*?)(?=━)/i);
+                                      if (!m) return [];
+                                      return m[1].split('\n').map(l => l.replace(/^-\s*/, '').trim()).filter(Boolean);
+                                    })();
+
+                                    const tiempo_evaluacion = getIndicador(text, 'EVALUACIÓN DEL MANEJO DEL TIEMPO');
+                                    const tiempo_impacto = getIndicador(text, 'IMPACTO EN LA INTERACCIÓN');
+
+                                    const proc_necesidades = getIndicador(text, 'DETECCIÓN DE NECESIDADES');
+                                    const proc_presentacion = getIndicador(text, 'PRESENTACIÓN DEL PRODUCTO');
+                                    const proc_objeciones = getIndicador(text, 'MANEJO DE OBJECIONES');
+                                    const proc_confianza = getIndicador(text, 'GENERACIÓN DE CONFIANZA');
+                                    const proc_cierre = getIndicador(text, 'INTENTO DE CIERRE');
+
+                                    const cult_nivel = getIndicador(text, 'NIVEL DE ALINEACIÓN');
+                                    const cult_analisis = getIndicador(text, 'ANÁLISIS');
+                                    const cult_recomendacion = getIndicador(text, 'RECOMENDACIÓN');
+
+                                    const emocional_perfil = getIndicador(text, 'PERFIL EMOCIONAL DETECTADO');
+                                    const emocional_senales = getIndicador(text, 'SEÑALES OBSERVADAS');
+                                    const emocional_impacto = getIndicador(text, 'IMPACTO EN LA INTERACCIÓN');
+
+                                    const habilidades = (() => {
+                                      const m = text.match(/🛠️ HABILIDADES A DESARROLLAR[\s\S]*?\n([\s\S]*?)(?=━)/i);
+                                      if (!m) return [];
+                                      return m[1].split('\n').map(l => l.replace(/^\d+\.\s*/, '').trim()).filter(Boolean);
+                                    })();
+
+                                    const resumen_sintesis = getIndicador(text, 'SÍNTESIS DEL DESEMPEÑO');
+                                    const resumen_aprendizaje = getIndicador(text, 'PRINCIPAL APRENDIZAJE');
+                                    const resumen_recomendacion = getIndicador(text, 'RECOMENDACIÓN PRINCIPAL');
+
+                                    const indicadores = [
+                                      { label: 'Probabilidad de cierre', value: getIndicador(text, 'PROBABILIDAD DE CIERRE') },
+                                      { label: 'Claridad del asesoramiento', value: getIndicador(text, 'CLARIDAD DEL ASESORAMIENTO') },
+                                      { label: 'Detección de necesidades', value: getIndicador(text, 'DETECCIÓN DE NECESIDADES') },
+                                      { label: 'Manejo de objeciones', value: getIndicador(text, 'MANEJO DE OBJECIONES') },
+                                      { label: 'Confianza transmitida', value: getIndicador(text, 'CONFIANZA TRANSMITIDA') },
+                                      { label: 'Intento de cierre', value: getIndicador(text, 'INTENTO DE CIERRE') },
+                                      { label: 'Conocimiento del producto', value: getIndicador(text, 'CONOCIMIENTO DEL PRODUCTO') },
+                                      { label: 'Alineación cultural', value: getIndicador(text, 'ALINEACIÓN CULTURAL') },
+                                    ];
+
+                                    const nivelColor = (val) => {
+                                      const v = (val || '').toLowerCase();
+                                      if (v.includes('alt') || v.includes('concret')) return '#16a34a';
+                                      if (v.includes('med')) return '#d97706';
+                                      return '#dc2626';
                                     };
-                                    const evalBlock = getBlock('📊');
-                                    const tiempoBlock = getBlock('⏱');
-                                    const culturaBlock = getBlock('🏢');
-                                    const estadoBlock = getBlock('🧠');
-                                    const skillsBlock = getBlock('🛠');
-                                    const resumenBlock = getBlock('📋');
-                                    const resultado = getField(evalBlock, 'RESULTADO DE LA CONVERSACIÓN');
-                                    const duracion = getField(tiempoBlock, 'DURACIÓN TOTAL');
-                                    const alineacion = getField(culturaBlock, 'NIVEL DE ALINEACIÓN');
-                                    const analisis = getField(evalBlock, 'ANÁLISIS DETALLADO');
-                                    const quiebre = getField(evalBlock, 'PUNTO DE QUIEBRE');
-                                    const fortalezas = getList(evalBlock, 'FORTALEZAS OBSERVADAS');
-                                    const areas = getList(evalBlock, 'ÁREAS CRÍTICAS A MEJORAR');
-                                    const perfilEmocional = getField(estadoBlock, 'PERFIL EMOCIONAL DETECTADO');
-                                    const recomBienestar = getList(estadoBlock, 'RECOMENDACIONES PARA EL BIENESTAR');
-                                    const skillLines = skillsBlock.split('\n').filter(l => l.match(/^\d\./)).map(l => l.replace(/^\d\.\s*/,''));
-                                    const resumen = resumenBlock;
+
                                     return (
                                       <>
-                                        {/* Tarjetas métricas */}
-                                        <div style={{ display: 'flex', gap: '1rem', marginBottom: '1.5rem' }}>
-                                          {[
-                                            { label: 'Resultado', value: resultado, color: '#6be1e3' },
-                                            { label: 'Duración', value: duracion, color: '#e4c76a' },
-                                            { label: 'Alineación cultural', value: alineacion, color: '#e17bd7' },
-                                          ].map((card, i) => (
-                                            <div key={i} style={{ flex: 1, background: '#f8f9fc', borderRadius: '8px', padding: '1rem 1.25rem', borderLeft: `3px solid ${card.color}` }}>
-                                              <div style={{ fontSize: '11px', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '4px' }}>{card.label}</div>
-                                              <div style={{ fontSize: '13px', fontWeight: 500, color: '#1a181d' }}>{card.value || '—'}</div>
+                                        {/* HEADER */}
+                                        <div style={{ background: '#0f1923', padding: '2rem 2.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                                          <div>
+                                            <div style={{ fontSize: '11px', letterSpacing: '0.15em', color: '#6be1e3', fontWeight: 500, textTransform: 'uppercase', marginBottom: '8px' }}>Informe de Entrenamiento Comercial</div>
+                                            <div style={{ fontSize: '22px', fontWeight: 600, color: '#ffffff', marginBottom: '4px' }}>{profileEmp.name}</div>
+                                            <div style={{ fontSize: '13px', color: '#8892a0' }}>{profileEmp.email}</div>
+                                            <div style={{ marginTop: '10px', display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
+                                              {encabezado_producto !== '—' && <span style={{ fontSize: '12px', color: '#6be1e3' }}>📦 {encabezado_producto}</span>}
+                                              {encabezado_prototipo !== '—' && <span style={{ fontSize: '12px', color: '#e17bd7' }}>👤 {encabezado_prototipo}</span>}
                                             </div>
-                                          ))}
-                                        </div>
-                                        {/* Análisis detallado */}
-                                        {analisis && <div style={{ marginBottom: '1.25rem' }}>
-                                          <div style={{ fontSize: '12px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.1em', color: '#64748b', marginBottom: '6px' }}>Análisis detallado</div>
-                                          <div style={{ fontSize: '13px', color: '#334155', lineHeight: '1.7' }}>{analisis}</div>
-                                        </div>}
-                                        {/* Punto de quiebre */}
-                                        {quiebre && <div style={{ marginBottom: '1.25rem' }}>
-                                          <div style={{ fontSize: '12px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.1em', color: '#64748b', marginBottom: '6px' }}>Punto de quiebre</div>
-                                          <div style={{ fontSize: '13px', color: '#334155', lineHeight: '1.7' }}>{quiebre}</div>
-                                        </div>}
-                                        {/* Fortalezas y áreas */}
-                                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1.25rem' }}>
-                                          <div style={{ background: '#f0fdf4', borderRadius: '8px', padding: '1rem 1.25rem' }}>
-                                            <div style={{ fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.1em', color: '#16a34a', marginBottom: '8px' }}>Fortalezas</div>
-                                            {fortalezas.map((f, i) => <div key={i} style={{ fontSize: '12px', color: '#334155', lineHeight: '1.8', display: 'flex', gap: '6px' }}><span style={{ color: '#16a34a' }}>▸</span>{f}</div>)}
                                           </div>
-                                          <div style={{ background: '#fff7ed', borderRadius: '8px', padding: '1rem 1.25rem' }}>
-                                            <div style={{ fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.1em', color: '#ea580c', marginBottom: '8px' }}>Áreas a mejorar</div>
-                                            {areas.map((a, i) => <div key={i} style={{ fontSize: '12px', color: '#334155', lineHeight: '1.8', display: 'flex', gap: '6px' }}><span style={{ color: '#ea580c' }}>▸</span>{a}</div>)}
+                                          <div style={{ textAlign: 'right' }}>
+                                            <div style={{ fontSize: '11px', color: '#8892a0', marginBottom: '4px' }}>{selSession.date ? new Date(selSession.date + 'Z').toLocaleDateString('es-AR', { day: '2-digit', month: 'long', year: 'numeric' }) : '—'}</div>
+                                            {selSession.score && (
+                                              <div style={{ marginTop: '12px', display: 'inline-block', background: 'rgba(107,225,227,0.12)', border: '1px solid #6be1e3', borderRadius: '6px', padding: '4px 14px' }}>
+                                                <span style={{ fontSize: '24px', fontWeight: 600, color: '#6be1e3' }}>{selSession.score}</span>
+                                                <span style={{ fontSize: '13px', color: '#4a6070' }}>/10</span>
+                                              </div>
+                                            )}
                                           </div>
                                         </div>
-                                        {/* Perfil emocional */}
-                                        {perfilEmocional && <div style={{ marginBottom: '1.25rem' }}>
-                                          <div style={{ fontSize: '12px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.1em', color: '#64748b', marginBottom: '6px' }}>Estado del vendedor</div>
-                                          <div style={{ fontSize: '13px', color: '#334155' }}><strong>Perfil emocional:</strong> {perfilEmocional}</div>
-                                          {recomBienestar.length > 0 && recomBienestar.map((r,i) => <div key={i} style={{ fontSize: '12px', color: '#334155', display: 'flex', gap: '6px', marginTop: '4px' }}><span style={{ color: '#6be1e3' }}>▸</span>{r}</div>)}
-                                        </div>}
-                                        {/* Hard skills */}
-                                        {skillLines.length > 0 && <div style={{ marginBottom: '1.25rem' }}>
-                                          <div style={{ fontSize: '12px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.1em', color: '#64748b', marginBottom: '8px' }}>Hard skills recomendadas</div>
-                                          {skillLines.map((s, i) => (
-                                            <div key={i} style={{ display: 'flex', gap: '10px', alignItems: 'flex-start', fontSize: '13px', color: '#334155', marginBottom: '6px' }}>
-                                              <span style={{ minWidth: '18px', height: '18px', background: '#0f1923', color: '#6be1e3', borderRadius: '4px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '10px', fontWeight: 600 }}>{i+1}</span>
-                                              <span>{s}</span>
+                                        <div style={{ height: '3px', background: 'linear-gradient(90deg, #6be1e3 0%, #e17bd7 50%, #e4c76a 100%)' }}></div>
+
+                                        {/* BODY */}
+                                        <div style={{ padding: '2rem 2.5rem', background: '#fff' }}>
+
+                                          {/* INDICADORES RÁPIDOS */}
+                                          <div style={{ display: 'flex', gap: '1rem', marginBottom: '1.5rem', flexWrap: 'wrap' }}>
+                                            {[
+                                              { label: 'Resultado', value: resultado, color: '#6be1e3' },
+                                              { label: 'Duración', value: duracion, color: '#e4c76a' },
+                                              { label: 'Alineación cultural', value: alineacion, color: '#e17bd7' },
+                                              { label: 'Prob. de cierre', value: prob_cierre, color: '#6be1e3' },
+                                            ].map((card, i) => (
+                                              <div key={i} style={{ flex: '1 1 140px', background: '#f8f9fc', borderRadius: '8px', padding: '0.75rem 1rem', borderLeft: `3px solid ${card.color}` }}>
+                                                <div style={{ fontSize: '10px', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '4px' }}>{card.label}</div>
+                                                <div style={{ fontSize: '12px', fontWeight: 600, color: '#1a181d' }}>{card.value || '—'}</div>
+                                              </div>
+                                            ))}
+                                          </div>
+
+                                          {/* EVALUACIÓN DEL ASESORAMIENTO */}
+                                          <div style={{ marginBottom: '1.25rem' }}>
+                                            <div style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', color: '#1a181d', borderBottom: '2px solid #6be1e3', paddingBottom: '4px', marginBottom: '8px' }}>📊 Evaluación del Asesoramiento</div>
+                                            {analisis_interaccion && <div style={{ marginBottom: '8px' }}><span style={{ fontSize: '11px', fontWeight: 600, color: '#64748b' }}>Análisis: </span><span style={{ fontSize: '12px', color: '#334155', lineHeight: '1.7' }}>{analisis_interaccion}</span></div>}
+                                            {motivo_resultado && <div><span style={{ fontSize: '11px', fontWeight: 600, color: '#64748b' }}>Motivo del resultado: </span><span style={{ fontSize: '12px', color: '#334155', lineHeight: '1.7' }}>{motivo_resultado}</span></div>}
+                                          </div>
+
+                                          {/* PUNTO DE QUIEBRE */}
+                                          <div style={{ marginBottom: '1.25rem', background: '#fff7ed', borderRadius: '8px', padding: '1rem', borderLeft: '3px solid #f97316' }}>
+                                            <div style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', color: '#ea580c', marginBottom: '8px' }}>🔴 Punto de Quiebre</div>
+                                            {momento_clave && <div style={{ marginBottom: '6px' }}><span style={{ fontSize: '11px', fontWeight: 600, color: '#64748b' }}>Momento clave: </span><span style={{ fontSize: '12px', color: '#334155' }}>{momento_clave}</span></div>}
+                                            {impacto_quiebre && <div><span style={{ fontSize: '11px', fontWeight: 600, color: '#64748b' }}>Impacto: </span><span style={{ fontSize: '12px', color: '#334155' }}>{impacto_quiebre}</span></div>}
+                                          </div>
+
+                                          {/* OBJECIONES */}
+                                          <div style={{ marginBottom: '1.25rem' }}>
+                                            <div style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', color: '#1a181d', borderBottom: '2px solid #e17bd7', paddingBottom: '4px', marginBottom: '8px' }}>💬 Objeciones del Cliente</div>
+                                            {objeciones.map((o, i) => <div key={i} style={{ fontSize: '12px', color: '#334155', display: 'flex', gap: '6px', marginBottom: '3px' }}><span style={{ color: '#e17bd7' }}>▸</span>{o}</div>)}
+                                            <div style={{ marginTop: '6px' }}><span style={{ fontSize: '11px', fontWeight: 600, color: '#64748b' }}>Nivel de manejo: </span><span style={{ fontSize: '12px', fontWeight: 700, color: nivelColor(nivel_objeciones) }}>{nivel_objeciones}</span></div>
+                                          </div>
+
+                                          {/* FORTALEZAS Y MEJORAS */}
+                                          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1.25rem' }}>
+                                            <div style={{ background: '#f0fdf4', borderRadius: '8px', padding: '1rem' }}>
+                                              <div style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', color: '#16a34a', marginBottom: '8px' }}>✅ Fortalezas</div>
+                                              {fortalezas.map((f, i) => <div key={i} style={{ fontSize: '12px', color: '#334155', display: 'flex', gap: '6px', marginBottom: '3px' }}><span style={{ color: '#16a34a' }}>▸</span>{f}</div>)}
                                             </div>
-                                          ))}
-                                        </div>}
-                                        {/* Resumen ejecutivo */}
-                                        {resumen && <div style={{ border: '1px solid #e2e8f0', borderRadius: '8px', padding: '1rem 1.25rem', borderLeft: '3px solid #e17bd7' }}>
-                                          <div style={{ fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.1em', color: '#64748b', marginBottom: '6px' }}>Resumen ejecutivo</div>
-                                          <div style={{ fontSize: '13px', color: '#334155', lineHeight: '1.7' }}>{resumen}</div>
-                                        </div>}
+                                            <div style={{ background: '#fff7ed', borderRadius: '8px', padding: '1rem' }}>
+                                              <div style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', color: '#ea580c', marginBottom: '8px' }}>⚠️ Oportunidades de Mejora</div>
+                                              {mejoras.map((m, i) => <div key={i} style={{ fontSize: '12px', color: '#334155', display: 'flex', gap: '6px', marginBottom: '3px' }}><span style={{ color: '#ea580c' }}>▸</span>{m}</div>)}
+                                            </div>
+                                          </div>
+
+                                          {/* ANÁLISIS DE TIEMPO */}
+                                          <div style={{ marginBottom: '1.25rem', background: '#f8f9fc', borderRadius: '8px', padding: '1rem', borderLeft: '3px solid #e4c76a' }}>
+                                            <div style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', color: '#92700a', marginBottom: '8px' }}>⏱️ Análisis de Tiempo</div>
+                                            <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
+                                              <div><span style={{ fontSize: '11px', color: '#64748b' }}>Duración: </span><span style={{ fontSize: '12px', fontWeight: 600 }}>{duracion}</span></div>
+                                              <div><span style={{ fontSize: '11px', color: '#64748b' }}>Evaluación: </span><span style={{ fontSize: '12px', fontWeight: 600 }}>{tiempo_evaluacion}</span></div>
+                                            </div>
+                                            {tiempo_impacto && <div style={{ marginTop: '6px', fontSize: '12px', color: '#334155' }}>{tiempo_impacto}</div>}
+                                          </div>
+
+                                          {/* EVALUACIÓN DEL PROCESO */}
+                                          <div style={{ marginBottom: '1.25rem' }}>
+                                            <div style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', color: '#1a181d', borderBottom: '2px solid #6be1e3', paddingBottom: '4px', marginBottom: '8px' }}>🎯 Evaluación del Proceso de Venta</div>
+                                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px' }}>
+                                              {[
+                                                { label: 'Detección de necesidades', value: proc_necesidades },
+                                                { label: 'Presentación del producto', value: proc_presentacion },
+                                                { label: 'Manejo de objeciones', value: proc_objeciones },
+                                                { label: 'Generación de confianza', value: proc_confianza },
+                                                { label: 'Intento de cierre', value: proc_cierre },
+                                              ].map((item, i) => (
+                                                <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#f8f9fc', padding: '6px 10px', borderRadius: '6px' }}>
+                                                  <span style={{ fontSize: '11px', color: '#64748b' }}>{item.label}</span>
+                                                  <span style={{ fontSize: '11px', fontWeight: 700, color: nivelColor(item.value) }}>{item.value}</span>
+                                                </div>
+                                              ))}
+                                            </div>
+                                          </div>
+
+                                          {/* ALINEACIÓN CULTURAL */}
+                                          <div style={{ marginBottom: '1.25rem', background: '#f8f0ff', borderRadius: '8px', padding: '1rem', borderLeft: '3px solid #e17bd7' }}>
+                                            <div style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', color: '#9333ea', marginBottom: '8px' }}>🏢 Alineación con la Cultura</div>
+                                            <div style={{ marginBottom: '4px' }}><span style={{ fontSize: '11px', color: '#64748b' }}>Nivel: </span><span style={{ fontSize: '12px', fontWeight: 700, color: nivelColor(cult_nivel) }}>{cult_nivel}</span></div>
+                                            {cult_analisis && <div style={{ marginBottom: '4px' }}><span style={{ fontSize: '11px', color: '#64748b' }}>Análisis: </span><span style={{ fontSize: '12px', color: '#334155' }}>{cult_analisis}</span></div>}
+                                            {cult_recomendacion && <div><span style={{ fontSize: '11px', color: '#64748b' }}>Recomendación: </span><span style={{ fontSize: '12px', color: '#334155' }}>{cult_recomendacion}</span></div>}
+                                          </div>
+
+                                          {/* ESTADO DEL VENDEDOR */}
+                                          <div style={{ marginBottom: '1.25rem' }}>
+                                            <div style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', color: '#1a181d', borderBottom: '2px solid #6be1e3', paddingBottom: '4px', marginBottom: '8px' }}>🧠 Estado del Vendedor</div>
+                                            {emocional_perfil && <div style={{ marginBottom: '4px' }}><span style={{ fontSize: '11px', fontWeight: 600, color: '#64748b' }}>Perfil emocional: </span><span style={{ fontSize: '12px', color: '#334155' }}>{emocional_perfil}</span></div>}
+                                            {emocional_senales && <div style={{ marginBottom: '4px' }}><span style={{ fontSize: '11px', fontWeight: 600, color: '#64748b' }}>Señales observadas: </span><span style={{ fontSize: '12px', color: '#334155' }}>{emocional_senales}</span></div>}
+                                            {emocional_impacto && <div><span style={{ fontSize: '11px', fontWeight: 600, color: '#64748b' }}>Impacto: </span><span style={{ fontSize: '12px', color: '#334155' }}>{emocional_impacto}</span></div>}
+                                          </div>
+
+                                          {/* HABILIDADES */}
+                                          {habilidades.length > 0 && (
+                                            <div style={{ marginBottom: '1.25rem' }}>
+                                              <div style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', color: '#1a181d', borderBottom: '2px solid #e4c76a', paddingBottom: '4px', marginBottom: '8px' }}>🛠️ Habilidades a Desarrollar</div>
+                                              {habilidades.map((s, i) => (
+                                                <div key={i} style={{ display: 'flex', gap: '10px', alignItems: 'flex-start', fontSize: '12px', color: '#334155', marginBottom: '6px' }}>
+                                                  <span style={{ minWidth: '18px', height: '18px', background: '#0f1923', color: '#6be1e3', borderRadius: '4px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '10px', fontWeight: 600 }}>{i + 1}</span>
+                                                  <span>{s}</span>
+                                                </div>
+                                              ))}
+                                            </div>
+                                          )}
+
+                                          {/* RESUMEN EJECUTIVO */}
+                                          <div style={{ marginBottom: '1.25rem', border: '1px solid #e2e8f0', borderRadius: '8px', padding: '1rem', borderLeft: '3px solid #e17bd7' }}>
+                                            <div style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', color: '#64748b', marginBottom: '8px' }}>📋 Resumen Ejecutivo</div>
+                                            {resumen_sintesis && <div style={{ marginBottom: '4px' }}><span style={{ fontSize: '11px', fontWeight: 600, color: '#64748b' }}>Síntesis: </span><span style={{ fontSize: '12px', color: '#334155' }}>{resumen_sintesis}</span></div>}
+                                            {resumen_aprendizaje && <div style={{ marginBottom: '4px' }}><span style={{ fontSize: '11px', fontWeight: 600, color: '#64748b' }}>Aprendizaje: </span><span style={{ fontSize: '12px', color: '#334155' }}>{resumen_aprendizaje}</span></div>}
+                                            {resumen_recomendacion && <div><span style={{ fontSize: '11px', fontWeight: 600, color: '#64748b' }}>Recomendación: </span><span style={{ fontSize: '12px', color: '#334155' }}>{resumen_recomendacion}</span></div>}
+                                          </div>
+
+                                          {/* TABLA DE INDICADORES */}
+                                          <div style={{ marginBottom: '1rem' }}>
+                                            <div style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', color: '#1a181d', borderBottom: '2px solid #6be1e3', paddingBottom: '4px', marginBottom: '8px' }}>📈 Indicadores de Desempeño Comercial</div>
+                                            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '12px' }}>
+                                              <thead>
+                                                <tr style={{ background: '#f8f9fc' }}>
+                                                  <th style={{ padding: '8px 12px', textAlign: 'left', color: '#64748b', fontWeight: 600, fontSize: '11px', borderBottom: '1px solid #e2e8f0' }}>Indicador</th>
+                                                  <th style={{ padding: '8px 12px', textAlign: 'right', color: '#64748b', fontWeight: 600, fontSize: '11px', borderBottom: '1px solid #e2e8f0' }}>Nivel</th>
+                                                </tr>
+                                              </thead>
+                                              <tbody>
+                                                {indicadores.map((ind, i) => (
+                                                  <tr key={i} style={{ borderBottom: '1px solid #f1f5f9' }}>
+                                                    <td style={{ padding: '7px 12px', color: '#334155' }}>{ind.label}</td>
+                                                    <td style={{ padding: '7px 12px', textAlign: 'right', fontWeight: 700, color: nivelColor(ind.value) }}>{ind.value}</td>
+                                                  </tr>
+                                                ))}
+                                              </tbody>
+                                            </table>
+                                          </div>
+
+                                        </div>
+
+                                        {/* FOOTER */}
+                                        <div style={{ background: '#f8f9fc', borderTop: '1px solid #e2e8f0', padding: '0.75rem 2.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                          <div style={{ fontSize: '11px', color: '#94a3b8' }}>ONE Commercial IA — Sistema de Entrenamiento Comercial</div>
+                                          <div style={{ fontSize: '11px', color: '#94a3b8' }}>Confidencial</div>
+                                        </div>
                                       </>
                                     );
                                   })()}

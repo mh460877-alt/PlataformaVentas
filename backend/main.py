@@ -650,8 +650,27 @@ def get_feedback(data: FeedbackReq, db: Session = Depends(get_db)):
     # ✅ FIX: duration_seconds ahora se guarda en la sesión y se pasa al informe admin
     duration_seconds = data.duration_seconds or 0
 
+    # Recuperar nombre del producto y prototipo desde el system prompt
+    nombre_producto = ""
+    nombre_prototipo = ""
+    system_msg = db.query(ChatMessage).filter(
+        ChatMessage.session_id == data.session_id,
+        ChatMessage.role == "system"
+    ).first()
+    if system_msg:
+        if "evaluando comprar:" in system_msg.content:
+            try:
+                nombre_producto = system_msg.content.split("evaluando comprar:")[1].split("\n")[0].strip().rstrip(".")
+            except:
+                pass
+        if "Tu nombre es" in system_msg.content:
+            try:
+                nombre_prototipo = system_msg.content.split("Tu nombre es")[1].split(".")[0].strip()
+            except:
+                pass
+
     feedback_vendedor = generar_evaluacion_vendedor(historial)
-    feedback_admin = generar_evaluacion_admin(historial, nombre_vendedor, duration_seconds, mission_values)
+    feedback_admin = generar_evaluacion_admin(historial, nombre_vendedor, duration_seconds, mission_values, nombre_producto, nombre_prototipo)
 
     score = 5
     for line in feedback_vendedor.split("\n"):
