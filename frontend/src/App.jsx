@@ -438,7 +438,7 @@ function SuperAdmin() {
   const [modalCapsule, setModalCapsule] = useState(false);
   const [modalContent, setModalContent] = useState(false);
   const [newCompany, setNewCompany] = useState({ company_name: '', email: '', password: '', phone: '', mission_values: '' });
-  const [editingCompany, setEditingCompany] = useState({ id: 0, company_name: '', email: '', password: '', phone: '' });
+  const [editingCompany, setEditingCompany] = useState({ id: 0, company_name: '', email: '', password: '', phone: '', mission_values: '' });
   const [newCap, setNewCap] = useState({ title: '', description: '' });
   const [newContent, setNewContent] = useState({ title: '', url: '', type: 'video', capsule_id: '' });
 
@@ -464,7 +464,7 @@ function SuperAdmin() {
   };
 
   const prepareEdit = (emp) => {
-    setEditingCompany({ id: emp.id, company_name: emp.company_name, email: emp.email, phone: emp.phone || '', password: '' });
+    setEditingCompany({ id: emp.id, company_name: emp.company_name, email: emp.email, phone: emp.phone || '', password: '', mission_values: emp.mission_values || '' });
     setShowEditModal(true);
   };
 
