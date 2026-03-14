@@ -539,34 +539,55 @@ function SuperAdmin() {
     <Plus className="mr-2 w-4 h-4" /> Nuevo Cliente
   </button>
 </header>
-        <div className="space-y-4">
-          {empresas.map(emp => (
-            <div key={emp.id} className={`p-6 rounded-3xl border flex justify-between items-center transition group shadow-md ${emp.is_active ? 'bg-slate-800 border-slate-700 hover:border-[#6be1e3]' : 'bg-slate-900 border-red-900 opacity-60'}`}>
-              <div className="flex items-center gap-6">
-                <div className={`p-3 rounded-xl ${emp.is_active ? 'bg-slate-700 text-[#e17bd7]' : 'bg-red-900/20 text-red-500'}`}><Building /></div>
-                <div>
-                  <h3 className="font-bold text-xl text-white mb-1 flex items-center gap-2">
-                    {emp.company_name}
-                    {!emp.is_active && <span className="text-[10px] bg-red-500 px-2 py-0.5 rounded text-white">INACTIVO</span>}
-                  </h3>
-                  <div className="flex gap-4 text-sm text-slate-400">
-                    <span className="flex items-center gap-1"><User size={14} /> {emp.email}</span>
-                    <span className="flex items-center cursor-pointer hover:text-white" onClick={() => setShowPass({ ...showPass, [emp.id]: !showPass[emp.id] })}>
-                      {showPass[emp.id] ? <EyeOff size={14} className="mr-1" /> : <Eye size={14} className="mr-1" />}
-                      <span className="font-mono">{showPass[emp.id] ? (emp.visible_password || '******') : '••••••'}</span>
+        <div className="bg-slate-800 rounded-3xl border border-slate-700 overflow-hidden shadow-xl">
+          <table className="w-full text-left text-slate-300">
+            <thead className="bg-slate-900 text-xs uppercase font-bold text-slate-500">
+              <tr>
+                <th className="p-5">Empresa</th>
+                <th className="p-5">Email</th>
+                <th className="p-5">Teléfono</th>
+                <th className="p-5">Contraseña</th>
+                <th className="p-5 text-center">Acciones</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-700">
+              {empresasFiltradas.map(emp => (
+                <tr key={emp.id} className={`transition hover:bg-slate-700/40 ${!emp.is_active ? 'opacity-50' : ''}`}>
+                  <td className="p-5">
+                    <div className="flex items-center gap-3">
+                      <div className={`p-2 rounded-xl ${emp.is_active ? 'bg-slate-700 text-[#e17bd7]' : 'bg-red-900/20 text-red-500'}`}>
+                        <Building size={16} />
+                      </div>
+                      <div>
+                        <p className="font-bold text-white">{emp.company_name}</p>
+                        {!emp.is_active && <span className="text-[10px] bg-red-500 px-2 py-0.5 rounded text-white">INACTIVO</span>}
+                      </div>
+                    </div>
+                  </td>
+                  <td className="p-5 text-sm text-slate-400">{emp.email}</td>
+                  <td className="p-5 text-sm text-[#6be1e3]">{emp.phone || '—'}</td>
+                  <td className="p-5">
+                    <span
+                      className="font-mono text-sm cursor-pointer hover:text-white transition"
+                      onClick={() => setShowPass({ ...showPass, [emp.id]: !showPass[emp.id] })}
+                    >
+                      {showPass[emp.id] ? (emp.visible_password || '******') : '••••••'}
                     </span>
-                    {emp.phone && <span className="text-[#6be1e3] flex items-center gap-1"><Phone size={14} /> {emp.phone}</span>}
-                  </div>
-                </div>
-              </div>
-              <div className="flex gap-2">
-                <button onClick={() => prepareEdit(emp)} className="p-3 bg-blue-500/10 text-blue-400 rounded-xl hover:bg-blue-500 hover:text-white transition" title="Editar"><Edit2 size={18} /></button>
-                <button onClick={() => toggleStatus(emp.id, emp.is_active)} className={`p-3 rounded-xl transition ${emp.is_active ? 'bg-green-500/10 text-green-400 hover:bg-green-500 hover:text-white' : 'bg-red-500/10 text-red-400 hover:bg-red-500 hover:text-white'}`} title={emp.is_active ? "Deshabilitar" : "Habilitar"}><Power size={18} /></button>
-                <button onClick={() => deleteCompany(emp.id)} className="p-3 bg-slate-700 text-slate-400 rounded-xl hover:bg-red-600 hover:text-white transition" title="Eliminar"><Trash2 size={18} /></button>
-              </div>
-            </div>
-          ))}
-          {empresas.length === 0 && <div className="text-center p-10 text-slate-500 bg-slate-800/30 rounded-2xl">No hay clientes registrados aún.</div>}
+                  </td>
+                  <td className="p-5">
+                    <div className="flex gap-2 justify-center">
+                      <button onClick={() => prepareEdit(emp)} className="p-2 bg-blue-500/10 text-blue-400 rounded-xl hover:bg-blue-500 hover:text-white transition" title="Editar"><Edit2 size={16} /></button>
+                      <button onClick={() => toggleStatus(emp.id, emp.is_active)} className={`p-2 rounded-xl transition ${emp.is_active ? 'bg-green-500/10 text-green-400 hover:bg-green-500 hover:text-white' : 'bg-red-500/10 text-red-400 hover:bg-red-500 hover:text-white'}`} title={emp.is_active ? "Deshabilitar" : "Habilitar"}><Power size={16} /></button>
+                      <button onClick={() => deleteCompany(emp.id)} className="p-2 bg-slate-700 text-slate-400 rounded-xl hover:bg-red-600 hover:text-white transition" title="Eliminar"><Trash2 size={16} /></button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+              {empresasFiltradas.length === 0 && (
+                <tr><td colSpan={5} className="p-10 text-center text-slate-500">No se encontraron resultados.</td></tr>
+              )}
+            </tbody>
+          </table>
         </div>
       </div>
     );
