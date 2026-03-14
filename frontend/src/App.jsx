@@ -1787,26 +1787,6 @@ function CompanyDashboard() {
                                 </button>
                               </div>
                               <div id="informe-pdf" style={{ fontFamily: 'sans-serif', maxWidth: '720px', margin: '0 auto', background: '#fff', borderRadius: '12px', overflow: 'hidden', border: '1px solid #e2e8f0' }}>
-                                {/* HEADER */}
-                                <div style={{ background: '#0f1923', padding: '2rem 2.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                                  <div>
-                                    <div style={{ fontSize: '11px', letterSpacing: '0.15em', color: '#6be1e3', fontWeight: 500, textTransform: 'uppercase', marginBottom: '8px' }}>Informe de Desempeño Comercial</div>
-                                    <div style={{ fontSize: '22px', fontWeight: 600, color: '#ffffff', marginBottom: '4px' }}>{profileEmp.name}</div>
-                                    <div style={{ fontSize: '13px', color: '#8892a0' }}>{profileEmp.email}</div>
-                                  </div>
-                                  <div style={{ textAlign: 'right' }}>
-                                    <div style={{ fontSize: '11px', color: '#8892a0', marginBottom: '4px' }}>{selSession.date ? new Date(selSession.date + 'Z').toLocaleDateString('es-AR', { day: '2-digit', month: 'long', year: 'numeric' }) : '—'}</div>
-                                    {selSession.score && (
-                                      <div style={{ marginTop: '12px', display: 'inline-block', background: 'rgba(107,225,227,0.12)', border: '1px solid #6be1e3', borderRadius: '6px', padding: '4px 14px' }}>
-                                        <span style={{ fontSize: '24px', fontWeight: 600, color: '#6be1e3' }}>{selSession.score}</span>
-                                        <span style={{ fontSize: '13px', color: '#4a6070' }}>/10</span>
-                                      </div>
-                                    )}
-                                  </div>
-                                </div>
-                                {/* GRADIENTE */}
-                                <div style={{ height: '3px', background: 'linear-gradient(90deg, #6be1e3 0%, #e17bd7 50%, #e4c76a 100%)' }}></div>
-                                {/* BODY */}
                                 <div style={{ padding: '2rem 2.5rem', background: '#fff' }}>
                                   {(() => {
                                     const text = selSession.feedback_admin;
@@ -1839,15 +1819,15 @@ function CompanyDashboard() {
                                     })();
 
                                     const fortalezas = (() => {
-                                      const m = text.match(/✅ FORTALEZAS OBSERVADAS[\s\S]*?\n([\s\S]*?)(?=━)/i);
+                                      const m = text.match(/FORTALEZAS OBSERVADAS[\s\S]*?\n([\s\S]*?)(?=━|OPORTUNIDADES)/i);
                                       if (!m) return [];
-                                      return m[1].split('\n').map(l => l.replace(/^-\s*/, '').trim()).filter(Boolean);
+                                      return m[1].split('\n').map(l => l.replace(/^[-•▸]\s*/, '').trim()).filter(Boolean);
                                     })();
 
                                     const mejoras = (() => {
-                                      const m = text.match(/⚠️ OPORTUNIDADES DE MEJORA[\s\S]*?\n([\s\S]*?)(?=━)/i);
+                                      const m = text.match(/OPORTUNIDADES DE MEJORA[\s\S]*?\n([\s\S]*?)(?=━|ANÁLISIS DE TIEMPO)/i);
                                       if (!m) return [];
-                                      return m[1].split('\n').map(l => l.replace(/^-\s*/, '').trim()).filter(Boolean);
+                                      return m[1].split('\n').map(l => l.replace(/^[-•▸]\s*/, '').trim()).filter(Boolean);
                                     })();
 
                                     const tiempo_evaluacion = getIndicador(text, 'EVALUACIÓN DEL MANEJO DEL TIEMPO');
