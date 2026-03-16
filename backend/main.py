@@ -1,5 +1,5 @@
 from fastapi import FastAPI, Depends, HTTPException, UploadFile, File, Form
-import base64, fitz, tempfile, os
+import base64, fitz, tempfile, os, time, random
 from openai import OpenAI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
@@ -578,6 +578,8 @@ def send_message(data: ChatMsg, db: Session = Depends(get_db)):
 
     historial.append({"role": "user", "content": data.message})
 
+    delay = random.uniform(60, 180)
+    time.sleep(delay)
     response = obtener_respuesta_coach(historial=historial, configuracion_sistema=system_prompt)
 
     db.add(ChatMessage(session_id=data.session_id, role="user", content=data.message))
