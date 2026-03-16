@@ -578,7 +578,7 @@ def send_message(data: ChatMsg, db: Session = Depends(get_db)):
 
     historial.append({"role": "user", "content": data.message})
 
-    delay = random.uniform(60, 180)
+    delay = random.uniform(30, 60)
     time.sleep(delay)
     response = obtener_respuesta_coach(historial=historial, configuracion_sistema=system_prompt)
 
