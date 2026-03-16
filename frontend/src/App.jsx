@@ -2243,6 +2243,7 @@ function EmployeePortal() {
   const [attachPreview, setAttachPreview] = useState(null);
   const [recording, setRecording] = useState(false);
   const mediaRecorderRef = useRef(null);
+  const [showChatEmoji, setShowChatEmoji] = useState(false);
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
   const timerRef = useRef(null);
 
@@ -2495,14 +2496,49 @@ const stopRecording = () => {
             >
               <Mic size={20} />
             </button>
-            <input
-              className="flex-1 p-4 rounded-xl border bg-slate-50 outline-none focus:ring-2 focus:ring-[#6be1e3] text-sm"
+            {/* Botón emoji */}
+            <div style={{ position: 'relative' }}>
+              <button
+                type="button"
+                onClick={() => setShowChatEmoji(v => !v)}
+                className="p-3 bg-slate-100 rounded-xl hover:bg-slate-200 transition flex-shrink-0 text-base"
+                title="Insertar emoji"
+              >
+                😊
+              </button>
+              {showChatEmoji && (
+                <div
+                  style={{ position: 'absolute', bottom: '48px', left: 0, zIndex: 9999 }}
+                  className="bg-white border rounded-xl shadow-2xl p-3 grid grid-cols-8 gap-1 w-56"
+                >
+                  {EMOJI_LIST.map((em, i) => (
+                    <button
+                      key={i}
+                      type="button"
+                      className="w-6 h-6 text-sm hover:scale-125 transition flex items-center justify-center rounded"
+                      onClick={() => { setInput(prev => prev + em); setShowChatEmoji(false); }}
+                    >
+                      {em}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+            <textarea
+              className="flex-1 p-4 rounded-xl border bg-slate-50 outline-none focus:ring-2 focus:ring-[#6be1e3] text-sm resize-none"
               value={input}
               placeholder={recording ? '🎙 Grabando...' : 'Escribí tu respuesta como vendedor...'}
               onChange={e => setInput(e.target.value)}
-              onKeyPress={e => e.key === 'Enter' && sendMessage()}
+              onKeyDown={e => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                  e.preventDefault();
+                  sendMessage();
+                }
+              }}
               disabled={sending || recording}
-            />
+              rows={1}
+              style={{ maxHeight: '120px', overflowY: 'auto' }}
+            ></textarea>
             <button
               onClick={sendMessage}
               disabled={sending || (!input.trim() && !attachFile)}
