@@ -7,7 +7,7 @@ from typing import List, Optional
 from sqlalchemy.orm import Session
 
 from app.database import engine, SessionLocal, Base
-from app.models import User, Employee, Product, ClientPrototype, Capsule, CapsuleContent, ChatSession, ChatMessage, EmployeeCapsule
+from app.models import User, Employee, Product, ClientPrototype, Capsule, CapsuleContent, ChatSession, ChatMessage, EmployeeCapsule, GlobalPrototype
 from app.services.openai_service import obtener_respuesta_coach, generar_evaluacion, generar_evaluacion_vendedor, generar_evaluacion_admin, obtener_respuesta_coach_con_imagen
 
 # Crear tablas nuevas y migrar columnas faltantes de forma segura
@@ -89,6 +89,22 @@ def run_migrations():
                 print("✅ Migración: columna duration_seconds agregada a chat_sessions")
             except Exception as e:
                 print(f"⚠️ Migración duration_seconds: {e}")
+
+        # 7. Crear tabla global_prototypes si no existe
+        if 'global_prototypes' not in tables:
+            try:
+                conn.execute(text("""
+                    CREATE TABLE global_prototypes (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        name VARCHAR,
+                        description VARCHAR,
+                        objection VARCHAR
+                    )
+                """))
+                conn.commit()
+                print("✅ Migración: tabla global_prototypes creada")
+            except Exception as e:
+                print(f"⚠️ Migración global_prototypes: {e}")
 
 run_migrations()
 
@@ -332,6 +348,33 @@ def delete_content(id: int, db: Session = Depends(get_db)):
     db.commit()
     return {"status": "ok"}
 
+# ============================================================
+# PROTOTIPOS GLOBALES (SuperAdmin)
+# ============================================================
+class GlobalPrototypeReq(BaseModel):
+    name: str
+    description: str
+    objection: str
+
+@app.get("/global-prototypes")
+def get_global_prototypes(db: Session = Depends(get_db)):
+    protos = db.query(GlobalPrototype).all()
+    return [
+        {"id": p.id, "name": p.name, "description": p.description, "objection": p.objection}
+        for p in protos
+    ]
+
+@app.post("/global-prototypes")
+def create_global_prototype(data: GlobalPrototypeReq, db: Session = Depends(get_db)):
+    db.add(GlobalPrototype(name=data.name, description=data.description, objection=data.objection))
+    db.commit()
+    return {"status": "ok"}
+
+@app.delete("/global-prototypes/{id}")
+def delete_global_prototype(id: int, db: Session = Depends(get_db)):
+    db.query(GlobalPrototype).filter(GlobalPrototype.id == id).delete()
+    db.commit()
+    return {"status": "ok"}
 
 # ============================================================
 # ADMIN EMPRESA — EMPLEADOS

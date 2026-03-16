@@ -593,6 +593,99 @@ function SuperAdmin() {
     );
   };
 
+  const GlobalPrototypesView = () => {
+  const [globalProtos, setGlobalProtos] = useState([]);
+  const [showForm, setShowForm] = useState(false);
+  const [newProto, setNewProto] = useState({ name: '', description: '', objection: '' });
+  const [search, setSearch] = useState('');
+
+  useEffect(() => { loadProtos(); }, []);
+
+  const loadProtos = async () => {
+    try {
+      const res = await axios.get(`${API_URL}/global-prototypes`);
+      setGlobalProtos(Array.isArray(res.data) ? res.data : []);
+    } catch (e) { console.error(e); }
+  };
+
+  const handleCreate = async () => {
+    if (!newProto.name || !newProto.description || !newProto.objection) return alert("Completá todos los campos");
+    try {
+      await axios.post(`${API_URL}/global-prototypes`, newProto);
+      setNewProto({ name: '', description: '', objection: '' });
+      setShowForm(false);
+      loadProtos();
+    } catch { alert("Error al crear prototipo"); }
+  };
+
+  const handleDelete = async (id) => {
+    if (confirm("¿Eliminar este prototipo global?")) {
+      await axios.delete(`${API_URL}/global-prototypes/${id}`);
+      loadProtos();
+    }
+  };
+
+  const filtered = globalProtos.filter(p =>
+    p.name.toLowerCase().includes(search.toLowerCase()) ||
+    p.description.toLowerCase().includes(search.toLowerCase())
+  );
+
+  return (
+    <div>
+      <div className="flex justify-between items-center mb-8 gap-4">
+        <div className="flex gap-4 items-center bg-slate-800 p-2 rounded-xl px-4 border border-slate-700 flex-1 max-w-md">
+          <Search size={20} className="text-slate-400" />
+          <input className="bg-transparent outline-none text-white w-full text-sm" placeholder="Buscar prototipo..." value={search} onChange={e => setSearch(e.target.value)} />
+        </div>
+        <button onClick={() => setShowForm(!showForm)} className="bg-[#6be1e3] text-[#1a181d] px-6 py-2 rounded-xl font-bold flex items-center hover:opacity-90 shadow-lg">
+          <Plus className="mr-2 w-4 h-4" /> Nuevo Prototipo
+        </button>
+      </div>
+
+      {showForm && (
+        <div className="bg-slate-800 border border-[#6be1e3] rounded-2xl p-6 mb-6">
+          <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4">Nuevo Prototipo Global</p>
+          <div className="grid md:grid-cols-3 gap-3 mb-3">
+            <input className="bg-slate-700 border border-slate-600 p-3 rounded-xl text-white text-sm outline-none focus:ring-2 focus:ring-[#6be1e3]" placeholder="Nombre del perfil" value={newProto.name} onChange={e => setNewProto({ ...newProto, name: e.target.value })} />
+            <input className="bg-slate-700 border border-slate-600 p-3 rounded-xl text-white text-sm outline-none focus:ring-2 focus:ring-[#6be1e3]" placeholder="Descripción del cliente" value={newProto.description} onChange={e => setNewProto({ ...newProto, description: e.target.value })} />
+            <input className="bg-slate-700 border border-slate-600 p-3 rounded-xl text-white text-sm outline-none focus:ring-2 focus:ring-[#6be1e3]" placeholder="Objeción principal" value={newProto.objection} onChange={e => setNewProto({ ...newProto, objection: e.target.value })} />
+          </div>
+          <div className="flex gap-2">
+            <button onClick={handleCreate} className="bg-[#6be1e3] text-black px-5 py-2 rounded-xl font-bold text-sm hover:opacity-80">Guardar</button>
+            <button onClick={() => setShowForm(false)} className="text-slate-400 text-sm px-4 py-2 hover:text-white">Cancelar</button>
+          </div>
+        </div>
+      )}
+
+      <div className="bg-slate-800 rounded-3xl border border-slate-700 overflow-hidden shadow-xl">
+        <table className="w-full text-left text-slate-300">
+          <thead className="bg-slate-900 text-xs uppercase font-bold text-slate-500">
+            <tr>
+              <th className="p-5">Perfil</th>
+              <th className="p-5">Descripción</th>
+              <th className="p-5">Objeción Principal</th>
+              <th className="p-5 text-center w-16">Acc.</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-slate-700">
+            {filtered.map(p => (
+              <tr key={p.id} className="hover:bg-slate-700/40 transition">
+                <td className="p-5 font-bold text-white">{p.name}</td>
+                <td className="p-5 text-sm text-slate-400">{p.description}</td>
+                <td className="p-5"><span className="text-xs text-red-400 bg-red-900/20 px-2 py-1 rounded-lg">{p.objection}</span></td>
+                <td className="p-5 text-center">
+                  <button onClick={() => handleDelete(p.id)} className="p-2 bg-slate-700 text-slate-400 rounded-xl hover:bg-red-600 hover:text-white transition"><Trash2 size={16} /></button>
+                </td>
+              </tr>
+            ))}
+            {filtered.length === 0 && <tr><td colSpan={4} className="p-10 text-center text-slate-500">No hay prototipos globales todavía.</td></tr>}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+};
+
   const CapsulesAdminView = () => {
     const visibleCapsules = capsules.filter(c => c.title.toLowerCase().includes(searchCapsule.toLowerCase()));
     if (!currentCapsule) return (
@@ -785,12 +878,15 @@ function SuperAdmin() {
         <nav className="space-y-3 flex-1">
           <button onClick={() => setActiveTab('empresas')} className={`w-full text-left p-4 rounded-2xl transition-all duration-300 flex items-center ${activeTab === 'empresas' ? 'bg-[#e17bd7] text-white font-bold shadow-lg translate-x-2' : 'text-slate-400 hover:text-white hover:bg-white/5'}`}><Building className="mr-3 w-5 h-5" /> Clientes</button>
           <button onClick={() => setActiveTab('capsulas')} className={`w-full text-left p-4 rounded-2xl transition-all duration-300 flex items-center ${activeTab === 'capsulas' ? 'bg-[#e4c76a] text-[#1a181d] font-bold shadow-lg translate-x-2' : 'text-slate-400 hover:text-white hover:bg-white/5'}`}><Folder className="mr-3 w-5 h-5" /> Contenidos</button>
+          <button onClick={() => setActiveTab('prototipos')} className={`w-full text-left p-4 rounded-2xl transition-all duration-300 flex items-center ${activeTab === 'prototipos' ? 'bg-[#6be1e3] text-[#1a181d] font-bold shadow-lg translate-x-2' : 'text-slate-400 hover:text-white hover:bg-white/5'}`}><Users className="mr-3 w-5 h-5" /> Prototipos</button>
         </nav>
         <button onClick={() => navigate('/login')} className="mt-12 text-red-400 text-sm flex items-center font-bold px-4 py-3 rounded-xl hover:bg-white/5 transition"><LogOut className="w-4 h-4 mr-3" /> Cerrar Sesión</button>
       </aside>
       <main className="flex-1 ml-80 p-12">
-        <h2 className="text-4xl font-bold mb-10 tracking-tight">{activeTab === 'empresas' ? 'Gestión de Clientes' : 'Biblioteca Global'}</h2>
-        {activeTab === 'empresas' ? <CompaniesView /> : <CapsulesAdminView />}
+        <h2 className="text-4xl font-bold mb-10 tracking-tight">
+          {activeTab === 'empresas' ? 'Gestión de Clientes' : activeTab === 'capsulas' ? 'Biblioteca Global' : 'Prototipos Globales'}
+        </h2>
+        {activeTab === 'empresas' ? <CompaniesView /> : activeTab === 'capsulas' ? <CapsulesAdminView /> : <GlobalPrototypesView />}
       </main>
 
       {/* MODAL CREAR EMPRESA */}
@@ -1093,9 +1189,17 @@ function BibliotecaView({ capsules }) {
 function ProductsView({ products, newProd, setNewProd, addProduct, deleteProduct, addPrototype, deletePrototype, newProto, setNewProto, onUpdateProduct }) {
   const [openProduct, setOpenProduct] = useState(null);
   const [showProtoForm, setShowProtoForm] = useState(false);
+  const [globalProtos, setGlobalProtos] = useState([]);
+  const [showGlobalList, setShowGlobalList] = useState(false);
   const [editingInfo, setEditingInfo] = useState(false);
   const [showInfoModal, setShowInfoModal] = useState(false);
   const [infoText, setInfoText] = useState('');
+  
+  useEffect(() => {
+    axios.get(`${API_URL}/global-prototypes`).then(res => {
+      setGlobalProtos(Array.isArray(res.data) ? res.data : []);
+    }).catch(e => console.error(e));
+  }, []);
 
   // Cuando se abre un producto, sincronizar la info local
   const enterProduct = (p) => {
@@ -1232,12 +1336,20 @@ function ProductsView({ products, newProd, setNewProd, addProduct, deleteProduct
             <Package size={20} className="text-[#6be1e3]" /> {p.name}
           </h2>
         </div>
-        <button
-          onClick={() => { setShowProtoForm(!showProtoForm); setEditingInfo(false); }}
-          className="ml-auto flex items-center gap-2 bg-[#6be1e3] text-black text-sm font-bold px-4 py-2.5 rounded-xl hover:opacity-80 transition"
-        >
-          <Plus size={15} /> Prototipo Cliente
-        </button>
+        <div className="ml-auto flex items-center gap-2">
+          <button
+            onClick={() => { setShowGlobalList(!showGlobalList); setShowProtoForm(false); setEditingInfo(false); }}
+            className="flex items-center gap-2 bg-slate-100 border border-slate-300 text-slate-700 text-sm font-bold px-4 py-2.5 rounded-xl hover:bg-slate-200 transition"
+          >
+            <Users size={15} /> Usar Prototipo Global
+          </button>
+          <button
+            onClick={() => { setShowProtoForm(!showProtoForm); setShowGlobalList(false); setEditingInfo(false); }}
+            className="flex items-center gap-2 bg-[#6be1e3] text-black text-sm font-bold px-4 py-2.5 rounded-xl hover:opacity-80 transition"
+          >
+            <Plus size={15} /> Prototipo Cliente
+          </button>
+        </div>
       </div>
 
       {/* Sección: Información del producto */}
@@ -1302,6 +1414,36 @@ function ProductsView({ products, newProd, setNewProd, addProduct, deleteProduct
           </div>
         )}
       </div>
+
+      {showGlobalList && (
+        <div className="bg-white border-2 border-slate-200 rounded-2xl p-6 mb-6 shadow-sm">
+          <p className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-4">Prototipos Globales Disponibles</p>
+          {globalProtos.length === 0 ? (
+            <p className="text-sm text-slate-400 italic">No hay prototipos globales creados todavía.</p>
+          ) : (
+            <div className="space-y-2">
+              {globalProtos.map(gp => (
+                <div key={gp.id} className="flex items-center justify-between p-3 bg-slate-50 rounded-xl border hover:border-[#6be1e3] transition">
+                  <div>
+                    <p className="font-bold text-slate-800 text-sm">{gp.name}</p>
+                    <p className="text-xs text-slate-500">{gp.description}</p>
+                    <span className="text-xs text-red-500 bg-red-50 px-2 py-0.5 rounded mt-1 inline-block">{gp.objection}</span>
+                  </div>
+                  <button
+                    onClick={async () => {
+                      await addPrototype(p.id, { name: gp.name, description: gp.description, objection: gp.objection });
+                      setShowGlobalList(false);
+                    }}
+                    className="flex items-center gap-2 bg-[#6be1e3] text-black text-xs font-bold px-4 py-2 rounded-xl hover:opacity-80 transition flex-shrink-0 ml-4"
+                  >
+                    <Plus size={13} /> Agregar
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Formulario nuevo prototipo */}
       {showProtoForm && (
@@ -1514,11 +1656,14 @@ function CompanyDashboard() {
     }
   };
 
-  const addPrototype = async (productId) => {
-    if (!newProto.name || !newProto.description || !newProto.objection) return alert("Completá todos los campos del prototipo");
-    await axios.post(`${API_URL}/prototypes`, { ...newProto, product_id: productId });
-    setNewProto({ name: '', description: '', objection: '' });
-    setSelProductId(null);
+  const addPrototype = async (productId, dataOverride = null) => {
+    const data = dataOverride || newProto;
+    if (!data.name || !data.description || !data.objection) return alert("Completá todos los campos del prototipo");
+    await axios.post(`${API_URL}/prototypes`, { ...data, product_id: productId });
+    if (!dataOverride) {
+      setNewProto({ name: '', description: '', objection: '' });
+      setSelProductId(null);
+    }
     loadAll();
   };
 

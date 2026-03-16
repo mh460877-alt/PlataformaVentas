@@ -106,3 +106,11 @@ class ChatMessage(Base):
     content = Column(Text)
 
     session = relationship("ChatSession", back_populates="messages")
+
+# --- PROTOTIPOS GLOBALES (SuperAdmin) ---
+class GlobalPrototype(Base):
+    __tablename__ = "global_prototypes"
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String)
+    description = Column(String)
+    objection = Column(String)
