@@ -2325,7 +2325,10 @@ function EmployeePortal() {
           : userMsg;
         res = await axios.post(`${API_URL}/chat/message`, { session_id: session, message: messageToSend });
       }
-      setMsgs([...newMsgs, { role: 'ai', content: res.data.response }]);
+      const aiResponse = res.data.response;
+      const ventaCerrada = aiResponse.includes('[VENTA_CERRADA]');
+      const cleanResponse = aiResponse.replace('[VENTA_CERRADA]', '').trim();
+      setMsgs([...newMsgs, { role: 'ai', content: cleanResponse }, ...(ventaCerrada ? [{ role: 'sale_closed' }] : [])]);
     } catch {
       setMsgs([...newMsgs, { role: 'ai', content: '⚠️ Error de conexión. Intentá de nuevo.' }]);
     } finally {
@@ -2431,20 +2434,31 @@ const stopRecording = () => {
         </header>
 
         <div className="flex-1 overflow-y-auto p-6 space-y-4 max-w-4xl mx-auto w-full">
-          {msgs.map((m, i) => (
-            <div key={i} className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-              <div className={`p-4 rounded-2xl max-w-[75%] text-sm leading-relaxed shadow-sm ${m.role === 'user' ? 'bg-[#1a181d] text-white rounded-br-sm' : 'bg-white text-slate-800 rounded-bl-sm border'}`}>
-                {typeof m.content === 'object' && m.content.imageB64 ? (
-                  <div>
-                    <img src={`data:${m.content.mediaType};base64,${m.content.imageB64}`} alt="imagen adjunta" className="rounded-xl max-w-full mb-2 max-h-60 object-contain" />
-                    {m.content.text && <p>{m.content.text}</p>}
-                  </div>
-                ) : (
-                  m.content
-                )}
+          {msgs.map((m, i) => {
+            if (m.role === 'sale_closed') return (
+              <div key={i} className="flex justify-center my-4">
+                <div className="bg-green-50 border-2 border-green-400 rounded-2xl p-6 text-center max-w-sm shadow-lg">
+                  <p className="text-4xl mb-2">🎉</p>
+                  <p className="text-green-700 font-extrabold text-lg">¡Venta Cerrada!</p>
+                  <p className="text-green-600 text-sm mt-1">El cliente confirmó la compra. ¡Excelente trabajo!</p>
+                </div>
               </div>
-            </div>
-          ))}
+            );
+            return (
+              <div key={i} className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                <div className={`p-4 rounded-2xl max-w-[75%] text-sm leading-relaxed shadow-sm ${m.role === 'user' ? 'bg-[#1a181d] text-white rounded-br-sm' : 'bg-white text-slate-800 rounded-bl-sm border'}`}>
+                  {typeof m.content === 'object' && m.content.imageB64 ? (
+                    <div>
+                      <img src={`data:${m.content.mediaType};base64,${m.content.imageB64}`} alt="imagen adjunta" className="rounded-xl max-w-full mb-2 max-h-60 object-contain" />
+                      {m.content.text && <p>{m.content.text}</p>}
+                    </div>
+                  ) : (
+                    m.content
+                  )}
+                </div>
+              </div>
+            );
+          })}
           {sending && (
             <div className="flex justify-start">
               <div className="bg-white p-4 rounded-2xl border shadow-sm">

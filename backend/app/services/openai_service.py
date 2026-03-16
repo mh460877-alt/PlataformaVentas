@@ -35,7 +35,7 @@ El rol "user" es el VENDEDOR. El rol "assistant" es el CLIENTE SIMULADO.
 ANTES DE CALIFICAR, analizá objetivamente estos puntos:
 1. ¿El vendedor respondió TODAS las preguntas del cliente? Cada pregunta sin responder baja la nota.
 2. ¿Dio información técnica clave del producto (precio, garantía, financiación, características)? Si evitó datos, bajá la nota.
-3. ¿Hubo cierre real? (el cliente decidió comprar, rechazó o pidió tiempo). Si no hubo cierre, la nota NO puede superar 6.
+3. ¿Hubo cierre real? Si en la conversación aparece la señal [VENTA_CERRADA], la venta SE CONCRETÓ y debe reflejarse positivamente. Si no aparece esa señal, la nota NO puede superar 6.
 4. ¿Manejó las objeciones con argumentos concretos o las esquivó con frases vagas?
 5. ¿El vendedor fue empático y personalizado, o genérico y mecánico?
 
