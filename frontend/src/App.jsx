@@ -1773,7 +1773,7 @@ function CompanyDashboard() {
                                   onClick={() => {
                                     const el = document.getElementById('informe-pdf');
                                     window.html2pdf().set({
-                                      margin: 0,
+                                      margin: [10, 0, 0, 0],
                                       filename: `Informe_Sesion_${profileEmp.name.replace(/ /g,'_')}.pdf`,
                                       image: { type: 'jpeg', quality: 0.98 },
                                       html2canvas: { scale: 2, useCORS: true },
@@ -2048,11 +2048,6 @@ function CompanyDashboard() {
                                       </>
                                     );
                                   })()}
-                                </div>
-                                {/* FOOTER */}
-                                <div style={{ background: '#f8f9fc', borderTop: '1px solid #e2e8f0', padding: '0.75rem 2.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                  <div style={{ fontSize: '11px', color: '#94a3b8' }}>ONE Commercial IA — Sistema de Entrenamiento Comercial</div>
-                                  <div style={{ fontSize: '11px', color: '#94a3b8' }}>Confidencial</div>
                                 </div>
                               </div>
                             </div>
