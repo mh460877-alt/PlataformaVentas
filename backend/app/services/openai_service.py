@@ -13,10 +13,9 @@ def obtener_respuesta_coach(historial: list, configuracion_sistema: str):
         mensajes_a_enviar.extend(historial)
 
         response = client.chat.completions.create(
-            model="gpt-3.5-turbo",
+            model="gpt-4o",
             messages=mensajes_a_enviar,
-            # ✅ FIX: Bajada de 0.85 a 0.6 para que el modelo respete mejor el rol de cliente
-            temperature=0.6,
+            temperature=0.4,
         )
         return response.choices[0].message.content
     except Exception as e:

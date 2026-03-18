@@ -4,11 +4,12 @@ from openai import OpenAI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import List, Optional
+import re
 from sqlalchemy.orm import Session
 
 from app.database import engine, SessionLocal, Base
 from app.models import User, Employee, Product, ClientPrototype, Capsule, CapsuleContent, ChatSession, ChatMessage, EmployeeCapsule, GlobalPrototype
-from app.services.openai_service import obtener_respuesta_coach, generar_evaluacion, generar_evaluacion_vendedor, generar_evaluacion_admin, obtener_respuesta_coach_con_imagen
+from app.services.openai_service import obtener_respuesta_coach, obtener_respuesta_coach_con_imagen, generar_evaluacion, generar_evaluacion_verdad, generar_feedback_capsula
 
 # Crear tablas nuevas y migrar columnas faltantes de forma segura
 Base.metadata.create_all(bind=engine)
@@ -107,6 +108,88 @@ def run_migrations():
                 print(f"⚠️ Migración global_prototypes: {e}")
 
 run_migrations()
+
+def respuesta_fuera_de_rol(texto: str) -> bool:
+    if not texto:
+        return True
+
+    t = texto.strip().lower()
+
+    frases_prohibidas = [
+        "te recomiendo",
+        "nuestro producto",
+        "nuestra empresa",
+        "contamos con",
+        "te conviene",
+        "puedo ayudarte",
+        "puedo asesorarte",
+        "estoy aquí para ayudarte",
+        "te explico",
+        "la mejor opción para vos",
+        "ofrecemos",
+    ]
+
+    for frase in frases_prohibidas:
+        if frase in t:
+            return True
+
+    return False
+
+def corregir_respuesta_cliente(system_prompt: str, historial: list, respuesta_original: str) -> str:
+    prompt_correccion = f"""
+La última respuesta salió del personaje y sonó como vendedor, asesor o representante de empresa.
+
+RESPUESTA INCORRECTA:
+{respuesta_original}
+
+REESCRIBILA cumpliendo estas reglas:
+- Sos únicamente el CLIENTE.
+- No podés vender, asesorar, recomendar ni explicar el producto como empresa.
+- Podés preguntar, dudar, comparar, objetar, mostrar interés o decidir.
+- Mantené el tono natural del cliente.
+- Respuesta breve: 1 a 3 oraciones.
+- No agregues aclaraciones meta.
+- Devolvé SOLO la nueva respuesta del cliente.
+""".strip()
+
+    historial_correccion = list(historial)
+    historial_correccion.append({"role": "assistant", "content": respuesta_original})
+    historial_correccion.append({"role": "user", "content": prompt_correccion})
+
+    nueva = obtener_respuesta_coach(
+        historial=historial_correccion,
+        configuracion_sistema=system_prompt
+    )
+
+    return nueva.strip() if nueva else respuesta_original
+
+def generar_respuesta_cliente_segura(system_prompt: str, historial: list) -> str:
+    respuesta = obtener_respuesta_coach(
+        historial=historial,
+        configuracion_sistema=system_prompt
+    )
+
+    if respuesta_fuera_de_rol(respuesta):
+        respuesta_corregida = corregir_respuesta_cliente(system_prompt, historial, respuesta)
+        if not respuesta_fuera_de_rol(respuesta_corregida):
+            return respuesta_corregida
+
+    return respuesta    
+
+def generar_respuesta_cliente_segura_con_imagen(system_prompt: str, historial: list, imagen_b64: str, media_type: str) -> str:
+    respuesta = obtener_respuesta_coach_con_imagen(
+        historial=historial,
+        configuracion_sistema=system_prompt,
+        imagen_b64=imagen_b64,
+        media_type=media_type
+    )
+
+    if respuesta_fuera_de_rol(respuesta):
+        respuesta_corregida = corregir_respuesta_cliente(system_prompt, historial, respuesta)
+        if not respuesta_fuera_de_rol(respuesta_corregida):
+            return respuesta_corregida
+
+    return respuesta    
 
 app = FastAPI(title="ONE Commercial AI")
 
@@ -583,11 +666,24 @@ EJEMPLOS PROHIBIDOS:
 Poner a prueba al vendedor. Observar si explica bien, responde preguntas, maneja objeciones y genera confianza.
 La conversación puede terminar en compra, duda, postergación o rechazo. Cualquier resultado es válido."""
 
-    initial_prompt = f"Iniciá la conversación como {agent_name}, un cliente que contacta al vendedor. Tu primer mensaje debe ser breve y directo, preguntando por información básica sobre {product_name}. Solo el mensaje del cliente, sin saludos elaborados."
+    initial_prompt = f"""
+    Iniciá la conversación ÚNICAMENTE como {agent_name}, que es el cliente.
 
-    initial_msg = obtener_respuesta_coach(
-        historial=[{"role": "user", "content": initial_prompt}],
-        configuracion_sistema=system_prompt
+    Reglas para este primer mensaje:
+    - Debe sonar a cliente real.
+    - Debe ser breve y directo.
+    - Debe preguntar algo básico o inicial sobre {product_name}.
+    - No des explicaciones del producto.
+    - No uses tono de vendedor.
+    - No saludes de forma elaborada.
+    - No agregues texto fuera del personaje.
+
+    Devolvé SOLO el primer mensaje del cliente.
+    """.strip()
+
+    initial_msg = generar_respuesta_cliente_segura(
+        system_prompt=system_prompt,
+        historial=[{"role": "user", "content": initial_prompt}]
     )
 
     db.add(ChatMessage(session_id=session.id, role="system", content=system_prompt))
@@ -623,7 +719,10 @@ def send_message(data: ChatMsg, db: Session = Depends(get_db)):
 
     delay = random.uniform(30, 60)
     time.sleep(delay)
-    response = obtener_respuesta_coach(historial=historial, configuracion_sistema=system_prompt)
+    response = generar_respuesta_cliente_segura(
+        system_prompt=system_prompt,
+        historial=historial
+    )
 
     db.add(ChatMessage(session_id=data.session_id, role="user", content=data.message))
     db.add(ChatMessage(session_id=data.session_id, role="assistant", content=response))
@@ -652,9 +751,9 @@ def send_message_with_image(data: ChatMsgConImagen, db: Session = Depends(get_db
 
     historial.append({"role": "user", "content": data.message or "[imagen compartida]"})
 
-    response = obtener_respuesta_coach_con_imagen(
+    response = generar_respuesta_cliente_segura_con_imagen(
+        system_prompt=system_prompt,
         historial=historial,
-        configuracion_sistema=system_prompt,
         imagen_b64=data.image_b64,
         media_type=data.media_type or "image/jpeg"
     )
