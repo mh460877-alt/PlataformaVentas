@@ -955,26 +955,47 @@ function SuperAdmin() {
               />
 
               <div className="grid md:grid-cols-3 gap-3">
-                <input
+                <select
                   className="bg-slate-800 border border-slate-700 p-3 rounded-xl text-white text-sm outline-none focus:ring-2 focus:ring-[#6be1e3]"
-                  placeholder="Estado inicial"
-                  value={editForm.initial_state}
+                  value={editForm.initial_state || ''}
                   onChange={(e) => setEditForm({ ...editForm, initial_state: e.target.value })}
-                />
+                >
+                  <option value="">Estado inicial</option>
+                  <option value="tranquilo">Tranquilo</option>
+                  <option value="apurado">Apurado</option>
+                  <option value="indeciso">Indeciso</option>
+                  <option value="molesto">Molesto</option>
+                  <option value="distante">Distante</option>
+                  <option value="entusiasmado">Entusiasmado</option>
+                </select>
 
-                <input
+                <select
                   className="bg-slate-800 border border-slate-700 p-3 rounded-xl text-white text-sm outline-none focus:ring-2 focus:ring-[#6be1e3]"
-                  placeholder="Estilo de comunicación"
-                  value={editForm.communication_style}
+                  value={editForm.communication_style || ''}
                   onChange={(e) => setEditForm({ ...editForm, communication_style: e.target.value })}
-                />
+                >
+                  <option value="">Estilo de comunicación</option>
+                  <option value="cordial">Cordial</option>
+                  <option value="directo">Directo</option>
+                  <option value="analítico">Analítico</option>
+                  <option value="reservado">Reservado</option>
+                  <option value="conversador">Conversador</option>
+                  <option value="breve">Breve</option>
+                </select>
 
-                <input
+                <select
                   className="bg-slate-800 border border-slate-700 p-3 rounded-xl text-white text-sm outline-none focus:ring-2 focus:ring-[#6be1e3]"
-                  placeholder="Cómo reacciona"
-                  value={editForm.reaction_style}
+                  value={editForm.reaction_style || ''}
                   onChange={(e) => setEditForm({ ...editForm, reaction_style: e.target.value })}
-                />
+                >
+                  <option value="">Cómo reacciona</option>
+                  <option value="valora claridad">Valora claridad</option>
+                  <option value="responde a empatía">Responde a empatía</option>
+                  <option value="necesita precisión">Necesita precisión</option>
+                  <option value="rechaza presión">Rechaza presión</option>
+                  <option value="necesita confianza">Necesita confianza</option>
+                  <option value="valora rapidez">Valora rapidez</option>
+                </select>
               </div>
 
               <div className="flex gap-3 pt-2">

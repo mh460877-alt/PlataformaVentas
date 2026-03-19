@@ -535,6 +535,22 @@ def create_global_prototype(data: GlobalPrototypeReq, db: Session = Depends(get_
     db.commit()
     return {"status": "ok"}
 
+@app.put("/global-prototypes/{id}")
+def update_global_prototype(id: int, data: GlobalPrototypeReq, db: Session = Depends(get_db)):
+    proto = db.query(GlobalPrototype).filter(GlobalPrototype.id == id).first()
+    if not proto:
+        raise HTTPException(404, "Prototipo global no encontrado")
+
+    proto.name = data.name
+    proto.description = data.description
+    proto.objection = data.objection
+    proto.initial_state = data.initial_state or ""
+    proto.communication_style = data.communication_style or ""
+    proto.reaction_style = data.reaction_style or ""
+
+    db.commit()
+    return {"status": "ok"}
+
 @app.delete("/global-prototypes/{id}")
 def delete_global_prototype(id: int, db: Session = Depends(get_db)):
     db.query(GlobalPrototype).filter(GlobalPrototype.id == id).delete()
