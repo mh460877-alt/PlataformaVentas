@@ -1529,6 +1529,47 @@ function ProductsView({ products, newProd, setNewProd, addProduct, deleteProduct
   const [editingInfo, setEditingInfo] = useState(false);
   const [showInfoModal, setShowInfoModal] = useState(false);
   const [infoText, setInfoText] = useState('');
+  const [viewProto, setViewProto] = useState(null);
+  const [editProto, setEditProto] = useState(null);
+  const [editForm, setEditForm] = useState({
+    name: '',
+    description: '',
+    objection: '',
+    initial_state: '',
+    communication_style: '',
+    reaction_style: ''
+  });
+
+  const openViewPrototype = (proto) => {
+    setViewProto(proto);
+  };
+
+  const openEditPrototype = (proto) => {
+    setEditProto(proto);
+    setEditForm({
+      name: proto.name || '',
+      description: proto.description || '',
+      objection: proto.objection || '',
+      initial_state: proto.initial_state || '',
+      communication_style: proto.communication_style || '',
+      reaction_style: proto.reaction_style || ''
+    });
+  };
+
+  const updatePrototype = async () => {
+    if (!editForm.name || !editForm.description || !editForm.objection) {
+      return alert("Completá nombre, descripción y objeción");
+    }
+
+    try {
+      await axios.put(`${API_URL}/prototypes/${editProto.id}`, editForm);
+      setEditProto(null);
+      await onUpdateProduct(openProduct.id, { info: openProduct.info || '' });
+    } catch (e) {
+      console.error(e);
+      alert("Error al actualizar el prototipo");
+    }
+  };
   
   useEffect(() => {
     axios.get(`${API_URL}/global-prototypes`).then(res => {
