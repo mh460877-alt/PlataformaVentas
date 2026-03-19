@@ -596,7 +596,14 @@ function SuperAdmin() {
   const GlobalPrototypesView = () => {
   const [globalProtos, setGlobalProtos] = useState([]);
   const [showForm, setShowForm] = useState(false);
-  const [newProto, setNewProto] = useState({ name: '', description: '', objection: '' });
+  const [newProto, setNewProto] = useState({
+    name: '',
+    description: '',
+    objection: '',
+    initial_state: '',
+    communication_style: '',
+    reaction_style: ''
+  });
   const [search, setSearch] = useState('');
 
   useEffect(() => { loadProtos(); }, []);
@@ -612,7 +619,14 @@ function SuperAdmin() {
     if (!newProto.name || !newProto.description || !newProto.objection) return alert("Completá todos los campos");
     try {
       await axios.post(`${API_URL}/global-prototypes`, newProto);
-      setNewProto({ name: '', description: '', objection: '' });
+      setNewProto({
+        name: '',
+        description: '',
+        objection: '',
+        initial_state: '',
+        communication_style: '',
+        reaction_style: ''
+      });
       setShowForm(false);
       loadProtos();
     } catch { alert("Error al crear prototipo"); }
@@ -646,9 +660,68 @@ function SuperAdmin() {
         <div className="bg-slate-800 border border-[#6be1e3] rounded-2xl p-6 mb-6">
           <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4">Nuevo Prototipo Global</p>
           <div className="grid md:grid-cols-3 gap-3 mb-3">
-            <input className="bg-slate-700 border border-slate-600 p-3 rounded-xl text-white text-sm outline-none focus:ring-2 focus:ring-[#6be1e3]" placeholder="Nombre del perfil" value={newProto.name} onChange={e => setNewProto({ ...newProto, name: e.target.value })} />
-            <input className="bg-slate-700 border border-slate-600 p-3 rounded-xl text-white text-sm outline-none focus:ring-2 focus:ring-[#6be1e3]" placeholder="Descripción del cliente" value={newProto.description} onChange={e => setNewProto({ ...newProto, description: e.target.value })} />
-            <input className="bg-slate-700 border border-slate-600 p-3 rounded-xl text-white text-sm outline-none focus:ring-2 focus:ring-[#6be1e3]" placeholder="Objeción principal" value={newProto.objection} onChange={e => setNewProto({ ...newProto, objection: e.target.value })} />
+            <input
+              className="bg-slate-700 border border-slate-600 p-3 rounded-xl text-white text-sm outline-none focus:ring-2 focus:ring-[#6be1e3]"
+              placeholder="Nombre del perfil"
+              value={newProto.name}
+              onChange={e => setNewProto({ ...newProto, name: e.target.value })}
+            />
+            <input
+              className="bg-slate-700 border border-slate-600 p-3 rounded-xl text-white text-sm outline-none focus:ring-2 focus:ring-[#6be1e3]"
+              placeholder="Descripción del cliente"
+              value={newProto.description}
+              onChange={e => setNewProto({ ...newProto, description: e.target.value })}
+            />
+            <input
+              className="bg-slate-700 border border-slate-600 p-3 rounded-xl text-white text-sm outline-none focus:ring-2 focus:ring-[#6be1e3]"
+              placeholder="Objeción principal"
+              value={newProto.objection}
+              onChange={e => setNewProto({ ...newProto, objection: e.target.value })}
+            />
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-3 mb-3">
+            <select
+              className="bg-slate-700 border border-slate-600 p-3 rounded-xl text-white text-sm outline-none focus:ring-2 focus:ring-[#6be1e3]"
+              value={newProto.initial_state}
+              onChange={e => setNewProto({ ...newProto, initial_state: e.target.value })}
+            >
+              <option value="">Estado inicial</option>
+              <option value="tranquilo">Tranquilo</option>
+              <option value="apurado">Apurado</option>
+              <option value="indeciso">Indeciso</option>
+              <option value="molesto">Molesto</option>
+              <option value="distante">Distante</option>
+              <option value="entusiasmado">Entusiasmado</option>
+            </select>
+
+            <select
+              className="bg-slate-700 border border-slate-600 p-3 rounded-xl text-white text-sm outline-none focus:ring-2 focus:ring-[#6be1e3]"
+              value={newProto.communication_style}
+              onChange={e => setNewProto({ ...newProto, communication_style: e.target.value })}
+            >
+              <option value="">Estilo de comunicación</option>
+              <option value="cordial">Cordial</option>
+              <option value="directo">Directo</option>
+              <option value="analítico">Analítico</option>
+              <option value="reservado">Reservado</option>
+              <option value="conversador">Conversador</option>
+              <option value="breve">Breve</option>
+            </select>
+
+            <select
+              className="bg-slate-700 border border-slate-600 p-3 rounded-xl text-white text-sm outline-none focus:ring-2 focus:ring-[#6be1e3]"
+              value={newProto.reaction_style}
+              onChange={e => setNewProto({ ...newProto, reaction_style: e.target.value })}
+            >
+              <option value="">Cómo reacciona</option>
+              <option value="valora claridad">Valora claridad</option>
+              <option value="responde a empatía">Responde a empatía</option>
+              <option value="necesita precisión">Necesita precisión</option>
+              <option value="rechaza presión">Rechaza presión</option>
+              <option value="necesita confianza">Necesita confianza</option>
+              <option value="valora rapidez">Valora rapidez</option>
+            </select>
           </div>
           <div className="flex gap-2">
             <button onClick={handleCreate} className="bg-[#6be1e3] text-black px-5 py-2 rounded-xl font-bold text-sm hover:opacity-80">Guardar</button>
@@ -1431,7 +1504,7 @@ function ProductsView({ products, newProd, setNewProd, addProduct, deleteProduct
                   </div>
                   <button
                     onClick={async () => {
-                      await addPrototype(p.id, { name: gp.name, description: gp.description, objection: gp.objection });
+                      await addPrototype(p.id, { name: gp.name, description: gp.description, objection: gp.objection, initial_state: gp.initial_state || '', communication_style: gp.communication_style || '', reaction_style: gp.reaction_style || '' });
                       setShowGlobalList(false);
                     }}
                     className="flex items-center gap-2 bg-[#6be1e3] text-black text-xs font-bold px-4 py-2 rounded-xl hover:opacity-80 transition flex-shrink-0 ml-4"
@@ -1468,6 +1541,50 @@ function ProductsView({ products, newProd, setNewProd, addProduct, deleteProduct
               value={newProto.objection}
               onChange={e => setNewProto({ ...newProto, objection: e.target.value })}
             />
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-3 mb-3">
+            <select
+              className="border p-2.5 rounded-xl text-sm outline-none focus:ring-2 focus:ring-[#6be1e3]"
+              value={newProto.initial_state}
+              onChange={e => setNewProto({ ...newProto, initial_state: e.target.value })}
+            >
+              <option value="">Estado inicial</option>
+              <option value="tranquilo">Tranquilo</option>
+              <option value="apurado">Apurado</option>
+              <option value="indeciso">Indeciso</option>
+              <option value="molesto">Molesto</option>
+              <option value="distante">Distante</option>
+              <option value="entusiasmado">Entusiasmado</option>
+            </select>
+
+            <select
+              className="border p-2.5 rounded-xl text-sm outline-none focus:ring-2 focus:ring-[#6be1e3]"
+              value={newProto.communication_style}
+              onChange={e => setNewProto({ ...newProto, communication_style: e.target.value })}
+            >
+              <option value="">Estilo de comunicación</option>
+              <option value="cordial">Cordial</option>
+              <option value="directo">Directo</option>
+              <option value="analítico">Analítico</option>
+              <option value="reservado">Reservado</option>
+              <option value="conversador">Conversador</option>
+              <option value="breve">Breve</option>
+            </select>
+
+            <select
+              className="border p-2.5 rounded-xl text-sm outline-none focus:ring-2 focus:ring-[#6be1e3]"
+              value={newProto.reaction_style}
+              onChange={e => setNewProto({ ...newProto, reaction_style: e.target.value })}
+            >
+              <option value="">Cómo reacciona</option>
+              <option value="valora claridad">Valora claridad</option>
+              <option value="responde a empatía">Responde a empatía</option>
+              <option value="necesita precisión">Necesita precisión</option>
+              <option value="rechaza presión">Rechaza presión</option>
+              <option value="necesita confianza">Necesita confianza</option>
+              <option value="valora rapidez">Valora rapidez</option>
+            </select>
           </div>
           <div className="flex gap-2">
             <button onClick={() => handleAddPrototype(p.id)} className="bg-[#6be1e3] text-black px-5 py-2 rounded-xl font-bold text-sm hover:opacity-80">
@@ -1565,7 +1682,7 @@ function CompanyDashboard() {
   const [capsules, setCapsules] = useState([]);
   const [newEmp, setNewEmp] = useState({ name: '', email: '', password: '' });
   const [newProd, setNewProd] = useState({ name: '' });
-  const [newProto, setNewProto] = useState({ name: '', description: '', objection: '' });
+  const [newProto, setNewProto] = useState({ name: '', description: '', objection: '', initial_state: '', communication_style: '', reaction_style: '' });
   const [selProductId, setSelProductId] = useState(null);
 
   // PERFIL DEL VENDEDOR
@@ -1661,7 +1778,7 @@ function CompanyDashboard() {
     if (!data.name || !data.description || !data.objection) return alert("Completá todos los campos del prototipo");
     await axios.post(`${API_URL}/prototypes`, { ...data, product_id: productId });
     if (!dataOverride) {
-      setNewProto({ name: '', description: '', objection: '' });
+      setNewProto({ name: '', description: '', objection: '', initial_state: '', communication_style: '', reaction_style: '' });
       setSelProductId(null);
     }
     loadAll();

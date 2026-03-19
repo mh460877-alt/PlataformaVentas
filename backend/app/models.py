@@ -62,6 +62,9 @@ class ClientPrototype(Base):
     name = Column(String)
     description = Column(String)
     objection = Column(String)
+    initial_state = Column(String, nullable=True, default="")
+    communication_style = Column(String, nullable=True, default="")
+    reaction_style = Column(String, nullable=True, default="")
     product_id = Column(Integer, ForeignKey("products.id"))
 
     product = relationship("Product", back_populates="prototypes")
@@ -114,3 +117,6 @@ class GlobalPrototype(Base):
     name = Column(String)
     description = Column(String)
     objection = Column(String)
+    initial_state = Column(String, nullable=True, default="")
+    communication_style = Column(String, nullable=True, default="")
+    reaction_style = Column(String, nullable=True, default="")
