@@ -682,6 +682,23 @@ def create_prototype(data: PrototypeReq, db: Session = Depends(get_db)):
     return {"status": "ok"}
 
 
+@app.put("/prototypes/{id}")
+def update_prototype(id: int, data: PrototypeReq, db: Session = Depends(get_db)):
+    proto = db.query(ClientPrototype).filter(ClientPrototype.id == id).first()
+    if not proto:
+        raise HTTPException(404, "Prototipo no encontrado")
+
+    proto.name = data.name
+    proto.description = data.description
+    proto.objection = data.objection
+    proto.initial_state = data.initial_state or ""
+    proto.communication_style = data.communication_style or ""
+    proto.reaction_style = data.reaction_style or ""
+
+    db.commit()
+    return {"status": "ok"}    
+
+
 @app.delete("/prototypes/{id}")
 def delete_prototype(id: int, db: Session = Depends(get_db)):
     db.query(ClientPrototype).filter(ClientPrototype.id == id).delete()
