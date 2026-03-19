@@ -1562,7 +1562,10 @@ function ProductsView({ products, newProd, setNewProd, addProduct, deleteProduct
     }
 
     try {
-      await axios.put(`${API_URL}/prototypes/${editProto.id}`, editForm);
+      await axios.put(`${API_URL}/prototypes/${editProto.id}`, {
+        ...editForm,
+        product_id: openProduct.id
+      });
       setEditProto(null);
       await onUpdateProduct(openProduct.id, { info: openProduct.info || '' });
     } catch (e) {
