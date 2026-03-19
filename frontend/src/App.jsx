@@ -606,6 +606,48 @@ function SuperAdmin() {
   });
   const [search, setSearch] = useState('');
 
+  const [viewProto, setViewProto] = useState(null);
+  const [editProto, setEditProto] = useState(null);
+  const [editForm, setEditForm] = useState({
+    name: '',
+    description: '',
+    objection: '',
+    initial_state: '',
+    communication_style: '',
+    reaction_style: ''
+  });
+
+  const openViewModal = (proto) => {
+    setViewProto(proto);
+  };
+
+  const openEditModal = (proto) => {
+    setEditProto(proto);
+    setEditForm({
+      name: proto.name || '',
+      description: proto.description || '',
+      objection: proto.objection || '',
+      initial_state: proto.initial_state || '',
+      communication_style: proto.communication_style || '',
+      reaction_style: proto.reaction_style || ''
+    });
+  };
+
+  const handleUpdate = async () => {
+    if (!editForm.name || !editForm.description || !editForm.objection) {
+      return alert("Completá nombre, descripción y objeción");
+    }
+
+    try {
+      await axios.put(`${API_URL}/global-prototypes/${editProto.id}`, editForm);
+      setEditProto(null);
+      loadProtos();
+    } catch (e) {
+      console.error(e);
+      alert("Error al actualizar el prototipo");
+    }
+  };
+
   useEffect(() => { loadProtos(); }, []);
 
   const loadProtos = async () => {
@@ -731,30 +773,229 @@ function SuperAdmin() {
       )}
 
       <div className="bg-slate-800 rounded-3xl border border-slate-700 overflow-hidden shadow-xl">
-        <table className="w-full text-left text-slate-300">
+        <table className="w-full text-left text-slate-300 table-fixed">
           <thead className="bg-slate-900 text-xs uppercase font-bold text-slate-500">
             <tr>
-              <th className="p-5">Perfil</th>
-              <th className="p-5">Descripción</th>
-              <th className="p-5">Objeción Principal</th>
-              <th className="p-5 text-center w-16">Acc.</th>
+              <th className="px-5 py-4 w-[18%]">Perfil</th>
+              <th className="px-5 py-4 w-[37%]">Descripción</th>
+              <th className="px-5 py-4 w-[30%]">Objeción Principal</th>
+              <th className="px-5 py-4 text-center w-[15%]">Acc.</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-700">
             {filtered.map(p => (
-              <tr key={p.id} className="hover:bg-slate-700/40 transition">
-                <td className="p-5 font-bold text-white">{p.name}</td>
-                <td className="p-5 text-sm text-slate-400">{p.description}</td>
-                <td className="p-5"><span className="text-xs text-red-400 bg-red-900/20 px-2 py-1 rounded-lg">{p.objection}</span></td>
-                <td className="p-5 text-center">
-                  <button onClick={() => handleDelete(p.id)} className="p-2 bg-slate-700 text-slate-400 rounded-xl hover:bg-red-600 hover:text-white transition"><Trash2 size={16} /></button>
+              <tr key={p.id} className="h-24 hover:bg-slate-700/40 transition align-middle">
+                <td className="px-5 py-4 align-middle">
+                  <p className="font-bold text-white text-sm line-clamp-2 overflow-hidden">
+                    {p.name}
+                  </p>
+                </td>
+
+                <td className="px-5 py-4 align-middle">
+                  <p className="text-sm text-slate-400 line-clamp-2 overflow-hidden">
+                    {p.description}
+                  </p>
+                </td>
+
+                <td className="px-5 py-4 align-middle">
+                  <div className="line-clamp-2 overflow-hidden">
+                    <span className="text-xs text-red-400 bg-red-900/20 px-2 py-1 rounded-lg inline-block">
+                      {p.objection}
+                    </span>
+                  </div>
+                </td>
+
+                <td className="px-5 py-4 align-middle">
+                  <div className="flex items-center justify-center gap-2">
+                    <button
+                      onClick={() => openViewModal(p)}
+                      className="p-2 bg-cyan-500/10 text-cyan-400 rounded-xl hover:bg-cyan-500 hover:text-white transition"
+                      title="Ver"
+                    >
+                      <Eye size={16} />
+                    </button>
+
+                    <button
+                      onClick={() => openEditModal(p)}
+                      className="p-2 bg-blue-500/10 text-blue-400 rounded-xl hover:bg-blue-500 hover:text-white transition"
+                      title="Editar"
+                    >
+                      <Edit2 size={16} />
+                    </button>
+
+                    <button
+                      onClick={() => handleDelete(p.id)}
+                      className="p-2 bg-slate-700 text-slate-400 rounded-xl hover:bg-red-600 hover:text-white transition"
+                      title="Eliminar"
+                    >
+                      <Trash2 size={16} />
+                    </button>
+                  </div>
                 </td>
               </tr>
             ))}
-            {filtered.length === 0 && <tr><td colSpan={4} className="p-10 text-center text-slate-500">No hay prototipos globales todavía.</td></tr>}
+
+            {filtered.length === 0 && (
+              <tr>
+                <td colSpan={4} className="p-10 text-center text-slate-500">
+                  No hay prototipos globales todavía.
+                </td>
+              </tr>
+            )}
           </tbody>
         </table>
       </div>
+
+            {viewProto && (
+        <div
+          className="fixed inset-0 bg-black/70 flex items-center justify-center p-4 z-[99999] backdrop-blur-sm"
+          onClick={() => setViewProto(null)}
+        >
+          <div
+            className="bg-slate-900 border border-slate-700 rounded-3xl w-full max-w-2xl shadow-2xl overflow-hidden"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between px-6 py-5 border-b border-slate-700">
+              <div>
+                <p className="text-xs uppercase tracking-widest font-bold text-slate-500">Prototipo Global</p>
+                <h3 className="text-xl font-bold text-white mt-1">{viewProto.name}</h3>
+              </div>
+              <button
+                onClick={() => setViewProto(null)}
+                className="text-slate-400 hover:text-white p-2 rounded-xl hover:bg-white/10 transition"
+              >
+                <X size={20} />
+              </button>
+            </div>
+
+            <div className="p-6 space-y-5 text-sm">
+              <div>
+                <p className="text-xs uppercase font-bold tracking-widest text-slate-500 mb-2">Descripción</p>
+                <div className="bg-slate-800 border border-slate-700 rounded-2xl p-4 text-slate-300">
+                  {viewProto.description || '—'}
+                </div>
+              </div>
+
+              <div>
+                <p className="text-xs uppercase font-bold tracking-widest text-slate-500 mb-2">Objeción principal</p>
+                <div className="bg-slate-800 border border-slate-700 rounded-2xl p-4 text-red-300">
+                  {viewProto.objection || '—'}
+                </div>
+              </div>
+
+              <div className="grid md:grid-cols-3 gap-4">
+                <div>
+                  <p className="text-xs uppercase font-bold tracking-widest text-slate-500 mb-2">Estado inicial</p>
+                  <div className="bg-slate-800 border border-slate-700 rounded-2xl p-4 text-slate-300 min-h-[72px]">
+                    {viewProto.initial_state || '—'}
+                  </div>
+                </div>
+
+                <div>
+                  <p className="text-xs uppercase font-bold tracking-widest text-slate-500 mb-2">Estilo de comunicación</p>
+                  <div className="bg-slate-800 border border-slate-700 rounded-2xl p-4 text-slate-300 min-h-[72px]">
+                    {viewProto.communication_style || '—'}
+                  </div>
+                </div>
+
+                <div>
+                  <p className="text-xs uppercase font-bold tracking-widest text-slate-500 mb-2">Cómo reacciona</p>
+                  <div className="bg-slate-800 border border-slate-700 rounded-2xl p-4 text-slate-300 min-h-[72px]">
+                    {viewProto.reaction_style || '—'}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {editProto && (
+        <div
+          className="fixed inset-0 bg-black/70 flex items-center justify-center p-4 z-[99999] backdrop-blur-sm"
+          onClick={() => setEditProto(null)}
+        >
+          <div
+            className="bg-slate-900 border border-slate-700 rounded-3xl w-full max-w-2xl shadow-2xl overflow-hidden"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between px-6 py-5 border-b border-slate-700">
+              <div>
+                <p className="text-xs uppercase tracking-widest font-bold text-slate-500">Editar Prototipo Global</p>
+                <h3 className="text-xl font-bold text-white mt-1">{editProto.name}</h3>
+              </div>
+              <button
+                onClick={() => setEditProto(null)}
+                className="text-slate-400 hover:text-white p-2 rounded-xl hover:bg-white/10 transition"
+              >
+                <X size={20} />
+              </button>
+            </div>
+
+            <div className="p-6 space-y-4">
+              <input
+                className="w-full bg-slate-800 border border-slate-700 p-3 rounded-xl text-white text-sm outline-none focus:ring-2 focus:ring-[#6be1e3]"
+                placeholder="Nombre del perfil"
+                value={editForm.name}
+                onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
+              />
+
+              <textarea
+                className="w-full bg-slate-800 border border-slate-700 p-3 rounded-xl text-white text-sm outline-none focus:ring-2 focus:ring-[#6be1e3] min-h-[110px]"
+                placeholder="Descripción"
+                value={editForm.description}
+                onChange={(e) => setEditForm({ ...editForm, description: e.target.value })}
+              />
+
+              <textarea
+                className="w-full bg-slate-800 border border-slate-700 p-3 rounded-xl text-white text-sm outline-none focus:ring-2 focus:ring-[#6be1e3] min-h-[90px]"
+                placeholder="Objeción principal"
+                value={editForm.objection}
+                onChange={(e) => setEditForm({ ...editForm, objection: e.target.value })}
+              />
+
+              <div className="grid md:grid-cols-3 gap-3">
+                <input
+                  className="bg-slate-800 border border-slate-700 p-3 rounded-xl text-white text-sm outline-none focus:ring-2 focus:ring-[#6be1e3]"
+                  placeholder="Estado inicial"
+                  value={editForm.initial_state}
+                  onChange={(e) => setEditForm({ ...editForm, initial_state: e.target.value })}
+                />
+
+                <input
+                  className="bg-slate-800 border border-slate-700 p-3 rounded-xl text-white text-sm outline-none focus:ring-2 focus:ring-[#6be1e3]"
+                  placeholder="Estilo de comunicación"
+                  value={editForm.communication_style}
+                  onChange={(e) => setEditForm({ ...editForm, communication_style: e.target.value })}
+                />
+
+                <input
+                  className="bg-slate-800 border border-slate-700 p-3 rounded-xl text-white text-sm outline-none focus:ring-2 focus:ring-[#6be1e3]"
+                  placeholder="Cómo reacciona"
+                  value={editForm.reaction_style}
+                  onChange={(e) => setEditForm({ ...editForm, reaction_style: e.target.value })}
+                />
+              </div>
+
+              <div className="flex gap-3 pt-2">
+                <button
+                  onClick={handleUpdate}
+                  className="bg-[#6be1e3] text-black px-5 py-2 rounded-xl font-bold text-sm hover:opacity-80"
+                >
+                  Guardar cambios
+                </button>
+
+                <button
+                  onClick={() => setEditProto(null)}
+                  className="text-slate-400 text-sm px-4 py-2 hover:text-white"
+                >
+                  Cancelar
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
