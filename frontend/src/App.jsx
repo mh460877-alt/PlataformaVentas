@@ -1913,32 +1913,64 @@ function ProductsView({ products, newProd, setNewProd, addProduct, deleteProduct
             Sin prototipos. Usá el botón <strong>+ Prototipo Cliente</strong> para agregar.
           </div>
         ) : (
-          <table className="w-full text-left">
+          <table className="w-full text-left table-fixed">
             <thead className="text-xs uppercase font-bold text-slate-400 tracking-wider border-b">
               <tr>
-                <th className="px-6 py-3">Perfil del cliente</th>
-                <th className="px-6 py-3">Descripción</th>
-                <th className="px-6 py-3">Objeción principal</th>
-                <th className="px-6 py-3 w-12"></th>
+                <th className="px-6 py-3 w-[18%]">Perfil del cliente</th>
+                <th className="px-6 py-3 w-[37%]">Descripción</th>
+                <th className="px-6 py-3 w-[30%]">Objeción principal</th>
+                <th className="px-6 py-3 text-center w-[15%]">Acc.</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
               {p.prototypes.map(pr => (
-                <tr key={pr.id} className="hover:bg-slate-50 transition">
-                  <td className="px-6 py-4">
-                    <p className="font-bold text-slate-800 text-sm">{pr.name}</p>
+                <tr key={pr.id} className="h-24 hover:bg-slate-50 transition align-middle">
+                  <td className="px-6 py-4 align-middle">
+                    <p className="font-bold text-slate-800 text-sm line-clamp-2 overflow-hidden">
+                      {pr.name}
+                    </p>
                   </td>
-                  <td className="px-6 py-4 text-sm text-slate-500">{pr.description}</td>
-                  <td className="px-6 py-4">
-                    <span className="text-xs text-red-500 bg-red-50 px-2 py-1 rounded-lg">{pr.objection}</span>
+
+                  <td className="px-6 py-4 align-middle">
+                    <p className="text-sm text-slate-500 line-clamp-2 overflow-hidden">
+                      {pr.description}
+                    </p>
                   </td>
-                  <td className="px-6 py-4">
-                    <button
-                      onClick={() => deletePrototype(pr.id)}
-                      className="p-1.5 text-slate-300 hover:text-red-500 hover:bg-red-50 rounded-lg transition"
-                    >
-                      <Trash2 size={14} />
-                    </button>
+
+                  <td className="px-6 py-4 align-middle">
+                    <div className="line-clamp-2 overflow-hidden">
+                      <span className="text-xs text-red-500 bg-red-50 px-2 py-1 rounded-lg inline-block">
+                        {pr.objection}
+                      </span>
+                    </div>
+                  </td>
+
+                  <td className="px-6 py-4 align-middle">
+                    <div className="flex items-center justify-center gap-2">
+                      <button
+                        onClick={() => openViewPrototype(pr)}
+                        className="p-1.5 text-cyan-500 bg-cyan-50 hover:bg-cyan-500 hover:text-white rounded-lg transition"
+                        title="Ver"
+                      >
+                        <Eye size={14} />
+                      </button>
+
+                      <button
+                        onClick={() => openEditPrototype(pr)}
+                        className="p-1.5 text-blue-500 bg-blue-50 hover:bg-blue-500 hover:text-white rounded-lg transition"
+                        title="Editar"
+                      >
+                        <Edit2 size={14} />
+                      </button>
+
+                      <button
+                        onClick={() => deletePrototype(pr.id)}
+                        className="p-1.5 text-slate-300 hover:text-red-500 hover:bg-red-50 rounded-lg transition"
+                        title="Eliminar"
+                      >
+                        <Trash2 size={14} />
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}
