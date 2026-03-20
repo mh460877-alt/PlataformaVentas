@@ -3043,7 +3043,7 @@ function ProductList({ products, onStartChat }) {
           </tr>
         </thead>
         <tbody className="divide-y divide-slate-100">
-          {p.prototypes.map(pr => (
+          {product.prototypes.map(pr => (
             <tr key={pr.id} className="h-24 hover:bg-slate-50 transition align-middle">
               <td className="px-6 py-4 align-middle">
                 <p className="font-bold text-slate-800 text-sm line-clamp-2 overflow-hidden">
