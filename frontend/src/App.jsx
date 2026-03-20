@@ -3032,70 +3032,27 @@ function ProductList({ products, onStartChat }) {
 
   // Vista lista de productos
   return (
-    <div className="bg-white rounded-2xl border shadow-sm overflow-hidden">
-      <table className="w-full text-left table-fixed">
-        <thead className="text-xs uppercase font-bold text-slate-400 tracking-wider border-b">
-          <tr>
-            <th className="px-6 py-3 w-[18%]">Perfil del cliente</th>
-            <th className="px-6 py-3 w-[37%]">Descripción</th>
-            <th className="px-6 py-3 w-[30%]">Objeción principal</th>
-            <th className="px-6 py-3 text-center w-[15%]">Acc.</th>
-          </tr>
-        </thead>
-        <tbody className="divide-y divide-slate-100">
-          {product.prototypes.map(pr => (
-            <tr key={pr.id} className="h-24 hover:bg-slate-50 transition align-middle">
-              <td className="px-6 py-4 align-middle">
-                <p className="font-bold text-slate-800 text-sm line-clamp-2 overflow-hidden">
-                  {pr.name}
-                </p>
-              </td>
-
-              <td className="px-6 py-4 align-middle">
-                <p className="text-sm text-slate-500 line-clamp-2 overflow-hidden">
-                  {pr.description}
-                </p>
-              </td>
-
-              <td className="px-6 py-4 align-middle">
-                <div className="line-clamp-2 overflow-hidden">
-                  <span className="text-xs text-red-500 bg-red-50 px-2 py-1 rounded-lg inline-block">
-                    {pr.objection}
-                  </span>
-                </div>
-              </td>
-
-              <td className="px-6 py-4 align-middle">
-                <div className="flex items-center justify-center gap-2">
-                  <button
-                    onClick={() => openViewPrototype(pr)}
-                    className="p-1.5 text-cyan-500 bg-cyan-50 hover:bg-cyan-500 hover:text-white rounded-lg transition"
-                    title="Ver"
-                  >
-                    <Eye size={14} />
-                  </button>
-
-                  <button
-                    onClick={() => openEditPrototype(pr)}
-                    className="p-1.5 text-blue-500 bg-blue-50 hover:bg-blue-500 hover:text-white rounded-lg transition"
-                    title="Editar"
-                  >
-                    <Edit2 size={14} />
-                  </button>
-
-                  <button
-                    onClick={() => deletePrototype(pr.id)}
-                    className="p-1.5 text-slate-300 hover:text-red-500 hover:bg-red-50 rounded-lg transition"
-                    title="Eliminar"
-                  >
-                    <Trash2 size={14} />
-                  </button>
-                </div>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
+      {products.map(p => (
+        <button
+          key={p.id}
+          onClick={() => setOpenProductId(p.id)}
+          className="group text-left bg-white border border-slate-200 rounded-2xl p-6 hover:border-[#e17bd7] hover:shadow-lg transition-all duration-200"
+        >
+          <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#e17bd7]/20 to-[#6be1e3]/20 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+            <Package size={22} className="text-[#e17bd7]" />
+          </div>
+          <h3 className="font-bold text-slate-800 text-lg mb-1 group-hover:text-[#e17bd7] transition-colors">
+            {p.name}
+          </h3>
+          <p className="text-xs text-slate-400 font-semibold">
+            {p.prototypes?.length || 0} perfil{(p.prototypes?.length || 0) !== 1 ? 'es' : ''} disponible{(p.prototypes?.length || 0) !== 1 ? 's' : ''}
+          </p>
+          <div className="mt-5 flex items-center gap-2 text-xs font-bold text-[#e17bd7] opacity-0 group-hover:opacity-100 transition-opacity">
+            Ver perfiles <ArrowRight size={13} />
+          </div>
+        </button>
+      ))}
     </div>
   );
 }
