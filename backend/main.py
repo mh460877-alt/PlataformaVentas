@@ -9,7 +9,7 @@ from sqlalchemy.orm import Session
 
 from app.database import engine, SessionLocal, Base
 from app.models import User, Employee, Product, ClientPrototype, Capsule, CapsuleContent, ChatSession, ChatMessage, EmployeeCapsule, GlobalPrototype
-from app.services.openai_service import obtener_respuesta_coach, obtener_respuesta_coach_con_imagen, generar_evaluacion
+from app.services.openai_service import (obtener_respuesta_coach, obtener_respuesta_coach_con_imagen, generar_evaluacion_vendedor, generar_evaluacion_admin)
 
 # Crear tablas nuevas y migrar columnas faltantes de forma segura
 Base.metadata.create_all(bind=engine)
