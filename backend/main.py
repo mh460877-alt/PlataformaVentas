@@ -914,8 +914,13 @@ def get_feedback(data: FeedbackReq, db: Session = Depends(get_db)):
 
     historial = [{"role": m.role, "content": m.content} for m in all_messages]
 
-    if len(historial) < 2:
-        return {"feedback": "La conversación fue muy corta para evaluarla.", "score": 0}
+    # Contar solo intercambios reales (user + assistant), excluyendo el mensaje inicial del cliente
+    intercambios_reales = sum(1 for m in historial if m["role"] == "user")
+    if intercambios_reales < 3:
+        return {
+            "feedback": "sin_evaluacion",
+            "score": 0
+        }
 
     employee = db.query(Employee).filter(Employee.id == session.employee_id).first()
     nombre_vendedor = employee.name if employee else "el vendedor"
@@ -952,7 +957,7 @@ def get_feedback(data: FeedbackReq, db: Session = Depends(get_db)):
     feedback_vendedor = generar_evaluacion_vendedor(historial)
     feedback_admin = generar_evaluacion_admin(historial, nombre_vendedor, duration_seconds, mission_values, nombre_producto, nombre_prototipo)
 
-    score = 5
+    score = 0
     for line in feedback_vendedor.split("\n"):
         if "CALIFICACIÓN:" in line or "CALIFICACION:" in line:
             try:

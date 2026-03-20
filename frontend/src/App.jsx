@@ -3451,46 +3451,60 @@ const stopRecording = () => {
     return (
       <div className="min-h-screen bg-slate-50 flex items-center justify-center p-6">
         <div className="bg-white rounded-3xl shadow-xl max-w-2xl w-full p-8">
-          <h2 className="text-2xl font-bold text-[#1a181d] mb-6 text-center">Tu Evaluación</h2>
+          <h2 className="text-2xl font-bold text-[#1a181d] mb-6 text-center">Tu Resultado</h2>
 
-          {/* Puntaje */}
-          <div className={`text-center p-6 rounded-2xl border mb-6 ${scoreBg}`}>
-            <p className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">Puntaje Final</p>
-            <p className={`text-7xl font-extrabold ${scoreColor}`}>{score}<span className="text-3xl text-slate-400">/10</span></p>
-          </div>
-
-          {/* Secciones parseadas */}
-          {sections.length > 0 ? (
-            <div className="space-y-4 mb-6">
-              {sections.map((sec, i) => {
-                const emoji = Object.keys(sectionStyle).find(e => sec.title.startsWith(e));
-                const style = sectionStyle[emoji] || { bg: 'bg-slate-50 border-slate-200', title: 'text-slate-700' };
-                return (
-                  <div key={i} className={`rounded-2xl border p-4 ${style.bg}`}>
-                    <p className={`font-bold text-sm mb-2 ${style.title}`}>{sec.title}</p>
-                    {sec.body && <p className="text-sm text-slate-700 leading-relaxed">{sec.body}</p>}
-                    {sec.items.length > 0 && (
-                      <ul className="space-y-1">
-                        {sec.items.map((item, j) => (
-                          <li key={j} className="text-sm text-slate-700 flex gap-2">
-                            <span className="text-slate-400 mt-0.5 flex-shrink-0">•</span> {item}
-                          </li>
-                        ))}
-                      </ul>
-                    )}
-                  </div>
-                );
-              })}
+          {/* Caso: conversación muy corta, sin puntuación */}
+          {(score === 0 || feedback === 'sin_evaluacion') ? (
+            <div className="text-center py-8">
+              <p className="text-5xl mb-4">🤔</p>
+              <p className="text-lg font-bold text-slate-700 mb-2">Conversación insuficiente</p>
+              <p className="text-sm text-slate-500 leading-relaxed">
+                No hay suficiente información para generar una puntuación.<br/>
+                Necesitás al menos <strong>3 intercambios reales</strong> con el cliente para recibir un resultado.
+              </p>
             </div>
           ) : (
-            <div className="bg-slate-50 rounded-2xl p-5 mb-6 text-sm text-slate-700 leading-relaxed border whitespace-pre-wrap">
-              {feedback}
-            </div>
+            <>
+              {/* Puntaje */}
+              <div className={`text-center p-6 rounded-2xl border mb-6 ${scoreBg}`}>
+                <p className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">Puntuación Final</p>
+                <p className={`text-7xl font-extrabold ${scoreColor}`}>{score}<span className="text-3xl text-slate-400">/10</span></p>
+              </div>
+
+              {/* Secciones parseadas */}
+              {sections.length > 0 ? (
+                <div className="space-y-4 mb-6">
+                  {sections.map((sec, i) => {
+                    const emoji = Object.keys(sectionStyle).find(e => sec.title.startsWith(e));
+                    const style = sectionStyle[emoji] || { bg: 'bg-slate-50 border-slate-200', title: 'text-slate-700' };
+                    return (
+                      <div key={i} className={`rounded-2xl border p-4 ${style.bg}`}>
+                        <p className={`font-bold text-sm mb-2 ${style.title}`}>{sec.title}</p>
+                        {sec.body && <p className="text-sm text-slate-700 leading-relaxed">{sec.body}</p>}
+                        {sec.items.length > 0 && (
+                          <ul className="space-y-1">
+                            {sec.items.map((item, j) => (
+                              <li key={j} className="text-sm text-slate-700 flex gap-2">
+                                <span className="text-slate-400 mt-0.5 flex-shrink-0">•</span> {item}
+                              </li>
+                            ))}
+                          </ul>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              ) : (
+                <div className="bg-slate-50 rounded-2xl p-5 mb-6 text-sm text-slate-700 leading-relaxed border whitespace-pre-wrap">
+                  {feedback}
+                </div>
+              )}
+            </>
           )}
 
           <button
             onClick={() => { setView('select'); setFeedback(null); setScore(null); setMsgs([]); setSession(null); }}
-            className="w-full bg-[#1a181d] text-white py-4 rounded-xl font-bold hover:opacity-90 transition"
+            className="w-full bg-[#1a181d] text-white py-4 rounded-xl font-bold hover:opacity-90 transition mt-6"
           >
             Volver a Entrenar
           </button>

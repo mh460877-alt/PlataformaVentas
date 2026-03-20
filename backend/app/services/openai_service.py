@@ -46,7 +46,8 @@ CRITERIO DE CALIFICACIÓN ESTRICTO:
 - 1-2: Conversación muy pobre, respuestas incorrectas o conversación abandonada.
 
 ⚠️ REGLA CRÍTICA: Si el vendedor dio información incorrecta, inventó datos o confundió al cliente → nota MÁXIMA 4.
-⚠️ Si la conversación fue muy corta (menos de 4 intercambios reales) → nota MÁXIMA 5.
+⚠️ REGLA CRÍTICA: Si la conversación fue muy corta (menos de 4 intercambios reales del vendedor) → nota MÁXIMA 3.
+⚠️ REGLA CRÍTICA: Si el vendedor solo saludó o escribió 1 o 2 mensajes sin desarrollar ningún argumento → nota MÁXIMA 2.
 
 Generá el informe usando EXACTAMENTE este formato:
 
