@@ -2573,7 +2573,7 @@ function CompanyDashboard() {
                         <div className="text-center p-10 text-slate-400 border-2 border-dashed rounded-2xl">Sin sesiones registradas.</div>
                       )}
                       <div className="space-y-3">
-                        {profileEmp.sessions.map((s, i) => {
+                        {profileEmp.sessions.filter(s => s.messages.filter(m => m.role === 'user').length >= 3).map((s, i) => {
                           const scoreColor = !s.score ? 'text-slate-400' : s.score >= 8 ? 'text-green-500' : s.score >= 5 ? 'text-yellow-500' : 'text-red-500';
                           return (
                             <div key={s.id} className="w-full bg-slate-50 border p-4 rounded-xl flex justify-between items-center">
