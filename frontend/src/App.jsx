@@ -3032,27 +3032,43 @@ function ProductList({ products, onStartChat }) {
 
   // Vista lista de productos
   return (
-    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
-      {products.map(p => (
-        <button
-          key={p.id}
-          onClick={() => setOpenProductId(p.id)}
-          className="group text-left bg-white border border-slate-200 rounded-2xl p-6 hover:border-[#e17bd7] hover:shadow-lg transition-all duration-200"
-        >
-          <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#e17bd7]/20 to-[#6be1e3]/20 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-            <Package size={22} className="text-[#e17bd7]" />
-          </div>
-          <h3 className="font-bold text-slate-800 text-lg mb-1 group-hover:text-[#e17bd7] transition-colors">
-            {p.name}
-          </h3>
-          <p className="text-xs text-slate-400 font-semibold">
-            {p.prototypes?.length || 0} perfil{(p.prototypes?.length || 0) !== 1 ? 'es' : ''} disponible{(p.prototypes?.length || 0) !== 1 ? 's' : ''}
-          </p>
-          <div className="mt-5 flex items-center gap-2 text-xs font-bold text-[#e17bd7] opacity-0 group-hover:opacity-100 transition-opacity">
-            Ver perfiles <ArrowRight size={13} />
-          </div>
-        </button>
-      ))}
+    <div className="bg-white rounded-2xl border shadow-sm overflow-hidden">
+      <table className="w-full text-left">
+        <thead className="text-xs uppercase font-bold text-slate-400 tracking-wider border-b bg-slate-50">
+          <tr>
+            <th className="px-6 py-3">Producto</th>
+            <th className="px-6 py-3">Perfiles disponibles</th>
+            <th className="px-6 py-3 text-center">Acción</th>
+          </tr>
+        </thead>
+        <tbody className="divide-y divide-slate-100">
+          {products.map(p => (
+            <tr key={p.id} className="hover:bg-slate-50 transition align-middle">
+              <td className="px-6 py-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#e17bd7]/20 to-[#6be1e3]/20 flex items-center justify-center flex-shrink-0">
+                    <Package size={16} className="text-[#e17bd7]" />
+                  </div>
+                  <p className="font-bold text-slate-800">{p.name}</p>
+                </div>
+              </td>
+              <td className="px-6 py-4">
+                <span className="text-xs bg-[#e17bd7]/10 text-[#e17bd7] px-3 py-1.5 rounded-full font-bold">
+                  {p.prototypes?.length || 0} perfil{(p.prototypes?.length || 0) !== 1 ? 'es' : ''}
+                </span>
+              </td>
+              <td className="px-6 py-4 text-center">
+                <button
+                  onClick={() => setOpenProductId(p.id)}
+                  className="bg-[#1a181d] text-white px-4 py-2 rounded-xl text-sm font-bold hover:opacity-80 transition"
+                >
+                  Ingresar
+                </button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 }
