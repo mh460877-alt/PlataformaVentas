@@ -1526,6 +1526,7 @@ function ProductsView({ products, newProd, setNewProd, addProduct, deleteProduct
   const [showProtoForm, setShowProtoForm] = useState(false);
   const [globalProtos, setGlobalProtos] = useState([]);
   const [showGlobalList, setShowGlobalList] = useState(false);
+  const [selectedGlobalProtoKey, setSelectedGlobalProtoKey] = useState('');
   const [editingInfo, setEditingInfo] = useState(false);
   const [showInfoModal, setShowInfoModal] = useState(false);
   const [infoText, setInfoText] = useState('');
@@ -1586,6 +1587,8 @@ function ProductsView({ products, newProd, setNewProd, addProduct, deleteProduct
     setInfoText(p.info || '');
     setEditingInfo(false);
     setShowProtoForm(false);
+    setShowGlobalList(false);
+    setSelectedGlobalProtoKey('');
   };
 
   // Refrescar el producto abierto desde la lista actualizada
@@ -1610,7 +1613,17 @@ function ProductsView({ products, newProd, setNewProd, addProduct, deleteProduct
     await addPrototype(productId);
     setShowProtoForm(false);
   };
-
+  
+  const availableGlobalProtos = openProduct
+    ? globalProtos.filter(gp => {
+        const alreadyExists = openProduct.prototypes?.some(pr =>
+          (pr.name || '').trim().toLowerCase() === (gp.name || '').trim().toLowerCase() &&
+          (pr.description || '').trim().toLowerCase() === (gp.description || '').trim().toLowerCase() &&
+          (pr.objection || '').trim().toLowerCase() === (gp.objection || '').trim().toLowerCase()
+        );
+        return !alreadyExists;
+      })
+    : [];
   // ── VISTA: lista de productos ──
   if (!openProduct) {
     return (
@@ -1796,29 +1809,69 @@ function ProductsView({ products, newProd, setNewProd, addProduct, deleteProduct
 
       {showGlobalList && (
         <div className="bg-white border-2 border-slate-200 rounded-2xl p-6 mb-6 shadow-sm">
-          <p className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-4">Prototipos Globales Disponibles</p>
-          {globalProtos.length === 0 ? (
-            <p className="text-sm text-slate-400 italic">No hay prototipos globales creados todavía.</p>
+          <p className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-4">
+            Prototipos Globales Disponibles
+          </p>
+
+          {availableGlobalProtos.length === 0 ? (
+            <p className="text-sm text-slate-400 italic">
+              No hay prototipos globales disponibles para este producto.
+            </p>
           ) : (
-            <div className="space-y-2">
-              {globalProtos.map(gp => (
-                <div key={gp.id} className="flex items-center justify-between p-3 bg-slate-50 rounded-xl border hover:border-[#6be1e3] transition">
-                  <div>
-                    <p className="font-bold text-slate-800 text-sm">{gp.name}</p>
-                    <p className="text-xs text-slate-500">{gp.description}</p>
-                    <span className="text-xs text-red-500 bg-red-50 px-2 py-0.5 rounded mt-1 inline-block">{gp.objection}</span>
+            <div className="space-y-4">
+              <select
+                className="w-full border p-3 rounded-xl text-sm outline-none focus:ring-2 focus:ring-[#6be1e3] bg-white"
+                value={selectedGlobalProtoKey}
+                onChange={(e) => setSelectedGlobalProtoKey(e.target.value)}
+              >
+                <option value="">Seleccioná un prototipo global</option>
+                {availableGlobalProtos.map((gp, index) => {
+                  const optionKey = `${gp.id ?? 'gp'}-${index}`;
+                  return (
+                    <option key={optionKey} value={optionKey}>
+                      {gp.name}
+                    </option>
+                  );
+                })}
+              </select>
+
+              {selectedGlobalProtoKey && (() => {
+                const selectedGp = availableGlobalProtos.find((gp, index) => {
+                  const optionKey = `${gp.id ?? 'gp'}-${index}`;
+                  return optionKey === selectedGlobalProtoKey;
+                });
+
+                if (!selectedGp) return null;
+
+                return (
+                  <div className="p-4 bg-slate-50 rounded-xl border">
+                    <p className="font-bold text-slate-800 text-sm">{selectedGp.name}</p>
+                    <p className="text-xs text-slate-500 mt-1">{selectedGp.description}</p>
+                    <span className="text-xs text-red-500 bg-red-50 px-2 py-0.5 rounded mt-2 inline-block">
+                      {selectedGp.objection}
+                    </span>
+
+                    <div className="mt-4">
+                      <button
+                        onClick={async () => {
+                          await addPrototype(p.id, {
+                            name: selectedGp.name,
+                            description: selectedGp.description,
+                            objection: selectedGp.objection,
+                            initial_state: selectedGp.initial_state || '',
+                            communication_style: selectedGp.communication_style || '',
+                            reaction_style: selectedGp.reaction_style || ''
+                          });
+                          setSelectedGlobalProtoKey('');
+                        }}
+                        className="flex items-center gap-2 bg-[#6be1e3] text-black text-xs font-bold px-4 py-2 rounded-xl hover:opacity-80 transition"
+                      >
+                        <Plus size={13} /> Agregar al producto
+                      </button>
+                    </div>
                   </div>
-                  <button
-                    onClick={async () => {
-                      await addPrototype(p.id, { name: gp.name, description: gp.description, objection: gp.objection, initial_state: gp.initial_state || '', communication_style: gp.communication_style || '', reaction_style: gp.reaction_style || '' });
-                      setShowGlobalList(false);
-                    }}
-                    className="flex items-center gap-2 bg-[#6be1e3] text-black text-xs font-bold px-4 py-2 rounded-xl hover:opacity-80 transition flex-shrink-0 ml-4"
-                  >
-                    <Plus size={13} /> Agregar
-                  </button>
-                </div>
-              ))}
+                );
+              })()}
             </div>
           )}
         </div>
