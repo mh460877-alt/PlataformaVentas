@@ -2656,10 +2656,27 @@ function CompanyDashboard() {
                                 <div style={{ padding: '2rem 2.5rem', background: '#fff' }}>
                                   {(() => {
                                     const text = selSession.feedback_admin;
+
+                                    // Captura valor en la misma línea O en la línea siguiente
                                     const getIndicador = (text, label) => {
-                                      const regex = new RegExp(`${label}:\\s*([^\\n]+)`, 'i');
+                                      const escaped = label.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                                      const regex = new RegExp(`${escaped}:\\s*([^\\n]+)`, 'i');
                                       const m = text.match(regex);
-                                      return m ? m[1].trim() : '—';
+                                      if (m && m[1].trim() && m[1].trim() !== '—') return m[1].trim();
+                                      // Si no encontró en la misma línea, busca en la línea siguiente
+                                      const regexNext = new RegExp(`${escaped}:\\s*\\n([^\\n━]+)`, 'i');
+                                      const m2 = text.match(regexNext);
+                                      return m2 ? m2[1].trim() : '—';
+                                    };
+
+                                    // Captura bloques multilínea hasta el siguiente separador
+                                    const getBloque = (text, label) => {
+                                      const escaped = label.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                                      const regex = new RegExp(`${escaped}:\\s*\\n?([\\s\\S]*?)(?=\\n━|\\n[A-ZÁÉÍÓÚÑ]{3,}:|$)`, 'i');
+                                      const m = text.match(regex);
+                                      if (!m) return '—';
+                                      const val = m[1].trim();
+                                      return val || '—';
                                     };
 
                                     const encabezado_vendedor = getIndicador(text, 'VENDEDOR');
@@ -2671,33 +2688,33 @@ function CompanyDashboard() {
                                     const alineacion = getIndicador(text, 'ALINEACIÓN CULTURAL');
                                     const prob_cierre = getIndicador(text, 'PROBABILIDAD DE CIERRE DETECTADA');
 
-                                    const analisis_interaccion = getIndicador(text, 'ANÁLISIS DE LA INTERACCIÓN');
-                                    const motivo_resultado = getIndicador(text, 'MOTIVO PRINCIPAL DEL RESULTADO');
+                                    const analisis_interaccion = getBloque(text, 'ANÁLISIS DE LA INTERACCIÓN');
+                                    const motivo_resultado = getBloque(text, 'MOTIVO PRINCIPAL DEL RESULTADO');
 
-                                    const momento_clave = getIndicador(text, 'MOMENTO CLAVE');
-                                    const impacto_quiebre = getIndicador(text, 'IMPACTO EN EL RESULTADO');
+                                    const momento_clave = getBloque(text, 'MOMENTO CLAVE');
+                                    const impacto_quiebre = getBloque(text, 'IMPACTO EN EL RESULTADO');
 
                                     const nivel_objeciones = getIndicador(text, 'NIVEL DE MANEJO DE OBJECIONES');
                                     const objeciones = (() => {
-                                      const m = text.match(/OBJECIONES DETECTADAS:\n([\s\S]*?)(?=\nNIVEL DE MANEJO)/i);
+                                      const m = text.match(/OBJECIONES DETECTADAS:\s*\n([\s\S]*?)(?=\nNIVEL DE MANEJO)/i);
                                       if (!m) return [];
-                                      return m[1].split('\n').map(l => l.replace(/^-\s*/, '').trim()).filter(Boolean);
+                                      return m[1].split('\n').map(l => l.replace(/^[-•▸]\s*/, '').trim()).filter(l => l && l !== '—');
                                     })();
 
                                     const fortalezas = (() => {
                                       const m = text.match(/FORTALEZAS OBSERVADAS[\s\S]*?\n([\s\S]*?)(?=━|OPORTUNIDADES)/i);
                                       if (!m) return [];
-                                      return m[1].split('\n').map(l => l.replace(/^[-•▸]\s*/, '').trim()).filter(Boolean);
+                                      return m[1].split('\n').map(l => l.replace(/^[-•▸]\s*/, '').trim()).filter(l => l && l !== '—');
                                     })();
 
                                     const mejoras = (() => {
                                       const m = text.match(/OPORTUNIDADES DE MEJORA[\s\S]*?\n([\s\S]*?)(?=━|ANÁLISIS DE TIEMPO)/i);
                                       if (!m) return [];
-                                      return m[1].split('\n').map(l => l.replace(/^[-•▸]\s*/, '').trim()).filter(Boolean);
+                                      return m[1].split('\n').map(l => l.replace(/^[-•▸]\s*/, '').trim()).filter(l => l && l !== '—');
                                     })();
 
                                     const tiempo_evaluacion = getIndicador(text, 'EVALUACIÓN DEL MANEJO DEL TIEMPO');
-                                    const tiempo_impacto = getIndicador(text, 'IMPACTO EN LA INTERACCIÓN');
+                                    const tiempo_impacto = getBloque(text, 'IMPACTO EN LA INTERACCIÓN');
 
                                     const proc_necesidades = getIndicador(text, 'DETECCIÓN DE NECESIDADES');
                                     const proc_presentacion = getIndicador(text, 'PRESENTACIÓN DEL PRODUCTO');
@@ -2706,22 +2723,22 @@ function CompanyDashboard() {
                                     const proc_cierre = getIndicador(text, 'INTENTO DE CIERRE');
 
                                     const cult_nivel = getIndicador(text, 'NIVEL DE ALINEACIÓN');
-                                    const cult_analisis = getIndicador(text, 'ANÁLISIS');
-                                    const cult_recomendacion = getIndicador(text, 'RECOMENDACIÓN');
+                                    const cult_analisis = getBloque(text, 'ANÁLISIS');
+                                    const cult_recomendacion = getBloque(text, 'RECOMENDACIÓN');
 
                                     const emocional_perfil = getIndicador(text, 'PERFIL EMOCIONAL DETECTADO');
-                                    const emocional_senales = getIndicador(text, 'SEÑALES OBSERVADAS');
-                                    const emocional_impacto = getIndicador(text, 'IMPACTO EN LA INTERACCIÓN');
+                                    const emocional_senales = getBloque(text, 'SEÑALES OBSERVADAS');
+                                    const emocional_impacto = getBloque(text, 'IMPACTO EN LA INTERACCIÓN');
 
                                     const habilidades = (() => {
-                                      const m = text.match(/🛠️ HABILIDADES A DESARROLLAR[\s\S]*?\n([\s\S]*?)(?=━)/i);
+                                      const m = text.match(/HABILIDADES A DESARROLLAR[\s\S]*?\n([\s\S]*?)(?=━)/i);
                                       if (!m) return [];
-                                      return m[1].split('\n').map(l => l.replace(/^\d+\.\s*/, '').trim()).filter(Boolean);
+                                      return m[1].split('\n').map(l => l.replace(/^\d+\.\s*/, '').trim()).filter(l => l && l !== '—');
                                     })();
 
-                                    const resumen_sintesis = getIndicador(text, 'SÍNTESIS DEL DESEMPEÑO');
-                                    const resumen_aprendizaje = getIndicador(text, 'PRINCIPAL APRENDIZAJE');
-                                    const resumen_recomendacion = getIndicador(text, 'RECOMENDACIÓN PRINCIPAL');
+                                    const resumen_sintesis = getBloque(text, 'SÍNTESIS DEL DESEMPEÑO');
+                                    const resumen_aprendizaje = getBloque(text, 'PRINCIPAL APRENDIZAJE');
+                                    const resumen_recomendacion = getBloque(text, 'RECOMENDACIÓN PRINCIPAL');
 
                                     const indicadores = [
                                       { label: 'Probabilidad de cierre', value: getIndicador(text, 'PROBABILIDAD DE CIERRE') },
