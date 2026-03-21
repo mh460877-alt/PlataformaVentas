@@ -2656,6 +2656,7 @@ function CompanyDashboard() {
                                 <div style={{ padding: '2rem 2.5rem', background: '#fff' }}>
                                   {(() => {
                                     const text = selSession.feedback_admin;
+                                    console.log("TEXTO_ADMIN:", JSON.stringify(text));
 
                                     // Captura valor en la misma línea O en la línea siguiente
                                     const getIndicador = (text, label) => {
