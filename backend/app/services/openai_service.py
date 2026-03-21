@@ -249,14 +249,23 @@ IMPORTANTE:
 - Tono: profesional, objetivo, constructivo.
 - Todo en español."""
 
-        mensajes = list(historial)
-        mensajes.append({"role": "system", "content": prompt})
+        # Convertir historial para que la IA no confunda los roles con personas reales
+        historial_formateado = []
+        for m in historial:
+            rol = m["role"]
+            contenido = m["content"]
+            if rol == "assistant":
+                historial_formateado.append({"role": "user", "content": f"[CLIENTE SIMULADO]: {contenido}"})
+            elif rol == "user":
+                historial_formateado.append({"role": "user", "content": f"[VENDEDOR]: {contenido}"})
+
+        mensajes = [{"role": "system", "content": prompt}] + historial_formateado
 
         response = client.chat.completions.create(
-            model="gpt-3.5-turbo",
+            model="gpt-4o",
             messages=mensajes,
-            temperature=0.3,  # ✅ FIX: Más bajo para consistencia
-            max_tokens=3500,  # ✅ FIX: Subido de 1500 a 2000 para que no se corte con la sección de tiempo
+            temperature=0.3,
+            max_tokens=3500,
         )
         return response.choices[0].message.content
 
