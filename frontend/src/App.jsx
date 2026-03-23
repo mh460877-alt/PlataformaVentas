@@ -2820,7 +2820,7 @@ function CompanyDashboard() {
                                           </div>
 
                                           {/* PUNTO DE QUIEBRE */}
-                                          <div style={{ marginBottom: '1.25rem', background: '#fff7ed', borderRadius: '8px', padding: '1rem', borderLeft: '3px solid #f97316' }}>
+                                          <div style={{ marginBottom: '1.25rem', background: '#fff7ed', borderRadius: '8px', padding: '1rem', borderLeft: '3px solid #f97316', pageBreakInside: 'avoid', breakInside: 'avoid' }}>
                                             <div style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', color: '#ea580c', marginBottom: '8px' }}>🔴 Punto de Quiebre</div>
                                             {momento_clave && <div style={{ marginBottom: '6px' }}><span style={{ fontSize: '11px', fontWeight: 600, color: '#64748b' }}>Momento clave: </span><span style={{ fontSize: '12px', color: '#334155' }}>{momento_clave}</span></div>}
                                             {impacto_quiebre && <div><span style={{ fontSize: '11px', fontWeight: 600, color: '#64748b' }}>Impacto: </span><span style={{ fontSize: '12px', color: '#334155' }}>{impacto_quiebre}</span></div>}
@@ -2834,12 +2834,12 @@ function CompanyDashboard() {
                                           </div>
 
                                           {/* FORTALEZAS Y MEJORAS */}
-                                          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1.25rem' }}>
-                                            <div style={{ background: '#f0fdf4', borderRadius: '8px', padding: '1rem' }}>
+                                          <div style={{ marginBottom: '1.25rem', pageBreakInside: 'avoid', breakInside: 'avoid' }}>
+                                            <div style={{ background: '#f0fdf4', borderRadius: '8px', padding: '1rem', marginBottom: '0.75rem', pageBreakInside: 'avoid', breakInside: 'avoid' }}>
                                               <div style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', color: '#16a34a', marginBottom: '8px' }}>✅ Fortalezas</div>
                                               {fortalezas.map((f, i) => <div key={i} style={{ fontSize: '12px', color: '#334155', display: 'flex', gap: '6px', marginBottom: '3px' }}><span style={{ color: '#16a34a' }}>▸</span>{f}</div>)}
                                             </div>
-                                            <div style={{ background: '#fff7ed', borderRadius: '8px', padding: '1rem' }}>
+                                            <div style={{ background: '#fff7ed', borderRadius: '8px', padding: '1rem', pageBreakInside: 'avoid', breakInside: 'avoid' }}>
                                               <div style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', color: '#ea580c', marginBottom: '8px' }}>⚠️ Oportunidades de Mejora</div>
                                               {mejoras.map((m, i) => <div key={i} style={{ fontSize: '12px', color: '#334155', display: 'flex', gap: '6px', marginBottom: '3px' }}><span style={{ color: '#ea580c' }}>▸</span>{m}</div>)}
                                             </div>
@@ -2883,7 +2883,7 @@ function CompanyDashboard() {
                                           </div>
 
                                           {/* ESTADO DEL VENDEDOR */}
-                                          <div style={{ marginBottom: '1.25rem' }}>
+                                          <div style={{ marginBottom: '1.25rem', pageBreakInside: 'avoid', breakInside: 'avoid' }}>
                                             <div style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', color: '#1a181d', borderBottom: '2px solid #6be1e3', paddingBottom: '4px', marginBottom: '8px' }}>🧠 Estado del Vendedor</div>
                                             {emocional_perfil && <div style={{ marginBottom: '4px' }}><span style={{ fontSize: '11px', fontWeight: 600, color: '#64748b' }}>Perfil emocional: </span><span style={{ fontSize: '12px', color: '#334155' }}>{emocional_perfil}</span></div>}
                                             {emocional_senales && <div style={{ marginBottom: '4px' }}><span style={{ fontSize: '11px', fontWeight: 600, color: '#64748b' }}>Señales observadas: </span><span style={{ fontSize: '12px', color: '#334155' }}>{emocional_senales}</span></div>}
@@ -2904,7 +2904,7 @@ function CompanyDashboard() {
                                           )}
 
                                           {/* RESUMEN EJECUTIVO */}
-                                          <div style={{ marginBottom: '1.25rem', border: '1px solid #e2e8f0', borderRadius: '8px', padding: '1rem', borderLeft: '3px solid #e17bd7' }}>
+                                          <div style={{ marginBottom: '1.25rem', border: '1px solid #e2e8f0', borderRadius: '8px', padding: '1rem', borderLeft: '3px solid #e17bd7', pageBreakInside: 'avoid', breakInside: 'avoid' }}>
                                             <div style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', color: '#64748b', marginBottom: '8px' }}>📋 Resumen Ejecutivo</div>
                                             {resumen_sintesis && <div style={{ marginBottom: '4px' }}><span style={{ fontSize: '11px', fontWeight: 600, color: '#64748b' }}>Síntesis: </span><span style={{ fontSize: '12px', color: '#334155' }}>{resumen_sintesis}</span></div>}
                                             {resumen_aprendizaje && <div style={{ marginBottom: '4px' }}><span style={{ fontSize: '11px', fontWeight: 600, color: '#64748b' }}>Aprendizaje: </span><span style={{ fontSize: '12px', color: '#334155' }}>{resumen_aprendizaje}</span></div>}
@@ -2912,7 +2912,7 @@ function CompanyDashboard() {
                                           </div>
 
                                           {/* TABLA DE INDICADORES */}
-                                          <div style={{ marginBottom: '1rem' }}>
+                                          <div style={{ marginBottom: '1rem', pageBreakInside: 'avoid', breakInside: 'avoid' }}>
                                             <div style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', color: '#1a181d', borderBottom: '2px solid #6be1e3', paddingBottom: '4px', marginBottom: '8px' }}>📈 Indicadores de Desempeño Comercial</div>
                                             <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '12px' }}>
                                               <thead>
