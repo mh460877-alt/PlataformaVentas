@@ -2639,12 +2639,12 @@ function CompanyDashboard() {
                                   onClick={() => {
                                     const el = document.getElementById('informe-pdf');
                                     window.html2pdf().set({
-                                      margin: [10, 0, 0, 0],
+                                      margin: [0, 0, 0, 0],
                                       filename: `Informe_Sesion_${profileEmp.name.replace(/ /g,'_')}.pdf`,
                                       image: { type: 'jpeg', quality: 0.98 },
-                                      html2canvas: { scale: 2, useCORS: true },
+                                      html2canvas: { scale: 2, useCORS: true, scrollY: 0 },
                                       jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
-                                      pagebreak: { mode: ['avoid-all'] }
+                                      pagebreak: { mode: ['css', 'legacy'] }
                                     }).from(el).save();
                                   }}
                                   className="flex items-center gap-2 bg-[#1a181d] text-white px-4 py-2 rounded-xl text-xs font-bold hover:opacity-80 transition"
@@ -2703,15 +2703,15 @@ function CompanyDashboard() {
                                     })();
 
                                     const fortalezas = (() => {
-                                      const m = text.match(/FORTALEZAS OBSERVADAS[\s\S]*?\n([\s\S]*?)(?=━|OPORTUNIDADES)/i);
+                                      const m = text.match(/FORTALEZAS OBSERVADAS\s*\n━*\s*\n?([\s\S]*?)(?=\n━{5,}|\nOPORTUNIDADES)/i);
                                       if (!m) return [];
-                                      return m[1].split('\n').map(l => l.replace(/^[-•▸]\s*/, '').trim()).filter(l => l && l !== '—');
+                                      return m[1].split('\n').map(l => l.replace(/^[-•▸]\s*/, '').trim()).filter(l => l && l !== '—' && !l.startsWith('━'));
                                     })();
 
                                     const mejoras = (() => {
-                                      const m = text.match(/OPORTUNIDADES DE MEJORA[\s\S]*?\n([\s\S]*?)(?=━|ANÁLISIS DE TIEMPO)/i);
+                                      const m = text.match(/OPORTUNIDADES DE MEJORA\s*\n━*\s*\n?([\s\S]*?)(?=\n━{5,}|\nANÁLISIS DE TIEMPO)/i);
                                       if (!m) return [];
-                                      return m[1].split('\n').map(l => l.replace(/^[-•▸]\s*/, '').trim()).filter(l => l && l !== '—');
+                                      return m[1].split('\n').map(l => l.replace(/^[-•▸]\s*/, '').trim()).filter(l => l && l !== '—' && !l.startsWith('━'));
                                     })();
 
                                     const tiempo_evaluacion = getIndicador(text, 'EVALUACIÓN DEL MANEJO DEL TIEMPO');
@@ -2741,16 +2741,26 @@ function CompanyDashboard() {
                                     const resumen_aprendizaje = getBloque(text, 'PRINCIPAL APRENDIZAJE');
                                     const resumen_recomendacion = getBloque(text, 'RECOMENDACIÓN PRINCIPAL');
 
-                                    const indicadores = [
-                                      { label: 'Probabilidad de cierre', value: getIndicador(text, 'PROBABILIDAD DE CIERRE') },
-                                      { label: 'Claridad del asesoramiento', value: getIndicador(text, 'CLARIDAD DEL ASESORAMIENTO') },
-                                      { label: 'Detección de necesidades', value: getIndicador(text, 'DETECCIÓN DE NECESIDADES') },
-                                      { label: 'Manejo de objeciones', value: getIndicador(text, 'MANEJO DE OBJECIONES') },
-                                      { label: 'Confianza transmitida', value: getIndicador(text, 'CONFIANZA TRANSMITIDA') },
-                                      { label: 'Intento de cierre', value: getIndicador(text, 'INTENTO DE CIERRE') },
-                                      { label: 'Conocimiento del producto', value: getIndicador(text, 'CONOCIMIENTO DEL PRODUCTO') },
-                                      { label: 'Alineación cultural', value: getIndicador(text, 'ALINEACIÓN CULTURAL') },
-                                    ];
+                                    const indicadores = (() => {
+                                      const bloqueIndicadores = text.match(/INDICADORES DE DESEMPEÑO COMERCIAL[\s\S]*?\n━*\s*\n([\s\S]*?)(?=\n━{5,}|$)/i);
+                                      const src = bloqueIndicadores ? bloqueIndicadores[1] : '';
+                                      const getVal = (label) => {
+                                        const esc = label.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                                        const r = new RegExp(`${esc}:\\s*([^\\n]+)`, 'i');
+                                        const match = src.match(r);
+                                        return match ? match[1].trim() : '—';
+                                      };
+                                      return [
+                                        { label: 'Probabilidad de cierre',      value: getVal('PROBABILIDAD DE CIERRE') },
+                                        { label: 'Claridad del asesoramiento',  value: getVal('CLARIDAD DEL ASESORAMIENTO') },
+                                        { label: 'Detección de necesidades',    value: getVal('DETECCIÓN DE NECESIDADES') },
+                                        { label: 'Manejo de objeciones',        value: getVal('MANEJO DE OBJECIONES') },
+                                        { label: 'Confianza transmitida',       value: getVal('CONFIANZA TRANSMITIDA') },
+                                        { label: 'Intento de cierre',           value: getVal('INTENTO DE CIERRE') },
+                                        { label: 'Conocimiento del producto',   value: getVal('CONOCIMIENTO DEL PRODUCTO') },
+                                        { label: 'Alineación cultural',         value: getVal('ALINEACIÓN CULTURAL') },
+                                      ];
+                                    })();
 
                                     const nivelColor = (val) => {
                                       const v = (val || '').toLowerCase();
