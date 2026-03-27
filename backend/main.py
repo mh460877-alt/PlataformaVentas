@@ -10,6 +10,7 @@ from sqlalchemy.orm import Session
 from app.database import engine, SessionLocal, Base
 from app.models import User, Employee, Product, ClientPrototype, Capsule, CapsuleContent, ChatSession, ChatMessage, EmployeeCapsule, GlobalPrototype
 from app.services.openai_service import (obtener_respuesta_coach, obtener_respuesta_coach_con_imagen, generar_evaluacion_vendedor, generar_evaluacion_admin)
+from app.security import hashear_password, verificar_password
 
 # Crear tablas nuevas y migrar columnas faltantes de forma segura
 Base.metadata.create_all(bind=engine)
@@ -350,7 +351,10 @@ def login(data: LoginRequest, db: Session = Depends(get_db)):
         return {"type": "super_admin", "id": 0, "name": "Super Admin", "is_super_admin": True}
 
     company = db.query(User).filter(User.email == data.email).first()
-    if company and company.hashed_password == data.password:
+    if company and (
+        company.hashed_password == data.password or
+        verificar_password(data.password, company.hashed_password)
+    ):
         if not company.is_active and not company.is_super_admin:
             raise HTTPException(403, "Cuenta deshabilitada. Contacte a soporte.")
         return {
@@ -361,7 +365,10 @@ def login(data: LoginRequest, db: Session = Depends(get_db)):
         }
 
     emp = db.query(Employee).filter(Employee.email == data.email).first()
-    if emp and emp.password == data.password:
+    if emp and (
+        emp.password == data.password or
+        verificar_password(data.password, emp.password)
+    ):
         if not emp.company.is_active:
             raise HTTPException(403, "Empresa deshabilitada.")
         return {
@@ -380,7 +387,7 @@ def register(data: RegisterRequest, db: Session = Depends(get_db)):
         raise HTTPException(status_code=400, detail="El email ya existe")
     db.add(User(
         email=data.email,
-        hashed_password=data.password,
+        hashed_password=hashear_password(data.password),
         visible_password=data.password,
         company_name=data.company_name,
         phone=data.phone,
@@ -423,7 +430,7 @@ def update_user(id: int, data: UserUpdate, db: Session = Depends(get_db)):
     if data.mission_values is not None:
         user.mission_values = data.mission_values
     if data.password and len(data.password) > 0:
-        user.hashed_password = data.password
+        user.hashed_password = hashear_password(data.password)
         user.visible_password = data.password
     db.commit()
     return {"status": "updated"}
@@ -567,7 +574,7 @@ def create_employee(id: int, data: EmployeeReq, db: Session = Depends(get_db)):
     db.add(Employee(
         name=data.name,
         email=data.email,
-        password=data.password,
+        password=hashear_password(data.password),
         visible_password=data.password,
         role=data.role,
         company_id=id
@@ -1111,7 +1118,7 @@ def update_employee(id: int, data: EmployeeUpdate, db: Session = Depends(get_db)
     if data.email:
         emp.email = data.email
     if data.password and len(data.password) > 0:
-        emp.password = data.password
+        emp.password = hashear_password(data.password)
         emp.visible_password = data.password
     db.commit()
     return {"status": "updated"}
