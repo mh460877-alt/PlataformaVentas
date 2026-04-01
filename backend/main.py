@@ -255,8 +255,13 @@ def generar_respuesta_cliente_segura_con_imagen(system_prompt: str, historial: l
 app = FastAPI(title="ONE Commercial AI")
 
 app.add_middleware(
-    CORSMiddleware, allow_origins=["*"], allow_credentials=True,
-    allow_methods=["*"], allow_headers=["*"],
+    CORSMiddleware,
+    allow_origins=[
+        "https://onecommercialia.escencialconsultora.com",
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 def get_db():
@@ -853,7 +858,7 @@ def send_message(data: ChatMsg, db: Session = Depends(get_db)):
 
     historial.append({"role": "user", "content": data.message})
 
-    delay = random.uniform(30, 60)
+    delay = random.uniform(3, 8)
     time.sleep(delay)
     response = generar_respuesta_cliente_segura(
         system_prompt=system_prompt,
