@@ -321,9 +321,9 @@ class PrototypeReq(BaseModel):
     name: str
     description: str
     objection: str
-    initial_state: Optional[str] = ""
-    communication_style: Optional[str] = ""
-    reaction_style: Optional[str] = ""
+    initial_state: str
+    communication_style: str
+    reaction_style: str
     product_id: int
 
 class ChatInit(BaseModel):
@@ -507,9 +507,9 @@ class GlobalPrototypeReq(BaseModel):
     name: str
     description: str
     objection: str
-    initial_state: Optional[str] = ""
-    communication_style: Optional[str] = ""
-    reaction_style: Optional[str] = ""
+    initial_state: str
+    communication_style: str
+    reaction_style: str
 
 @app.get("/global-prototypes")
 def get_global_prototypes(db: Session = Depends(get_db)):

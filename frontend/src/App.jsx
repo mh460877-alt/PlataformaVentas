@@ -634,8 +634,8 @@ function SuperAdmin() {
   };
 
   const handleUpdate = async () => {
-    if (!editForm.name || !editForm.description || !editForm.objection) {
-      return alert("Completá nombre, descripción y objeción");
+    if (!editForm.name || !editForm.description || !editForm.objection || !editForm.initial_state || !editForm.communication_style || !editForm.reaction_style) {
+      return alert("Todos los campos son obligatorios, incluyendo estado inicial, estilo de comunicación y cómo reacciona");
     }
 
     try {
@@ -658,7 +658,7 @@ function SuperAdmin() {
   };
 
   const handleCreate = async () => {
-    if (!newProto.name || !newProto.description || !newProto.objection) return alert("Completá todos los campos");
+    if (!newProto.name || !newProto.description || !newProto.objection || !newProto.initial_state || !newProto.communication_style || !newProto.reaction_style) return alert("Todos los campos son obligatorios, incluyendo estado inicial, estilo de comunicación y cómo reacciona");
     try {
       await axios.post(`${API_URL}/global-prototypes`, newProto);
       setNewProto({
@@ -1558,8 +1558,8 @@ function ProductsView({ products, newProd, setNewProd, addProduct, deleteProduct
   };
 
   const updatePrototype = async () => {
-    if (!editForm.name || !editForm.description || !editForm.objection) {
-      return alert("Completá nombre, descripción y objeción");
+    if (!editForm.name || !editForm.description || !editForm.objection || !editForm.initial_state || !editForm.communication_style || !editForm.reaction_style) {
+      return alert("Todos los campos son obligatorios, incluyendo estado inicial, estilo de comunicación y cómo reacciona");
     }
 
     try {
@@ -2379,7 +2379,7 @@ function CompanyDashboard() {
 
   const addPrototype = async (productId, dataOverride = null) => {
     const data = dataOverride || newProto;
-    if (!data.name || !data.description || !data.objection) return alert("Completá todos los campos del prototipo");
+    if (!data.name || !data.description || !data.objection || !data.initial_state || !data.communication_style || !data.reaction_style) return alert("Todos los campos son obligatorios, incluyendo estado inicial, estilo de comunicación y cómo reacciona");
     await axios.post(`${API_URL}/prototypes`, { ...data, product_id: productId });
     if (!dataOverride) {
       setNewProto({ name: '', description: '', objection: '', initial_state: '', communication_style: '', reaction_style: '' });
