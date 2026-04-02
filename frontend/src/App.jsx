@@ -364,15 +364,11 @@ function LoginPage() {
     e.preventDefault();
     setLoading(true);
     setError('');
-    // SuperAdmin local
-    if (formData.email === 'admin@salesai.com' && formData.password === 'admin') {
-      navigate('/super-admin');
-      return;
-    }
     try {
       const res = await axios.post(`${API_URL}/login`, formData);
       localStorage.setItem('user', JSON.stringify(res.data));
-      if (res.data.type === 'company') navigate('/company-dashboard');
+      if (res.data.is_super_admin) navigate('/super-admin');
+      else if (res.data.type === 'company') navigate('/company-dashboard');
       else navigate('/employee-portal');
     } catch (err) {
       setError(err.response?.data?.detail || "Credenciales incorrectas o cuenta inactiva");
