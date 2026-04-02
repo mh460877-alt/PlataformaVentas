@@ -351,7 +351,9 @@ class ChatMsgConImagen(BaseModel):
 # ============================================================
 @app.post("/login")
 def login(data: LoginRequest, db: Session = Depends(get_db)):
-    if data.email == "admin@salesai.com" and data.password == "admin":
+    SUPER_ADMIN_EMAIL = os.getenv("SUPER_ADMIN_EMAIL", "")
+    SUPER_ADMIN_PASSWORD = os.getenv("SUPER_ADMIN_PASSWORD", "")
+    if data.email == SUPER_ADMIN_EMAIL and data.password == SUPER_ADMIN_PASSWORD:
         return {"type": "super_admin", "id": 0, "name": "Super Admin", "is_super_admin": True}
 
     company = db.query(User).filter(User.email == data.email).first()
