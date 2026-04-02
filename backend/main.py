@@ -1,5 +1,6 @@
 from fastapi import FastAPI, Depends, HTTPException, UploadFile, File, Form
 import base64, fitz, tempfile, os, time, random
+import bcrypt
 from openai import OpenAI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
@@ -357,7 +358,7 @@ def login(data: LoginRequest, db: Session = Depends(get_db)):
         return {"type": "super_admin", "id": 0, "name": "Super Admin", "is_super_admin": True}
 
     company = db.query(User).filter(User.email == data.email).first()
-    if company and company.hashed_password == data.password:
+    if company and bcrypt.checkpw(data.password.encode('utf-8'), company.hashed_password.encode('utf-8')):
         if not company.is_active and not company.is_super_admin:
             raise HTTPException(403, "Cuenta deshabilitada. Contacte a soporte.")
         return {
@@ -368,7 +369,7 @@ def login(data: LoginRequest, db: Session = Depends(get_db)):
         }
 
     emp = db.query(Employee).filter(Employee.email == data.email).first()
-    if emp and emp.password == data.password:
+    if emp and bcrypt.checkpw(data.password.encode('utf-8'), emp.password.encode('utf-8')):
         if not emp.company.is_active:
             raise HTTPException(403, "Empresa deshabilitada.")
         return {
@@ -385,9 +386,10 @@ def login(data: LoginRequest, db: Session = Depends(get_db)):
 def register(data: RegisterRequest, db: Session = Depends(get_db)):
     if db.query(User).filter(User.email == data.email).first():
         raise HTTPException(status_code=400, detail="El email ya existe")
+    hashed = bcrypt.hashpw(data.password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
     db.add(User(
         email=data.email,
-        hashed_password=data.password,
+        hashed_password=hashed,
         visible_password=data.password,
         company_name=data.company_name,
         phone=data.phone,
@@ -430,7 +432,8 @@ def update_user(id: int, data: UserUpdate, db: Session = Depends(get_db)):
     if data.mission_values is not None:
         user.mission_values = data.mission_values
     if data.password and len(data.password) > 0:
-        user.hashed_password = data.password
+        hashed = bcrypt.hashpw(data.password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+        user.hashed_password = hashed
         user.visible_password = data.password
     db.commit()
     return {"status": "updated"}
@@ -571,10 +574,11 @@ def delete_global_prototype(id: int, db: Session = Depends(get_db)):
 def create_employee(id: int, data: EmployeeReq, db: Session = Depends(get_db)):
     if db.query(Employee).filter(Employee.email == data.email).first():
         raise HTTPException(400, "El email ya existe")
+    hashed = bcrypt.hashpw(data.password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
     db.add(Employee(
         name=data.name,
         email=data.email,
-        password=data.password,
+        password=hashed,
         visible_password=data.password,
         role=data.role,
         company_id=id
@@ -1118,7 +1122,8 @@ def update_employee(id: int, data: EmployeeUpdate, db: Session = Depends(get_db)
     if data.email:
         emp.email = data.email
     if data.password and len(data.password) > 0:
-        emp.password = data.password
+        hashed = bcrypt.hashpw(data.password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+        emp.password = hashed
         emp.visible_password = data.password
     db.commit()
     return {"status": "updated"}
