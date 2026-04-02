@@ -1228,14 +1228,14 @@ function SuperAdmin() {
             <div className="space-y-4">
               <input className="w-full p-3 bg-white border border-slate-300 rounded-lg text-black focus:ring-2 focus:ring-cyan-500 outline-none" placeholder="Nombre Empresa *" onChange={e => setNewCompany({ ...newCompany, company_name: e.target.value })} />
               <input className="w-full p-3 bg-white border border-slate-300 rounded-lg text-black focus:ring-2 focus:ring-cyan-500 outline-none" placeholder="Email Admin *" onChange={e => setNewCompany({ ...newCompany, email: e.target.value })} />
-              <input className="w-full p-3 bg-white border border-slate-300 rounded-lg text-black focus:ring-2 focus:ring-cyan-500 outline-none" placeholder="Teléfono" onChange={e => setNewCompany({ ...newCompany, phone: e.target.value })} />
+              <input className="w-full p-3 bg-white border border-slate-300 rounded-lg text-black focus:ring-2 focus:ring-cyan-500 outline-none" placeholder="Teléfono" autoComplete="off" onChange={e => setNewCompany({ ...newCompany, phone: e.target.value })} />
             <RichTextEditor
               value={newCompany.mission_values}
               onChange={val => setNewCompany({ ...newCompany, mission_values: val })}
               placeholder="Misión y valores de la empresa (opcional)"
               minHeight="80px"
             />
-              <input className="w-full p-3 bg-white border border-slate-300 rounded-lg text-black focus:ring-2 focus:ring-cyan-500 outline-none" type="password" placeholder="Contraseña *" onChange={e => setNewCompany({ ...newCompany, password: e.target.value })} />
+              <input className="w-full p-3 bg-white border border-slate-300 rounded-lg text-black focus:ring-2 focus:ring-cyan-500 outline-none" type="password" placeholder="Contraseña *" autoComplete="new-password" onChange={e => setNewCompany({ ...newCompany, password: e.target.value })} />
               <button onClick={handleCreateCompany} className="w-full bg-[#1a181d] text-white p-3 rounded-lg font-bold hover:opacity-90 mt-2">Guardar</button>
             </div>
           </div>
@@ -1252,7 +1252,7 @@ function SuperAdmin() {
               <div><label className="text-xs font-bold text-slate-500 uppercase">Email</label><input className="w-full p-3 rounded-lg bg-white border border-slate-300 text-black mt-1 outline-none focus:ring-2 focus:ring-cyan-500" value={editingCompany.email} onChange={e => setEditingCompany({ ...editingCompany, email: e.target.value })} /></div>
               <div><label className="text-xs font-bold text-slate-500 uppercase">Teléfono</label><input className="w-full p-3 rounded-lg bg-white border border-slate-300 text-black mt-1 outline-none focus:ring-2 focus:ring-cyan-500" value={editingCompany.phone || ''} onChange={e => setEditingCompany({ ...editingCompany, phone: e.target.value })} /></div>
               <div><label className="text-xs font-bold text-slate-500 uppercase">Misión y Valores</label><RichTextEditor value={editingCompany.mission_values || ''} onChange={val => setEditingCompany({ ...editingCompany, mission_values: val })} placeholder="Misión y valores..." minHeight="80px" /></div>
-              <div><label className="text-xs font-bold text-slate-500 uppercase">Nueva Clave (dejar vacío para no cambiar)</label><input className="w-full p-3 rounded-lg bg-white border border-slate-300 text-black mt-1 outline-none focus:ring-2 focus:ring-cyan-500" type="password" placeholder="••••••" onChange={e => setEditingCompany({ ...editingCompany, password: e.target.value })} /></div>
+              <div><label className="text-xs font-bold text-slate-500 uppercase">Nueva Clave (dejar vacío para no cambiar)</label><input className="w-full p-3 rounded-lg bg-white border border-slate-300 text-black mt-1 outline-none focus:ring-2 focus:ring-cyan-500" type="password" placeholder="••••••" autoComplete="new-password" onChange={e => setEditingCompany({ ...editingCompany, password: e.target.value })} /></div>
               <button onClick={handleUpdateCompany} className="w-full bg-[#6be1e3] text-[#1a181d] p-3 rounded-lg font-bold hover:opacity-90 mt-2">Actualizar Datos</button>
             </div>
           </div>
@@ -2429,7 +2429,7 @@ function CompanyDashboard() {
                 <h3 className="font-bold mb-4 text-lg">Nuevo Vendedor</h3>
                 <input className="w-full bg-slate-50 border p-3 rounded-xl mb-2 text-sm outline-none focus:ring-2 focus:ring-[#e17bd7]" placeholder="Nombre completo" value={newEmp.name} onChange={e => setNewEmp({ ...newEmp, name: e.target.value })} />
                 <input className="w-full bg-slate-50 border p-3 rounded-xl mb-2 text-sm outline-none focus:ring-2 focus:ring-[#e17bd7]" placeholder="Email" value={newEmp.email} onChange={e => setNewEmp({ ...newEmp, email: e.target.value })} />
-                <input className="w-full bg-slate-50 border p-3 rounded-xl mb-4 text-sm outline-none focus:ring-2 focus:ring-[#e17bd7]" type="password" placeholder="Contraseña" value={newEmp.password} onChange={e => setNewEmp({ ...newEmp, password: e.target.value })} />
+                <input className="w-full bg-slate-50 border p-3 rounded-xl mb-4 text-sm outline-none focus:ring-2 focus:ring-[#e17bd7]" type="password" placeholder="Contraseña" autoComplete="new-password" value={newEmp.password} onChange={e => setNewEmp({ ...newEmp, password: e.target.value })} />
                 <button onClick={addEmployee} className="w-full bg-[#1a181d] text-white p-3 rounded-xl font-bold hover:opacity-90 flex items-center justify-center gap-2"><Plus size={16} /> Crear Vendedor</button>
               </div>
 
@@ -2551,7 +2551,7 @@ function CompanyDashboard() {
                   </div>
                   <div>
                     <label className="text-xs font-bold text-slate-500 uppercase tracking-wide">Nueva contraseña (dejar vacío para no cambiar)</label>
-                    <input className="w-full mt-1 p-3 bg-slate-50 border rounded-xl outline-none focus:ring-2 focus:ring-[#e17bd7] text-sm" type="password" placeholder="••••••••" value={profileEdit.password || ''} onChange={e => setProfileEdit({ ...profileEdit, password: e.target.value })} />
+                    <input className="w-full mt-1 p-3 bg-slate-50 border rounded-xl outline-none focus:ring-2 focus:ring-[#e17bd7] text-sm" type="password" placeholder="••••••••" autoComplete="new-password" value={profileEdit.password || ''} onChange={e => setProfileEdit({ ...profileEdit, password: e.target.value })} />
                   </div>
                   <button onClick={saveProfileEdit} className="w-full bg-[#1a181d] text-white p-3 rounded-xl font-bold hover:opacity-90 flex items-center justify-center gap-2 mt-2">
                     <Save size={16} /> Guardar Cambios
