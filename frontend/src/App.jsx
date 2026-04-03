@@ -1526,6 +1526,7 @@ function ProductsView({ products, newProd, setNewProd, addProduct, deleteProduct
   const [editingInfo, setEditingInfo] = useState(false);
   const [showInfoModal, setShowInfoModal] = useState(false);
   const [infoText, setInfoText] = useState('');
+  const [loadingPdf, setLoadingPdf] = useState(false);
   const [viewProto, setViewProto] = useState(null);
   const [editProto, setEditProto] = useState(null);
   const [editForm, setEditForm] = useState({
@@ -1770,6 +1771,35 @@ function ProductsView({ products, newProd, setNewProd, addProduct, deleteProduct
         </p>
         {editingInfo ? (
           <div>
+            <div className="flex items-center gap-3 mb-3">
+              <label className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-bold cursor-pointer transition ${loadingPdf ? 'bg-slate-200 text-slate-400 cursor-not-allowed' : 'bg-[#6be1e3]/15 text-[#3abfc1] hover:bg-[#6be1e3] hover:text-black'}`}>
+                <Upload size={14} />
+                {loadingPdf ? 'Procesando PDF...' : 'Importar desde PDF'}
+                <input
+                  type="file"
+                  accept=".pdf"
+                  className="hidden"
+                  disabled={loadingPdf}
+                  onChange={async (e) => {
+                    const file = e.target.files[0];
+                    if (!file) return;
+                    setLoadingPdf(true);
+                    try {
+                      const formData = new FormData();
+                      formData.append('file', file);
+                      const res = await axios.post(`${API_URL}/chat/pdf`, formData);
+                      setInfoText(prev => prev ? prev + '\n\n' + res.data.text : res.data.text);
+                    } catch {
+                      alert('Error procesando el PDF. Intentá de nuevo.');
+                    } finally {
+                      setLoadingPdf(false);
+                      e.target.value = '';
+                    }
+                  }}
+                />
+              </label>
+              <span className="text-xs text-slate-400">El texto se agregará al editor para que puedas revisarlo antes de guardar.</span>
+            </div>
             <RichTextEditor
               value={infoText}
               onChange={setInfoText}

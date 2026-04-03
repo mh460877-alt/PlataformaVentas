@@ -1017,7 +1017,7 @@ async def chat_pdf(file: UploadFile = File(...)):
         os.unlink(tmp_path)
     if not text.strip():
         raise HTTPException(400, "No se pudo extraer texto del PDF")
-    return {"type": "pdf", "text": text[:4000]}
+    return {"type": "pdf", "text": text[:10000]}
 
 
 @app.post("/chat/audio")
