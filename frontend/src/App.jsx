@@ -1798,6 +1798,32 @@ function ProductsView({ products, newProd, setNewProd, addProduct, deleteProduct
                   }}
                 />
               </label>
+              <label className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-bold cursor-pointer transition ${loadingPdf ? 'bg-slate-200 text-slate-400 cursor-not-allowed' : 'bg-[#e17bd7]/15 text-[#e17bd7] hover:bg-[#e17bd7] hover:text-white'}`}>
+                <ImageIcon size={14} />
+                {loadingPdf ? 'Procesando...' : 'Importar desde imagen'}
+                <input
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  disabled={loadingPdf}
+                  onChange={async (e) => {
+                    const file = e.target.files[0];
+                    if (!file) return;
+                    setLoadingPdf(true);
+                    try {
+                      const formData = new FormData();
+                      formData.append('file', file);
+                      const res = await axios.post(`${API_URL}/product/extract-from-image`, formData);
+                      setInfoText(prev => prev ? prev + '\n\n' + res.data.text : res.data.text);
+                    } catch {
+                      alert('Error procesando la imagen. Intentá de nuevo.');
+                    } finally {
+                      setLoadingPdf(false);
+                      e.target.value = '';
+                    }
+                  }}
+                />
+              </label>
               <span className="text-xs text-slate-400">El texto se agregará al editor para que puedas revisarlo antes de guardar.</span>
             </div>
             <RichTextEditor

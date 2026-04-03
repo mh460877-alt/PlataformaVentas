@@ -1020,6 +1020,38 @@ async def chat_pdf(file: UploadFile = File(...)):
     return {"type": "pdf", "text": text[:10000]}
 
 
+@app.post("/product/extract-from-image")
+async def extract_info_from_image(file: UploadFile = File(...)):
+    contents = await file.read()
+    b64 = base64.b64encode(contents).decode("utf-8")
+    media_type = file.content_type or "image/jpeg"
+    try:
+        client = OpenAI()
+        response = client.chat.completions.create(
+            model="gpt-4o",
+            messages=[
+                {
+                    "role": "user",
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": "Analizá esta imagen y extraé toda la información comercial y técnica del producto: nombre, precio, características, beneficios, condiciones, garantía, formas de pago, o cualquier dato relevante para un vendedor. Organizá la información de forma clara y estructurada en texto plano, sin markdown, sin asteriscos, sin guiones. Usá números y saltos de línea para separar secciones."
+                        },
+                        {
+                            "type": "image_url",
+                            "image_url": {"url": f"data:{media_type};base64,{b64}"}
+                        }
+                    ]
+                }
+            ],
+            max_tokens=2000
+        )
+        text = response.choices[0].message.content
+        return {"text": text}
+    except Exception as e:
+        raise HTTPException(400, f"Error procesando la imagen: {str(e)}")
+
+
 @app.post("/chat/audio")
 async def chat_audio(file: UploadFile = File(...)):
     contents = await file.read()
