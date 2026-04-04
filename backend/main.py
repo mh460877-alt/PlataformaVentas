@@ -484,6 +484,17 @@ def create_capsule(data: CapsuleReq, db: Session = Depends(get_db)):
     return {"status": "ok"}
 
 
+@app.put("/capsules/{id}")
+def update_capsule(id: int, data: CapsuleReq, db: Session = Depends(get_db)):
+    cap = db.query(Capsule).filter(Capsule.id == id).first()
+    if not cap:
+        raise HTTPException(404, "Cápsula no encontrada")
+    cap.title = data.title
+    cap.description = data.description
+    db.commit()
+    return {"status": "ok"}
+
+
 @app.delete("/capsules/{id}")
 def delete_capsule(id: int, db: Session = Depends(get_db)):
     db.query(CapsuleContent).filter(CapsuleContent.capsule_id == id).delete()
