@@ -1043,9 +1043,9 @@ function SuperAdmin() {
                   <td className="p-6">
                     <div className="flex items-center gap-3">
                       <Folder className="text-[#e4c76a]" />
-                      <div className="flex flex-col">
+                      <div className="flex flex-col min-w-0">
                         <span className="font-bold text-white text-lg">{cap.title}</span>
-                        <span className="text-xs text-slate-500">{cap.description}</span>
+                        <span className="text-xs text-slate-500 truncate max-w-md">{cap.description}</span>
                       </div>
                     </div>
                   </td>
@@ -1362,9 +1362,9 @@ function BibliotecaView({ capsules }) {
                           <div className="w-9 h-9 rounded-xl bg-[#e4c76a]/10 flex items-center justify-center flex-shrink-0">
                             <Folder size={18} className="text-[#e4c76a]" />
                           </div>
-                          <div>
+                          <div className="min-w-0">
                             <p className="font-bold text-slate-800">{c.title}</p>
-                            {c.description && <p className="text-xs text-slate-400 mt-0.5">{c.description}</p>}
+                            {c.description && <p className="text-xs text-slate-400 mt-0.5 truncate max-w-sm">{c.description}</p>}
                           </div>
                         </div>
                       </td>
