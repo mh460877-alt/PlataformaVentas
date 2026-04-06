@@ -1440,6 +1440,9 @@ function BibliotecaView({ capsules }) {
   const cap = openFolder;
   const videos = cap.contents.filter(c => c.type === 'video');
   const pdfs   = cap.contents.filter(c => c.type === 'pdf');
+
+  // Mostrar descripción completa si existe
+  const descripcionCompleta = cap.description && cap.description.trim();
   const maxRows = Math.max(videos.length, pdfs.length, 1);
   const rows = Array.from({ length: maxRows }, (_, i) => ({
     idx: i + 1,
@@ -1467,6 +1470,12 @@ function BibliotecaView({ capsules }) {
           {cap.contents.length} archivo{cap.contents.length !== 1 ? 's' : ''}
         </span>
       </div>
+
+      {descripcionCompleta && (
+        <div className="bg-slate-50 border border-slate-200 rounded-2xl px-6 py-4 mb-6 text-sm text-slate-600 leading-relaxed">
+          {descripcionCompleta}
+        </div>
+      )}
 
       {/* Tabla */}
       {cap.contents.length === 0 ? (
