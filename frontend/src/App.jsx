@@ -427,8 +427,55 @@ function LandingPage() {
       </main>
 
       {/* Footer */}
-      <footer className="py-6 text-center text-slate-400 text-xs border-t border-slate-50 bg-white relative z-10">
-        © 2026 ONE Commercial AI. Sistema Integral de Inteligencia y Entrenamiento Comercial.
+      <footer className="relative z-10">
+        {/* Bloque sucursales */}
+        <div style={{ backgroundColor: '#2a2730' }} className="px-8 py-12">
+          <div className="max-w-7xl mx-auto">
+            {/* Redes sociales */}
+            <div className="flex justify-center gap-4 mb-10">
+              <a href="https://www.facebook.com/escencialconsultora" target="_blank" rel="noreferrer"
+                className="w-9 h-9 border border-slate-500 rounded flex items-center justify-center text-slate-400 hover:text-white hover:border-white transition text-xs font-bold">f</a>
+              <a href="https://www.instagram.com/escencialconsultora" target="_blank" rel="noreferrer"
+                className="w-9 h-9 border border-slate-500 rounded flex items-center justify-center text-slate-400 hover:text-white hover:border-white transition text-xs font-bold">ig</a>
+              <a href="https://www.linkedin.com/company/escencialconsultora/" target="_blank" rel="noreferrer"
+                className="w-9 h-9 border border-slate-500 rounded flex items-center justify-center text-slate-400 hover:text-white hover:border-white transition text-xs font-bold">in</a>
+            </div>
+            {/* Sucursales */}
+            <div className="grid md:grid-cols-3 gap-10 text-slate-300">
+              {/* Tucumán */}
+              <div>
+                <h4 className="text-white font-bold text-base mb-3 pb-2 border-b border-slate-600">Sucursal Tucumán</h4>
+                <p className="text-sm mb-1">Email: info@escencialconsult.com.ar</p>
+                <p className="text-sm mb-1">Dirección: Catamarca 873 - San Miguel de Tucumán</p>
+                <p className="text-sm mb-1">Teléfono: +54 9 3816 22-1565</p>
+                <p className="text-sm">Celular: +54 9 3816 22-1565</p>
+              </div>
+              {/* Bolivia */}
+              <div>
+                <h4 className="text-white font-bold text-base mb-3 pb-2 border-b border-slate-600">Sucursal Bolivia</h4>
+                <p className="text-sm mb-1">Manzana 40, torre 2, piso 10</p>
+                <p className="text-sm mb-1">Santa Cruz de la Sierra, Bolivia</p>
+                <p className="text-sm">Teléfono: +591 76030430</p>
+              </div>
+              {/* Buenos Aires */}
+              <div>
+                <h4 className="text-white font-bold text-base mb-3 pb-2 border-b border-slate-600">Sucursal Buenos Aires</h4>
+                <p className="text-sm mb-1">Suipacha 946, C1008AAT</p>
+                <p className="text-sm mb-1">Cdad. Autónoma de Buenos Aires</p>
+                <p className="text-sm">Teléfono: +54 9 11 5006-1604</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        {/* Barra final */}
+        <div style={{ backgroundColor: '#1a181d' }} className="px-8 py-3 flex justify-between items-center border-t border-[#e17bd7]/30">
+          <p className="text-xs text-slate-500">
+            <span style={{ color: '#6be1e3' }} className="font-bold">ONE</span> | Todos los derechos reservados. © 2026
+          </p>
+          <p className="text-xs text-slate-500">
+            Desarrollado por <span style={{ color: '#6be1e3' }} className="font-bold">ONE</span> <span style={{ color: '#e17bd7' }}>by Escencial</span>
+          </p>
+        </div>
       </footer>
     </div>
   );
