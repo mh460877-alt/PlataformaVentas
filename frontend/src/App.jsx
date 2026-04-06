@@ -318,7 +318,7 @@ function LandingPage() {
   }, []);
 
   return (
-    <div className="min-h-screen font-sans relative overflow-x-hidden flex flex-col" style={{ backgroundColor: COLORS.white }}>
+    <div className="font-sans relative overflow-x-hidden flex flex-col" style={{ backgroundColor: COLORS.white }}>
       <canvas ref={canvasRef} style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', pointerEvents: 'none', zIndex: 0 }} />
 
       {/* Gradientes decorativos de fondo */}
