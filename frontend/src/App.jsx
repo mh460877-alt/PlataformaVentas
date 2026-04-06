@@ -250,59 +250,45 @@ function LandingPage() {
     const onMove = (e) => {
       const r = canvas.getBoundingClientRect();
       if (e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom){has=false;return;}
-      pmx=mx; pmy=my; mx=e.clientX-r.left; my=e.clientY-r.top;
+      mx=e.clientX-r.left; my=e.clientY-r.top;
       if(!has){sx=mx;sy=my;} has=true;
     };
     document.addEventListener('mousemove', onMove);
-    const spawn = (cx,cy,dvx,dvy) => {
-      const sp=Math.sqrt(dvx*dvx+dvy*dvy)||1;
-      const nx=dvx/sp, ny=dvy/sp, px=-ny, py=nx;
-      const count=3+Math.floor(Math.random()*3);
-      for(let i=0;i<count;i++){
-        const spread=(Math.random()-0.5)*H*0.85;
-        const off=(Math.random()-0.5)*30;
-        const x=cx+px*spread+nx*off, y=cy+py*spread+ny*off;
-        if(x<-20||x>W+20||y<-20||y>H+20) continue;
-        const color=PC[Math.floor(Math.random()*PC.length)];
-        const wp=(Math.random()-0.5)*0.6;
-        nodes.push({x,y,ox:x,oy:y,vx:px*wp*0.4+(Math.random()-0.5)*0.15,vy:py*wp*0.4+(Math.random()-0.5)*0.15,
-          r:1.5+Math.random()*2,color,alpha:0,ta:0.4+Math.random()*0.35,life:1,
-          decay:0.0015+Math.random()*0.0015,wp:Math.random()*Math.PI*2,
-          ws:0.01+Math.random()*0.012,wph:Math.random()*Math.PI*2,
-          wa:0.25+Math.random()*0.35,px,py});
-      }
-      while(nodes.length>MAX) nodes.shift();
-    };
-    const spawnIdle = (cx, cy) => {
-      const count = 2 + Math.floor(Math.random() * 2);
+
+    const spawnCircle = (cx, cy) => {
+      const count = 3 + Math.floor(Math.random() * 3);
       for(let i = 0; i < count; i++){
         const angle = Math.random() * Math.PI * 2;
-        const spread = 20 + Math.random() * 130;
-        const x = cx + Math.cos(angle) * spread;
-        const y = cy + Math.sin(angle) * spread;
+        const dist = 30 + Math.random() * 110;
+        const x = cx + Math.cos(angle) * dist;
+        const y = cy + Math.sin(angle) * dist;
         if(x<-20||x>W+20||y<-20||y>H+20) continue;
         const color = PC[Math.floor(Math.random()*PC.length)];
         const px = Math.cos(angle), py = Math.sin(angle);
-        nodes.push({x,y,ox:x,oy:y,
-          vx:(Math.random()-0.5)*0.12, vy:(Math.random()-0.5)*0.12,
-          r:1.5+Math.random()*2, color, alpha:0,
-          ta:0.3+Math.random()*0.3, life:1,
-          decay:0.002+Math.random()*0.002,
-          wp:Math.random()*Math.PI*2, ws:0.008+Math.random()*0.01,
-          wph:Math.random()*Math.PI*2, wa:0.3+Math.random()*0.4,
-          px, py});
+        nodes.push({
+          x, y, ox: cx, oy: cy,
+          vx: px*(0.15+Math.random()*0.2),
+          vy: py*(0.15+Math.random()*0.2),
+          r: 1.5+Math.random()*2,
+          color, alpha: 0,
+          ta: 0.35+Math.random()*0.35,
+          life: 1,
+          decay: 0.0018+Math.random()*0.0015,
+          wph: Math.random()*Math.PI*2,
+          wa: 0.3+Math.random()*0.5,
+          ws: 0.008+Math.random()*0.01,
+          wp: Math.random()*Math.PI*2,
+          px, py
+        });
       }
-      while(nodes.length>MAX) nodes.shift();
+      while(nodes.length > MAX) nodes.shift();
     };
 
     const animate = (now) => {
       ctx.clearRect(0,0,W,H); t+=0.012;
       if(has){
-        sx+=(mx-sx)*0.06; sy+=(my-sy)*0.06;
-        const dvx=mx-pmx, dvy=my-pmy;
-        const moved = Math.sqrt(dvx*dvx+dvy*dvy);
-        if(now-last>50 && moved>0.5){ spawn(sx,sy,dvx,dvy); last=now; }
-        else if(now-last>120 && moved<=0.5){ spawnIdle(sx,sy); last=now; }
+        sx+=(mx-sx)*0.05; sy+=(my-sy)*0.05;
+        if(now-last>90){ spawnCircle(sx,sy); last=now; }
       }
       for(let i=0;i<nodes.length;i++) for(let j=i+1;j<nodes.length;j++){
         const a=nodes[i],b=nodes[j],dx=a.x-b.x,dy=a.y-b.y,d=Math.sqrt(dx*dx+dy*dy);
