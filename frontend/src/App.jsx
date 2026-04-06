@@ -241,8 +241,8 @@ function LandingPage() {
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
     const PC = ['#6be1e3','#e17bd7','#e4c76a'];
-    const nodes = []; const MAX = 120; const CD = 80;
-    let W, H, mx=-9999, my=-9999, pmx=-9999, pmy=-9999;
+    const nodes = []; const MAX = 150; const CD = 85;
+    let W, H, mx=-9999, my=-9999;
     let sx=-9999, sy=-9999, has=false, last=0, t=0, animId;
     const resize = () => { W=canvas.width=canvas.offsetWidth; H=canvas.height=canvas.offsetHeight; };
     resize();
