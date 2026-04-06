@@ -26,7 +26,7 @@ const LogoOne = ({ small }) => (
     <img
       src={logoIconNegro}
       alt="ONE Commercial IA"
-      className={`${small ? 'h-14' : 'h-20'} w-auto object-contain`}
+      className={`${small ? 'h-14' : 'h-20'} w-auto object-contain heartbeat`}
     />
   </div>
 );
@@ -273,12 +273,36 @@ function LandingPage() {
       }
       while(nodes.length>MAX) nodes.shift();
     };
+    const spawnIdle = (cx, cy) => {
+      const count = 2 + Math.floor(Math.random() * 2);
+      for(let i = 0; i < count; i++){
+        const angle = Math.random() * Math.PI * 2;
+        const spread = 20 + Math.random() * 130;
+        const x = cx + Math.cos(angle) * spread;
+        const y = cy + Math.sin(angle) * spread;
+        if(x<-20||x>W+20||y<-20||y>H+20) continue;
+        const color = PC[Math.floor(Math.random()*PC.length)];
+        const px = Math.cos(angle), py = Math.sin(angle);
+        nodes.push({x,y,ox:x,oy:y,
+          vx:(Math.random()-0.5)*0.12, vy:(Math.random()-0.5)*0.12,
+          r:1.5+Math.random()*2, color, alpha:0,
+          ta:0.3+Math.random()*0.3, life:1,
+          decay:0.002+Math.random()*0.002,
+          wp:Math.random()*Math.PI*2, ws:0.008+Math.random()*0.01,
+          wph:Math.random()*Math.PI*2, wa:0.3+Math.random()*0.4,
+          px, py});
+      }
+      while(nodes.length>MAX) nodes.shift();
+    };
+
     const animate = (now) => {
       ctx.clearRect(0,0,W,H); t+=0.012;
       if(has){
         sx+=(mx-sx)*0.06; sy+=(my-sy)*0.06;
         const dvx=mx-pmx, dvy=my-pmy;
-        if(now-last>50 && Math.sqrt(dvx*dvx+dvy*dvy)>0.5){spawn(sx,sy,dvx,dvy);last=now;}
+        const moved = Math.sqrt(dvx*dvx+dvy*dvy);
+        if(now-last>50 && moved>0.5){ spawn(sx,sy,dvx,dvy); last=now; }
+        else if(now-last>120 && moved<=0.5){ spawnIdle(sx,sy); last=now; }
       }
       for(let i=0;i<nodes.length;i++) for(let j=i+1;j<nodes.length;j++){
         const a=nodes[i],b=nodes[j],dx=a.x-b.x,dy=a.y-b.y,d=Math.sqrt(dx*dx+dy*dy);
@@ -318,7 +342,7 @@ function LandingPage() {
         <LogoOne />
         <button 
           onClick={() => navigate('/login')} 
-          className="px-6 py-2 rounded-full font-bold text-white shadow-md hover:shadow-lg transition transform hover:-translate-y-0.5 text-sm" 
+          className="px-6 py-2 rounded-full font-bold text-white shadow-md hover:shadow-lg transition transform hover:-translate-y-0.5 text-sm heartbeat" 
           style={{ backgroundColor: COLORS.black }}
         >
           Ingresar
@@ -343,7 +367,7 @@ function LandingPage() {
           </p>
           <button
             onClick={() => navigate('/login')}
-            className="text-white px-8 py-4 rounded-xl text-base font-bold shadow-xl transition-all hover:scale-105 flex items-center mx-auto gap-2 group"
+            className="text-white px-8 py-4 rounded-xl text-base font-bold shadow-xl transition-all hover:scale-105 flex items-center mx-auto gap-2 group heartbeat"
             style={{ background: `linear-gradient(90deg, ${COLORS.cyan} 0%, ${COLORS.pink} 100%)` }}
           >
             Comenzar Ahora <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition" />
@@ -353,7 +377,7 @@ function LandingPage() {
         {/* Feature Cards */}
         <div className="grid md:grid-cols-3 gap-8 w-full mb-16">
           {/* Simulación */}
-          <div className="bg-white p-8 rounded-3xl shadow-sm hover:shadow-xl transition duration-300 border border-slate-100 group relative overflow-hidden">
+          <div className="bg-white p-8 rounded-3xl shadow-sm hover:shadow-xl transition duration-300 border border-slate-100 group relative overflow-hidden heartbeat">
             <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-[#6be1e3]/5 to-transparent rounded-full -translate-y-1/2 translate-x-1/2"></div>
             <div className="relative z-10">
               <div className="w-14 h-14 rounded-2xl flex items-center justify-center mb-5 group-hover:scale-110 transition-transform" style={{ backgroundColor: `${COLORS.cyan}15`, color: COLORS.cyan }}>
@@ -373,7 +397,7 @@ function LandingPage() {
           </div>
 
           {/* Cápsulas */}
-          <div className="bg-white p-8 rounded-3xl shadow-sm hover:shadow-xl transition duration-300 border border-slate-100 group relative overflow-hidden">
+          <div className="bg-white p-8 rounded-3xl shadow-sm hover:shadow-xl transition duration-300 border border-slate-100 group relative overflow-hidden heartbeat">
             <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-[#e17bd7]/5 to-transparent rounded-full -translate-y-1/2 translate-x-1/2"></div>
             <div className="relative z-10">
               <div className="w-14 h-14 rounded-2xl flex items-center justify-center mb-5 group-hover:scale-110 transition-transform" style={{ backgroundColor: `${COLORS.pink}15`, color: COLORS.pink }}>
@@ -393,7 +417,7 @@ function LandingPage() {
           </div>
 
           {/* Analítica */}
-          <div className="bg-white p-8 rounded-3xl shadow-sm hover:shadow-xl transition duration-300 border border-slate-100 group relative overflow-hidden">
+          <div className="bg-white p-8 rounded-3xl shadow-sm hover:shadow-xl transition duration-300 border border-slate-100 group relative overflow-hidden heartbeat">
             <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-[#e4c76a]/5 to-transparent rounded-full -translate-y-1/2 translate-x-1/2"></div>
             <div className="relative z-10">
               <div className="w-14 h-14 rounded-2xl flex items-center justify-center mb-5 group-hover:scale-110 transition-transform" style={{ backgroundColor: `${COLORS.gold}15`, color: COLORS.gold }}>

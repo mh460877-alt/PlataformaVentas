@@ -2,6 +2,18 @@
 /* No usar max-width global ni margin auto en #root, 
    ya que los layouts son full-screen */
 
+@keyframes heartbeat {
+  0%   { transform: scale(1); }
+  14%  { transform: scale(1.05); }
+  28%  { transform: scale(1); }
+  42%  { transform: scale(1.03); }
+  56%  { transform: scale(1); }
+  100% { transform: scale(1); }
+}
+.heartbeat {
+  animation: heartbeat 2.4s ease-in-out infinite;
+  display: inline-block;
+}
 .rich-content p { margin-bottom: 0.5rem; }
 .rich-content ul { list-style: disc; padding-left: 1.2rem; margin: 0.5rem 0; }
 .rich-content b, .rich-content strong { font-weight: 700; }
