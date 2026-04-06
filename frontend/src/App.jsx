@@ -259,24 +259,26 @@ function LandingPage() {
       const count = 3 + Math.floor(Math.random() * 3);
       for(let i = 0; i < count; i++){
         const angle = Math.random() * Math.PI * 2;
-        const dist = 30 + Math.random() * 110;
+        const dist = 40 + Math.random() * 100;
         const x = cx + Math.cos(angle) * dist;
         const y = cy + Math.sin(angle) * dist;
         if(x<-20||x>W+20||y<-20||y>H+20) continue;
         const color = PC[Math.floor(Math.random()*PC.length)];
-        const px = Math.cos(angle), py = Math.sin(angle);
+        // perpendicular al radio — hace que floten en arco, no al centro
+        const px = -Math.sin(angle), py = Math.cos(angle);
         nodes.push({
-          x, y, ox: cx, oy: cy,
-          vx: px*(0.15+Math.random()*0.2),
-          vy: py*(0.15+Math.random()*0.2),
-          r: 1.5+Math.random()*2,
+          x, y,
+          ox: x, oy: y,          // origen = donde nace, no el centro
+          vx: px*(0.1+Math.random()*0.15) + (Math.random()-0.5)*0.08,
+          vy: py*(0.1+Math.random()*0.15) + (Math.random()-0.5)*0.08,
+          r: 1.8+Math.random()*2,
           color, alpha: 0,
-          ta: 0.35+Math.random()*0.35,
+          ta: 0.3+Math.random()*0.35,
           life: 1,
-          decay: 0.0018+Math.random()*0.0015,
+          decay: 0.0016+Math.random()*0.0014,
           wph: Math.random()*Math.PI*2,
-          wa: 0.3+Math.random()*0.5,
-          ws: 0.008+Math.random()*0.01,
+          wa: 0.25+Math.random()*0.45,
+          ws: 0.006+Math.random()*0.009,
           wp: Math.random()*Math.PI*2,
           px, py
         });
