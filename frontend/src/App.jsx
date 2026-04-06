@@ -318,14 +318,15 @@ function LandingPage() {
   }, []);
 
   return (
-    <div className="font-sans relative overflow-x-hidden flex flex-col" style={{ backgroundColor: COLORS.white }}>
-      <canvas ref={canvasRef} style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', pointerEvents: 'none', zIndex: 0 }} />
+    <div className="font-sans flex flex-col" style={{ backgroundColor: COLORS.white }}>
+      <div className="relative overflow-hidden flex flex-col">
+        <canvas ref={canvasRef} style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', pointerEvents: 'none', zIndex: 0 }} />
 
-      {/* Gradientes decorativos de fondo */}
-      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-gradient-to-b from-[#e17bd7]/10 to-transparent rounded-full blur-[80px] -translate-y-1/2 translate-x-1/2 pointer-events-none"></div>
-      <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-gradient-to-t from-[#6be1e3]/10 to-transparent rounded-full blur-[80px] translate-y-1/2 -translate-x-1/2 pointer-events-none"></div>
-      
-      {/* Nav */}
+        {/* Gradientes decorativos de fondo */}
+        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-gradient-to-b from-[#e17bd7]/10 to-transparent rounded-full blur-[80px] -translate-y-1/2 translate-x-1/2 pointer-events-none"></div>
+        <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-gradient-to-t from-[#6be1e3]/10 to-transparent rounded-full blur-[80px] translate-y-1/2 -translate-x-1/2 pointer-events-none"></div>
+
+        {/* Nav */}
       <nav className="flex justify-between items-center px-8 py-6 max-w-7xl mx-auto w-full relative z-20">
         <LogoOne />
         <button 
@@ -425,6 +426,7 @@ function LandingPage() {
           </div>
         </div>
       </main>
+      </div>{/* fin hero wrapper */}
 
       {/* Footer */}
       <footer className="relative z-10">
