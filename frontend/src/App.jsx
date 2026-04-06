@@ -433,6 +433,8 @@ function SuperAdmin() {
   const [searchCapsule, setSearchCapsule] = useState('');
   const [modalCapsule, setModalCapsule] = useState(false);
   const [modalContent, setModalContent] = useState(false);
+  const [editingCap, setEditingCap] = useState(null);
+  const [editCapForm, setEditCapForm] = useState({ title: '', description: '' });
   const [newCompany, setNewCompany] = useState({ company_name: '', email: '', password: '', phone: '', mission_values: '' });
   const [editingCompany, setEditingCompany] = useState({ id: 0, company_name: '', email: '', password: '', phone: '', mission_values: '' });
   const [newCap, setNewCap] = useState({ title: '', description: '' });
@@ -505,6 +507,15 @@ function SuperAdmin() {
 
   const deleteCap = async (id) => {
     if (confirm("¿Borrar cápsula y todo su contenido?")) { await axios.delete(`${API_URL}/capsules/${id}`); loadData(); }
+  };
+
+  const handleUpdateCapsule = async () => {
+    if (!editCapForm.title) return alert("El título es obligatorio");
+    try {
+      await axios.put(`${API_URL}/capsules/${editingCap.id}`, editCapForm);
+      setEditingCap(null);
+      loadData();
+    } catch { alert("Error al actualizar la cápsula"); }
   };
 
   const deleteCont = async (id) => {
@@ -1050,7 +1061,10 @@ function SuperAdmin() {
                     </div>
                   </td>
                   <td className="p-6 text-center">
-                    <button onClick={(e) => { e.stopPropagation(); deleteCap(cap.id); }} className="p-2 bg-red-500/20 text-red-400 rounded hover:bg-red-500 hover:text-white transition mx-auto block"><Trash2 size={18} /></button>
+                    <div className="flex gap-2 justify-center">
+                      <button onClick={(e) => { e.stopPropagation(); setEditingCap(cap); setEditCapForm({ title: cap.title, description: cap.description }); }} className="p-2 bg-blue-500/10 text-blue-400 rounded-xl hover:bg-blue-500 hover:text-white transition"><Edit2 size={16} /></button>
+                      <button onClick={(e) => { e.stopPropagation(); deleteCap(cap.id); }} className="p-2 bg-red-500/20 text-red-400 rounded hover:bg-red-500 hover:text-white transition"><Trash2 size={18} /></button>
+                    </div>
                   </td>
                 </tr>
               ))}
@@ -1259,6 +1273,24 @@ function SuperAdmin() {
         </div>
       )}
 
+      {/* MODAL EDITAR CÁPSULA */}
+      {editingCap && (
+        <div className="fixed inset-0 bg-black/90 flex items-center justify-center p-4 z-[99999]">
+          <div className="bg-white p-6 rounded-2xl w-96">
+            <div className="flex justify-between mb-4">
+              <h3 className="font-bold text-black text-xl">Editar Cápsula</h3>
+              <button onClick={() => setEditingCap(null)} className="text-slate-400 hover:text-black"><X size={20} /></button>
+            </div>
+            <input className="w-full border border-slate-300 p-3 mb-3 rounded-lg text-black focus:ring-2 focus:ring-[#e17bd7] outline-none" placeholder="Título" value={editCapForm.title} onChange={e => setEditCapForm({ ...editCapForm, title: e.target.value })} />
+            <input className="w-full border border-slate-300 p-3 mb-6 rounded-lg text-black focus:ring-2 focus:ring-[#e17bd7] outline-none" placeholder="Descripción" value={editCapForm.description} onChange={e => setEditCapForm({ ...editCapForm, description: e.target.value })} />
+            <div className="flex gap-2">
+              <button onClick={handleUpdateCapsule} className="flex-1 bg-[#1a181d] text-white p-3 rounded-lg font-bold hover:opacity-90">Guardar</button>
+              <button onClick={() => setEditingCap(null)} className="text-red-500 px-4">Cancelar</button>
+            </div>
+          </div>
+        </div>
+      )}
+      
       {/* MODAL CREAR CÁPSULA */}
       {modalCapsule && (
         <div className="fixed inset-0 bg-black/90 flex items-center justify-center p-4 z-[99999]">
