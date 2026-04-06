@@ -234,8 +234,81 @@ function RichTextEditor({ value, onChange, placeholder, minHeight = '120px' }) {
 function LandingPage() {
   const navigate = useNavigate();
   useEffect(() => { document.title = 'ONE Commercial IA'; }, []);
+
+  const canvasRef = useRef(null);
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    const PC = ['#6be1e3','#e17bd7','#e4c76a'];
+    const nodes = []; const MAX = 120; const CD = 80;
+    let W, H, mx=-9999, my=-9999, pmx=-9999, pmy=-9999;
+    let sx=-9999, sy=-9999, has=false, last=0, t=0, animId;
+    const resize = () => { W=canvas.width=canvas.offsetWidth; H=canvas.height=canvas.offsetHeight; };
+    resize();
+    window.addEventListener('resize', resize);
+    const onMove = (e) => {
+      const r = canvas.getBoundingClientRect();
+      if (e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom){has=false;return;}
+      pmx=mx; pmy=my; mx=e.clientX-r.left; my=e.clientY-r.top;
+      if(!has){sx=mx;sy=my;} has=true;
+    };
+    document.addEventListener('mousemove', onMove);
+    const spawn = (cx,cy,dvx,dvy) => {
+      const sp=Math.sqrt(dvx*dvx+dvy*dvy)||1;
+      const nx=dvx/sp, ny=dvy/sp, px=-ny, py=nx;
+      const count=3+Math.floor(Math.random()*3);
+      for(let i=0;i<count;i++){
+        const spread=(Math.random()-0.5)*H*0.85;
+        const off=(Math.random()-0.5)*30;
+        const x=cx+px*spread+nx*off, y=cy+py*spread+ny*off;
+        if(x<-20||x>W+20||y<-20||y>H+20) continue;
+        const color=PC[Math.floor(Math.random()*PC.length)];
+        const wp=(Math.random()-0.5)*0.6;
+        nodes.push({x,y,ox:x,oy:y,vx:px*wp*0.4+(Math.random()-0.5)*0.15,vy:py*wp*0.4+(Math.random()-0.5)*0.15,
+          r:1.5+Math.random()*2,color,alpha:0,ta:0.4+Math.random()*0.35,life:1,
+          decay:0.0015+Math.random()*0.0015,wp:Math.random()*Math.PI*2,
+          ws:0.01+Math.random()*0.012,wph:Math.random()*Math.PI*2,
+          wa:0.25+Math.random()*0.35,px,py});
+      }
+      while(nodes.length>MAX) nodes.shift();
+    };
+    const animate = (now) => {
+      ctx.clearRect(0,0,W,H); t+=0.012;
+      if(has){
+        sx+=(mx-sx)*0.06; sy+=(my-sy)*0.06;
+        const dvx=mx-pmx, dvy=my-pmy;
+        if(now-last>50 && Math.sqrt(dvx*dvx+dvy*dvy)>0.5){spawn(sx,sy,dvx,dvy);last=now;}
+      }
+      for(let i=0;i<nodes.length;i++) for(let j=i+1;j<nodes.length;j++){
+        const a=nodes[i],b=nodes[j],dx=a.x-b.x,dy=a.y-b.y,d=Math.sqrt(dx*dx+dy*dy);
+        if(d<CD){const s=1-d/CD;ctx.save();ctx.globalAlpha=s*Math.min(a.alpha,b.alpha)*0.45;
+          ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);
+          ctx.strokeStyle=a.color;ctx.lineWidth=0.5;ctx.stroke();ctx.restore();}
+      }
+      for(let i=nodes.length-1;i>=0;i--){
+        const n=nodes[i]; n.life-=n.decay;
+        if(n.life<=0){nodes.splice(i,1);continue;}
+        if(n.alpha<n.ta) n.alpha+=0.035;
+        const fade=n.life<0.3?n.life/0.3:1, a=n.alpha*fade;
+        n.wp+=n.ws;
+        const wave=Math.sin(t*1.2+n.wph)*n.wa;
+        n.vx+=n.px*wave*0.018; n.vy+=n.py*wave*0.018;
+        n.vx+=(n.ox-n.x)*0.004; n.vy+=(n.oy-n.y)*0.004;
+        n.vx*=0.94; n.vy*=0.94; n.x+=n.vx; n.y+=n.vy;
+        ctx.save();ctx.globalAlpha=a;ctx.beginPath();ctx.arc(n.x,n.y,n.r,0,Math.PI*2);ctx.fillStyle=n.color;ctx.fill();ctx.restore();
+        ctx.save();ctx.globalAlpha=a*0.1;ctx.beginPath();ctx.arc(n.x,n.y,n.r*3.5,0,Math.PI*2);ctx.fillStyle=n.color;ctx.fill();ctx.restore();
+      }
+      animId=requestAnimationFrame(animate);
+    };
+    animId=requestAnimationFrame(animate);
+    return () => { window.removeEventListener('resize',resize); document.removeEventListener('mousemove',onMove); cancelAnimationFrame(animId); };
+  }, []);
+
   return (
     <div className="min-h-screen font-sans relative overflow-x-hidden flex flex-col" style={{ backgroundColor: COLORS.white }}>
+      <canvas ref={canvasRef} style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', pointerEvents: 'none', zIndex: 0 }} />
+
       {/* Gradientes decorativos de fondo */}
       <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-gradient-to-b from-[#e17bd7]/10 to-transparent rounded-full blur-[80px] -translate-y-1/2 translate-x-1/2 pointer-events-none"></div>
       <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-gradient-to-t from-[#6be1e3]/10 to-transparent rounded-full blur-[80px] translate-y-1/2 -translate-x-1/2 pointer-events-none"></div>
