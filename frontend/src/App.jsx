@@ -1446,7 +1446,7 @@ function SuperAdmin() {
                       const habilitada = companyCapsules.includes(cap.id);
                       return (
                         <div key={cap.id} className={`p-4 rounded-2xl border flex items-center gap-4 transition ${habilitada ? 'bg-green-500/10 border-green-500/30' : 'bg-white/5 border-white/10'}`}>
-                          <div className="flex-1">
+                          <div className="flex-1 min-w-0">
                             <p className="text-white font-bold text-sm truncate">{cap.title}</p>
                             <p className="text-slate-400 text-xs mt-0.5 truncate">{cap.description}</p>
                           </div>
