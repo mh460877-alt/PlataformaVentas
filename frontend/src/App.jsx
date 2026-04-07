@@ -3269,12 +3269,9 @@ function ProductList({ products, onStartChat }) {
               <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#e17bd7]/20 to-[#6be1e3]/20 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                 <span className="text-xl">👤</span>
               </div>
-              <h3 className="font-bold text-slate-800 text-lg mb-2 group-hover:text-[#e17bd7] transition-colors">
+              <h3 className="font-bold text-slate-800 text-lg group-hover:text-[#e17bd7] transition-colors">
                 {pr.name}
               </h3>
-              <p className="text-sm text-slate-500 leading-relaxed line-clamp-3">
-                {pr.description}
-              </p>
               <div className="mt-5 flex items-center gap-2 text-xs font-bold text-[#e17bd7] opacity-0 group-hover:opacity-100 transition-opacity">
                 Comenzar entrenamiento <ArrowRight size={13} />
               </div>
