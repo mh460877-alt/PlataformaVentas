@@ -2673,7 +2673,7 @@ function CompanyDashboard() {
                       <p className="text-xs text-slate-500">{e.email}</p>
                       <div className="flex gap-3 mt-1 text-xs text-slate-400">
                         <span className="flex items-center gap-1"><MessageSquare size={12} /> {e.sessions_count} sesiones</span>
-                        {e.avg_score && <span className="flex items-center gap-1 text-[#e4c76a]"><Star size={12} /> {e.avg_score}/10 promedio</span>}
+                        {e.avg_score && <span className="flex items-center gap-2"><span className={`w-3 h-3 rounded-full inline-block ${e.avg_score >= 7 ? 'bg-green-500' : e.avg_score >= 5 ? 'bg-orange-500' : 'bg-red-500'}`}></span><span className="text-xs text-slate-400">promedio</span></span>}
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
@@ -2801,7 +2801,7 @@ function CompanyDashboard() {
                       )}
                       <div className="space-y-3">
                         {profileEmp.sessions.filter(s => s.messages.filter(m => m.role === 'user').length >= 3).map((s, i) => {
-                          const scoreColor = !s.score ? 'text-slate-400' : s.score >= 8 ? 'text-green-500' : s.score >= 5 ? 'text-yellow-500' : 'text-red-500';
+                          const scoreBgColor = !s.score ? '' : s.score >= 7 ? 'bg-green-500' : s.score >= 5 ? 'bg-orange-500' : 'bg-red-500';
                           return (
                             <div key={s.id} className="w-full bg-slate-50 border p-4 rounded-xl flex justify-between items-center">
                               <div>
@@ -2812,7 +2812,7 @@ function CompanyDashboard() {
                                 <p className="text-xs text-slate-400 mt-0.5">{s.messages.filter(m => m.role === 'user').length} intercambios</p>
                               </div>
                               <div className="text-right flex items-center gap-3">
-                                {s.score ? <span className={`text-3xl font-extrabold ${scoreColor}`}>{s.score}<span className="text-sm text-slate-300">/10</span></span> : <span className="text-xs text-slate-400 bg-slate-200 px-2 py-1 rounded">Sin evaluar</span>}
+                                {s.score ? <span className={`w-5 h-5 rounded-full inline-block ${scoreBgColor}`}></span> : <span className="text-xs text-slate-400 bg-slate-200 px-2 py-1 rounded">Sin evaluar</span>}
                                 <button
                                   onClick={() => setSelSession({ ...s, vistaInicial: 'chat' })}
                                   className="bg-slate-200 text-slate-700 hover:bg-[#1a181d] hover:text-white px-3 py-1.5 rounded-lg text-xs font-bold transition">
@@ -2838,9 +2838,7 @@ function CompanyDashboard() {
                           <p className="text-xs text-slate-400">{selSession.date ? new Date(selSession.date).toLocaleDateString('es-AR', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' }) : '—'}</p>
                         </div>
                         {selSession.score && (
-                          <span className={`ml-auto text-2xl font-extrabold ${selSession.score >= 8 ? 'text-green-500' : selSession.score >= 5 ? 'text-yellow-500' : 'text-red-500'}`}>
-                            {selSession.score}/10
-                          </span>
+                          <span className={`ml-auto w-5 h-5 rounded-full inline-block ${selSession.score >= 7 ? 'bg-green-500' : selSession.score >= 5 ? 'bg-orange-500' : 'bg-red-500'}`}></span>
                         )}
                       </div>
                       {selSession.vistaInicial !== 'informe' && (
@@ -3012,10 +3010,7 @@ function CompanyDashboard() {
                                           <div style={{ textAlign: 'right' }}>
                                             <div style={{ fontSize: '11px', color: '#8892a0', marginBottom: '4px' }}>{selSession.date ? new Date(selSession.date + 'Z').toLocaleDateString('es-AR', { day: '2-digit', month: 'long', year: 'numeric' }) : '—'}</div>
                                             {selSession.score && (
-                                              <div style={{ marginTop: '12px', display: 'inline-block', background: 'rgba(107,225,227,0.12)', border: '1px solid #6be1e3', borderRadius: '6px', padding: '4px 14px' }}>
-                                                <span style={{ fontSize: '24px', fontWeight: 600, color: '#6be1e3' }}>{selSession.score}</span>
-                                                <span style={{ fontSize: '13px', color: '#4a6070' }}>/10</span>
-                                              </div>
+                                              <span style={{ display: 'inline-block', width: '20px', height: '20px', borderRadius: '50%', background: selSession.score >= 7 ? '#22c55e' : selSession.score >= 5 ? '#f97316' : '#ef4444' }}></span>
                                             )}
                                           </div>
                                         </div>
@@ -3666,8 +3661,9 @@ const stopRecording = () => {
 
   // PANTALLA DE FEEDBACK
   if (view === 'feedback') {
-    const scoreColor = score >= 8 ? 'text-green-500' : score >= 5 ? 'text-yellow-500' : 'text-red-500';
-    const scoreBg   = score >= 8 ? 'bg-green-50 border-green-200' : score >= 5 ? 'bg-yellow-50 border-yellow-200' : 'bg-red-50 border-red-200';
+    const scoreColor = score >= 7 ? 'text-green-500' : score >= 5 ? 'text-orange-500' : 'text-red-500';
+    const scoreBg   = score >= 7 ? 'bg-green-50 border-green-200' : score >= 5 ? 'bg-orange-50 border-orange-200' : 'bg-red-50 border-red-200';
+    const scoreBgCircle = score >= 7 ? 'bg-green-500' : score >= 5 ? 'bg-orange-500' : 'bg-red-500';
 
     // Parsear las secciones del feedback del vendedor
     const parseSections = (text) => {
@@ -3720,7 +3716,7 @@ const stopRecording = () => {
               {/* Puntaje */}
               <div className={`text-center p-6 rounded-2xl border mb-6 ${scoreBg}`}>
                 <p className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">Puntuación Final</p>
-                <p className={`text-7xl font-extrabold ${scoreColor}`}>{score}<span className="text-3xl text-slate-400">/10</span></p>
+                <span className={`w-16 h-16 rounded-full inline-block ${scoreBgCircle}`}></span>
               </div>
 
               {/* Secciones parseadas */}
@@ -3822,7 +3818,7 @@ const stopRecording = () => {
             {history.length === 0 && <div className="text-center p-12 bg-white rounded-2xl border-2 border-dashed text-slate-400">Aún no completaste ninguna sesión. ¡A entrenar!</div>}
             <div className="space-y-4">
               {history.map((s, i) => {
-                const scoreColor = !s.score ? 'text-slate-400' : s.score >= 8 ? 'text-green-500' : s.score >= 5 ? 'text-yellow-500' : 'text-red-500';
+                const scoreBgColor = !s.score ? '' : s.score >= 7 ? 'bg-green-500' : s.score >= 5 ? 'bg-orange-500' : 'bg-red-500';
                 return (
                   <div key={s.id} className="bg-white p-6 rounded-2xl border shadow-sm">
                     <div className="flex justify-between items-start">
@@ -3831,7 +3827,7 @@ const stopRecording = () => {
                         <p className="text-xs text-slate-400">{s.date ? new Date(s.date + 'Z').toLocaleDateString('es-AR', { day: '2-digit', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'Fecha no disponible'}</p>
                       </div>
                       <div className="text-right">
-                        {s.score ? <p className={`text-4xl font-extrabold ${scoreColor}`}>{s.score}<span className="text-lg text-slate-300">/10</span></p> : <p className="text-slate-400 text-sm">Sin evaluar</p>}
+                        {s.score ? <span className={`w-8 h-8 rounded-full inline-block ${scoreBgColor}`}></span> : <p className="text-slate-400 text-sm">Sin evaluar</p>}
                       </div>
                     </div>
                     {s.feedback && (
