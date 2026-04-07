@@ -9,7 +9,7 @@ import re
 from sqlalchemy.orm import Session
 
 from app.database import engine, SessionLocal, Base
-from app.models import User, Employee, Product, ClientPrototype, Capsule, CapsuleContent, ChatSession, ChatMessage, EmployeeCapsule, GlobalPrototype
+from app.models import User, Employee, Product, ClientPrototype, Capsule, CapsuleContent, ChatSession, ChatMessage, EmployeeCapsule, GlobalPrototype, CompanyCapsule
 from app.services.openai_service import (obtener_respuesta_coach, obtener_respuesta_coach_con_imagen, generar_evaluacion_vendedor, generar_evaluacion_admin)
 
 # Crear tablas nuevas y migrar columnas faltantes de forma segura
@@ -168,6 +168,24 @@ def run_migrations():
                 print("✅ Migración: global_prototypes.reaction_style")
             except Exception as e:
                 print(f"⚠️ Error migrando global_prototypes.reaction_style: {e}")
+
+        # Crear tabla company_capsules si no existe
+        if 'company_capsules' not in tables:
+            try:
+                conn.execute(text("""
+                    CREATE TABLE company_capsules (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        company_id INTEGER NOT NULL,
+                        capsule_id INTEGER NOT NULL,
+                        UNIQUE(company_id, capsule_id),
+                        FOREIGN KEY(company_id) REFERENCES users(id),
+                        FOREIGN KEY(capsule_id) REFERENCES capsules(id)
+                    )
+                """))
+                conn.commit()
+                print("✅ Migración: tabla company_capsules creada")
+            except Exception as e:
+                print(f"⚠️ Migración company_capsules: {e}")        
 
 run_migrations()
 
@@ -1211,3 +1229,24 @@ def get_employee_capsules(id: int, db: Session = Depends(get_db)):
                 ]
             })
     return result
+
+
+@app.get("/companies/{id}/capsules")
+def get_company_capsules(id: int, db: Session = Depends(get_db)):
+    assignments = db.query(CompanyCapsule).filter(CompanyCapsule.company_id == id).all()
+    return [a.capsule_id for a in assignments]
+
+@app.post("/companies/{id}/capsules/{capsule_id}")
+def toggle_company_capsule(id: int, capsule_id: int, db: Session = Depends(get_db)):
+    existing = db.query(CompanyCapsule).filter(
+        CompanyCapsule.company_id == id,
+        CompanyCapsule.capsule_id == capsule_id
+    ).first()
+    if existing:
+        db.delete(existing)
+        db.commit()
+        return {"status": "disabled"}
+    else:
+        db.add(CompanyCapsule(company_id=id, capsule_id=capsule_id))
+        db.commit()
+        return {"status": "enabled"}

@@ -120,3 +120,11 @@ class GlobalPrototype(Base):
     initial_state = Column(String, nullable=True, default="")
     communication_style = Column(String, nullable=True, default="")
     reaction_style = Column(String, nullable=True, default="")
+
+# --- ASIGNACIÓN CÁPSULAS A EMPRESAS ---
+class CompanyCapsule(Base):
+    __tablename__ = "company_capsules"
+    id = Column(Integer, primary_key=True, index=True)
+    company_id = Column(Integer, ForeignKey("users.id"))
+    capsule_id = Column(Integer, ForeignKey("capsules.id"))
+    __table_args__ = (UniqueConstraint('company_id', 'capsule_id', name='uq_comp_cap'),)
