@@ -561,6 +561,8 @@ function SuperAdmin() {
   const [activeTab, setActiveTab] = useState('empresas');
   const [showModal, setShowModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
+  const [activeCompanyTab, setActiveCompanyTab] = useState('info');
+  const [companyCapsules, setCompanyCapsules] = useState([]);
   const [empresas, setEmpresas] = useState([]);
   const [capsules, setCapsules] = useState([]);
   const [currentCapsule, setCurrentCapsule] = useState(null);
@@ -595,9 +597,22 @@ function SuperAdmin() {
     } catch (e) { alert("Error: " + (e.response?.data?.detail || "Error desconocido")); }
   };
 
-  const prepareEdit = (emp) => {
+  const prepareEdit = async (emp) => {
     setEditingCompany({ id: emp.id, company_name: emp.company_name, email: emp.email, phone: emp.phone || '', password: '', mission_values: emp.mission_values || '' });
+    setActiveCompanyTab('info');
+    try {
+      const res = await axios.get(`${API_URL}/companies/${emp.id}/capsules`);
+      setCompanyCapsules(Array.isArray(res.data) ? res.data : []);
+    } catch { setCompanyCapsules([]); }
     setShowEditModal(true);
+  };
+
+  const toggleCompanyCapsule = async (capsuleId) => {
+    try {
+      await axios.post(`${API_URL}/companies/${editingCompany.id}/capsules/${capsuleId}`);
+      const res = await axios.get(`${API_URL}/companies/${editingCompany.id}/capsules`);
+      setCompanyCapsules(Array.isArray(res.data) ? res.data : []);
+    } catch { alert("Error al actualizar cápsula"); }
   };
 
   const handleUpdateCompany = async () => {
@@ -717,7 +732,7 @@ function SuperAdmin() {
                   </td>
                   <td className="p-5">
                     <div className="flex gap-2 justify-center">
-                      <button onClick={() => prepareEdit(emp)} className="p-2 bg-blue-500/10 text-blue-400 rounded-xl hover:bg-blue-500 hover:text-white transition" title="Editar"><Edit2 size={16} /></button>
+                      <button onClick={() => prepareEdit(emp)} className="p-2 bg-slate-700 text-slate-400 rounded-xl hover:bg-white hover:text-black transition" title="Ver empresa"><Eye size={16} /></button>
                       <button onClick={() => toggleStatus(emp.id, emp.is_active)} className={`p-2 rounded-xl transition ${emp.is_active ? 'bg-green-500/10 text-green-400 hover:bg-green-500 hover:text-white' : 'bg-red-500/10 text-red-400 hover:bg-red-500 hover:text-white'}`} title={emp.is_active ? "Deshabilitar" : "Habilitar"}><Power size={16} /></button>
                       <button onClick={() => deleteCompany(emp.id)} className="p-2 bg-slate-700 text-slate-400 rounded-xl hover:bg-red-600 hover:text-white transition" title="Eliminar"><Trash2 size={16} /></button>
                     </div>
@@ -1390,18 +1405,60 @@ function SuperAdmin() {
         </div>
       )}
 
-      {/* MODAL EDITAR EMPRESA */}
+      {/* MODAL VER EMPRESA */}
       {showEditModal && (
-        <div className="fixed inset-0 bg-black/90 flex items-center justify-center p-4 z-[99999] backdrop-blur-md overflow-y-auto">
-          <div className="bg-white p-8 rounded-3xl w-full max-w-md shadow-2xl max-h-[90vh] overflow-y-auto">
-            <div className="flex justify-between mb-6"><h3 className="font-bold text-xl text-[#1a181d]">Editar Cliente</h3><button onClick={() => setShowEditModal(false)} className="text-slate-400 hover:text-black"><X size={20} /></button></div>
-            <div className="space-y-4">
-              <div><label className="text-xs font-bold text-slate-500 uppercase">Nombre</label><input className="w-full p-3 rounded-lg bg-white border border-slate-300 text-black mt-1 outline-none focus:ring-2 focus:ring-cyan-500" value={editingCompany.company_name} onChange={e => setEditingCompany({ ...editingCompany, company_name: e.target.value })} /></div>
-              <div><label className="text-xs font-bold text-slate-500 uppercase">Email</label><input className="w-full p-3 rounded-lg bg-white border border-slate-300 text-black mt-1 outline-none focus:ring-2 focus:ring-cyan-500" value={editingCompany.email} onChange={e => setEditingCompany({ ...editingCompany, email: e.target.value })} /></div>
-              <div><label className="text-xs font-bold text-slate-500 uppercase">Teléfono</label><input className="w-full p-3 rounded-lg bg-white border border-slate-300 text-black mt-1 outline-none focus:ring-2 focus:ring-cyan-500" value={editingCompany.phone || ''} onChange={e => setEditingCompany({ ...editingCompany, phone: e.target.value })} /></div>
-              <div><label className="text-xs font-bold text-slate-500 uppercase">Misión y Valores</label><RichTextEditor value={editingCompany.mission_values || ''} onChange={val => setEditingCompany({ ...editingCompany, mission_values: val })} placeholder="Misión y valores..." minHeight="80px" /></div>
-              <div><label className="text-xs font-bold text-slate-500 uppercase">Nueva Clave (dejar vacío para no cambiar)</label><input className="w-full p-3 rounded-lg bg-white border border-slate-300 text-black mt-1 outline-none focus:ring-2 focus:ring-cyan-500" type="password" placeholder="••••••" autoComplete="new-password" onChange={e => setEditingCompany({ ...editingCompany, password: e.target.value })} /></div>
-              <button onClick={handleUpdateCompany} className="w-full bg-[#6be1e3] text-[#1a181d] p-3 rounded-lg font-bold hover:opacity-90 mt-2">Actualizar Datos</button>
+        <div className="fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-[99999] backdrop-blur-md">
+          <div className="bg-[#1a181d] rounded-3xl w-full max-w-2xl shadow-2xl max-h-[90vh] flex flex-col">
+            {/* Header */}
+            <div className="flex items-center gap-4 p-6 border-b border-white/10">
+              <div className="w-12 h-12 rounded-2xl bg-[#e17bd7]/20 flex items-center justify-center flex-shrink-0">
+                <Building size={22} className="text-[#e17bd7]" />
+              </div>
+              <div className="flex-1">
+                <p className="text-xs text-slate-400 uppercase font-bold tracking-widest mb-0.5">Empresa</p>
+                <p className="text-white font-bold text-lg leading-tight">{editingCompany.company_name}</p>
+                <p className="text-slate-400 text-sm">{editingCompany.email}</p>
+              </div>
+              <button onClick={() => setShowEditModal(false)} className="text-slate-400 hover:text-white p-2 rounded-xl hover:bg-white/10 transition"><X size={20} /></button>
+            </div>
+            {/* Tabs */}
+            <div className="flex border-b border-white/10">
+              <button onClick={() => setActiveCompanyTab('info')} className={`flex-1 py-3 text-sm font-bold transition ${activeCompanyTab === 'info' ? 'text-[#e17bd7] border-b-2 border-[#e17bd7]' : 'text-slate-400 hover:text-white'}`}>Información</button>
+              <button onClick={() => setActiveCompanyTab('capsulas')} className={`flex-1 py-3 text-sm font-bold transition ${activeCompanyTab === 'capsulas' ? 'text-[#e17bd7] border-b-2 border-[#e17bd7]' : 'text-slate-400 hover:text-white'}`}>Cápsulas</button>
+            </div>
+            {/* Content */}
+            <div className="overflow-y-auto flex-1 p-6">
+              {activeCompanyTab === 'info' && (
+                <div className="space-y-4">
+                  <div><label className="text-xs font-bold text-slate-400 uppercase">Nombre</label><input className="w-full p-3 rounded-xl bg-white/5 border border-white/10 text-white mt-1 outline-none focus:ring-2 focus:ring-[#e17bd7]" value={editingCompany.company_name} onChange={e => setEditingCompany({ ...editingCompany, company_name: e.target.value })} /></div>
+                  <div><label className="text-xs font-bold text-slate-400 uppercase">Email</label><input className="w-full p-3 rounded-xl bg-white/5 border border-white/10 text-white mt-1 outline-none focus:ring-2 focus:ring-[#e17bd7]" value={editingCompany.email} onChange={e => setEditingCompany({ ...editingCompany, email: e.target.value })} /></div>
+                  <div><label className="text-xs font-bold text-slate-400 uppercase">Teléfono</label><input className="w-full p-3 rounded-xl bg-white/5 border border-white/10 text-white mt-1 outline-none focus:ring-2 focus:ring-[#e17bd7]" value={editingCompany.phone || ''} onChange={e => setEditingCompany({ ...editingCompany, phone: e.target.value })} /></div>
+                  <div><label className="text-xs font-bold text-slate-400 uppercase">Misión y Valores</label><RichTextEditor value={editingCompany.mission_values || ''} onChange={val => setEditingCompany({ ...editingCompany, mission_values: val })} placeholder="Misión y valores..." minHeight="80px" /></div>
+                  <div><label className="text-xs font-bold text-slate-400 uppercase">Nueva Clave (dejar vacío para no cambiar)</label><input className="w-full p-3 rounded-xl bg-white/5 border border-white/10 text-white mt-1 outline-none focus:ring-2 focus:ring-[#e17bd7]" type="password" placeholder="••••••" autoComplete="new-password" onChange={e => setEditingCompany({ ...editingCompany, password: e.target.value })} /></div>
+                  <button onClick={handleUpdateCompany} className="w-full bg-[#e17bd7] text-white p-3 rounded-xl font-bold hover:opacity-90 mt-2">Guardar Cambios</button>
+                </div>
+              )}
+              {activeCompanyTab === 'capsulas' && (
+                <div>
+                  <p className="text-slate-400 text-sm mb-4">Habilitá o deshabilitá el acceso de esta empresa a cada cápsula.</p>
+                  <div className="space-y-3">
+                    {capsules.map(cap => {
+                      const habilitada = companyCapsules.includes(cap.id);
+                      return (
+                        <div key={cap.id} className={`p-4 rounded-2xl border flex items-center gap-4 transition ${habilitada ? 'bg-green-500/10 border-green-500/30' : 'bg-white/5 border-white/10'}`}>
+                          <div className="flex-1">
+                            <p className="text-white font-bold text-sm">{cap.title}</p>
+                            <p className="text-slate-400 text-xs mt-0.5">{cap.description}</p>
+                          </div>
+                          <button onClick={() => toggleCompanyCapsule(cap.id)} className={`px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 ${habilitada ? 'bg-green-500 text-white hover:bg-red-500' : 'bg-white/10 text-slate-300 hover:bg-[#e17bd7] hover:text-white'}`}>
+                            {habilitada ? <><CheckCircle size={14} /> Habilitada</> : <><Plus size={14} /> Habilitar</>}
+                          </button>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>
