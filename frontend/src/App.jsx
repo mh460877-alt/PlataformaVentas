@@ -1447,8 +1447,8 @@ function SuperAdmin() {
                       return (
                         <div key={cap.id} className={`p-4 rounded-2xl border flex items-center gap-4 transition ${habilitada ? 'bg-green-500/10 border-green-500/30' : 'bg-white/5 border-white/10'}`}>
                           <div className="flex-1">
-                            <p className="text-white font-bold text-sm">{cap.title}</p>
-                            <p className="text-slate-400 text-xs mt-0.5">{cap.description}</p>
+                            <p className="text-white font-bold text-sm truncate">{cap.title}</p>
+                            <p className="text-slate-400 text-xs mt-0.5 truncate">{cap.description}</p>
                           </div>
                           <button onClick={() => toggleCompanyCapsule(cap.id)} className={`px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 ${habilitada ? 'bg-green-500 text-white hover:bg-red-500' : 'bg-white/10 text-slate-300 hover:bg-[#e17bd7] hover:text-white'}`}>
                             {habilitada ? <><CheckCircle size={14} /> Habilitada</> : <><Plus size={14} /> Habilitar</>}
