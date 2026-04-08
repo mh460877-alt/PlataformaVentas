@@ -10,3 +10,5 @@ Disallow: /docs/
 Disallow: /redoc/
 
 Allow: /
+
+Sitemap: https://onecommercialia.escencialconsultora.com/sitemap.xml
