@@ -547,6 +547,7 @@ function SuperAdmin() {
   const navigate = useNavigate();
   useEffect(() => { document.title = 'Super Admin | ONE Commercial IA'; }, []);
   const [activeTab, setActiveTab] = useState('empresas');
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [activeCompanyTab, setActiveCompanyTab] = useState('info');
@@ -1351,7 +1352,18 @@ function SuperAdmin() {
 
   return (
     <div className="min-h-screen bg-[#1a181d] text-white flex font-sans">
-      <aside className="w-80 p-10 border-r border-slate-800 bg-[#1a181d] flex flex-col fixed h-full z-10">
+      {/* Overlay mobile */}
+      {sidebarOpen && (
+        <div className="fixed inset-0 bg-black/60 z-20 md:hidden" onClick={() => setSidebarOpen(false)} />
+      )}
+      {/* Botón hamburguesa */}
+      <button
+        className="fixed top-4 left-4 z-30 md:hidden bg-[#e17bd7] text-white p-2 rounded-xl shadow-lg"
+        onClick={() => setSidebarOpen(!sidebarOpen)}
+      >
+        <span className="text-xl">☰</span>
+      </button>
+      <aside className={`w-72 md:w-80 p-8 md:p-10 border-r border-slate-800 bg-[#1a181d] flex flex-col fixed h-full z-20 transition-transform duration-300 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}`}>
         <div className="mb-12"><LogoOneWhite /></div>
         <div className="mb-10">
           <p className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-1">Rol</p>
@@ -1364,7 +1376,7 @@ function SuperAdmin() {
         </nav>
         <button onClick={() => navigate('/login')} className="mt-12 text-red-400 text-sm flex items-center font-bold px-4 py-3 rounded-xl hover:bg-white/5 transition"><LogOut className="w-4 h-4 mr-3" /> Cerrar Sesión</button>
       </aside>
-      <main className="flex-1 ml-80 p-12">
+      <main className="flex-1 ml-0 md:ml-80 p-4 md:p-12 pt-16 md:pt-12">
         <h2 className="text-4xl font-bold mb-10 tracking-tight">
           {activeTab === 'empresas' ? 'Gestión de Clientes' : activeTab === 'capsulas' ? 'Biblioteca Global' : 'Prototipos Globales'}
         </h2>
@@ -2512,6 +2524,7 @@ function CompanyDashboard() {
   useEffect(() => { document.title = 'Dashboard | ONE Commercial IA'; }, []);
   const user = JSON.parse(localStorage.getItem('user') || '{}');
   const [tab, setTab] = useState('employees');
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [employees, setEmployees] = useState([]);
   const [products, setProducts] = useState([]);
   const [capsules, setCapsules] = useState([]);
@@ -2675,7 +2688,16 @@ function CompanyDashboard() {
 
   return (
     <div className="min-h-screen bg-[#f8f9fc] flex font-sans text-slate-800">
-      <aside className="w-72 bg-[#1a181d] text-white p-6 flex flex-col fixed h-full z-10 shadow-2xl">
+      {sidebarOpen && (
+        <div className="fixed inset-0 bg-black/60 z-20 md:hidden" onClick={() => setSidebarOpen(false)} />
+      )}
+      <button
+        className="fixed top-4 left-4 z-30 md:hidden bg-[#e17bd7] text-white p-2 rounded-xl shadow-lg"
+        onClick={() => setSidebarOpen(!sidebarOpen)}
+      >
+        <span className="text-xl">☰</span>
+      </button>
+      <aside className={`w-72 bg-[#1a181d] text-white p-6 flex flex-col fixed h-full z-20 shadow-2xl transition-transform duration-300 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}`}>
         <div className="mb-10"><LogoOneWhite small /></div>
         <div className="mb-8 px-2">
           <p className="text-xs text-slate-500 uppercase tracking-widest font-bold mb-1">Empresa</p>
@@ -2694,7 +2716,7 @@ function CompanyDashboard() {
         </button>
       </aside>
 
-      <main className="ml-72 flex-1 p-10">
+      <main className="ml-0 md:ml-72 flex-1 p-4 md:p-10 pt-16 md:pt-10">
         {/* EQUIPO */}
         {tab === 'employees' && (
           <div>
@@ -3378,6 +3400,7 @@ function EmployeePortal() {
   useEffect(() => { document.title = 'Portal | ONE Commercial IA'; }, []);
   const user = JSON.parse(localStorage.getItem('user') || '{}');
   const [view, setView] = useState('select'); // 'select' | 'chat' | 'feedback'
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [products, setProducts] = useState([]);
   const [capsules, setCapsules] = useState([]);
   const [activeSection, setActiveSection] = useState('entrenar'); // 'entrenar' | 'capsulas' | 'historial'
@@ -3809,23 +3832,32 @@ const stopRecording = () => {
   // PANTALLA PRINCIPAL DEL VENDEDOR
   return (
     <div className="min-h-screen bg-[#f8f9fc] flex font-sans">
-      <aside className="w-64 bg-[#1a181d] text-white p-6 flex flex-col fixed h-full z-10">
+      {sidebarOpen && (
+        <div className="fixed inset-0 bg-black/60 z-20 md:hidden" onClick={() => setSidebarOpen(false)} />
+      )}
+      <button
+        className="fixed top-4 left-4 z-30 md:hidden bg-[#e17bd7] text-white p-2 rounded-xl shadow-lg"
+        onClick={() => setSidebarOpen(!sidebarOpen)}
+      >
+        <span className="text-xl">☰</span>
+      </button>
+      <aside className={`w-64 bg-[#1a181d] text-white p-6 flex flex-col fixed h-full z-20 transition-transform duration-300 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}`}>
         <div className="mb-10"><LogoOneWhite small /></div>
         <div className="mb-6 px-2">
           <p className="text-xs text-slate-500 uppercase tracking-widest font-bold mb-1">Vendedor</p>
           <p className="font-bold text-white">{user.name}</p>
         </div>
         <nav className="space-y-2 flex-1">
-          <button onClick={() => setActiveSection('entrenar')} className={`w-full text-left p-3 rounded-xl flex items-center gap-3 transition ${activeSection === 'entrenar' ? 'bg-[#e17bd7] text-white font-bold' : 'text-slate-400 hover:text-white hover:bg-white/5'}`}><BrainCircuit size={18} /> Entrenar</button>
-          <button onClick={() => setActiveSection('capsulas')} className={`w-full text-left p-3 rounded-xl flex items-center gap-3 transition ${activeSection === 'capsulas' ? 'bg-[#6be1e3] text-black font-bold' : 'text-slate-400 hover:text-white hover:bg-white/5'}`}><BookOpen size={18} /> Biblioteca</button>
-          <button onClick={() => setActiveSection('historial')} className={`w-full text-left p-3 rounded-xl flex items-center gap-3 transition ${activeSection === 'historial' ? 'bg-[#e4c76a] text-black font-bold' : 'text-slate-400 hover:text-white hover:bg-white/5'}`}><TrendingUp size={18} /> Mi Progreso</button>
+          <button onClick={() => { setActiveSection('entrenar'); setSidebarOpen(false); }} className={`w-full text-left p-3 rounded-xl flex items-center gap-3 transition ${activeSection === 'entrenar' ? 'bg-[#e17bd7] text-white font-bold' : 'text-slate-400 hover:text-white hover:bg-white/5'}`}><BrainCircuit size={18} /> Entrenar</button>
+          <button onClick={() => { setActiveSection('capsulas'); setSidebarOpen(false); }} className={`w-full text-left p-3 rounded-xl flex items-center gap-3 transition ${activeSection === 'capsulas' ? 'bg-[#6be1e3] text-black font-bold' : 'text-slate-400 hover:text-white hover:bg-white/5'}`}><BookOpen size={18} /> Biblioteca</button>
+          <button onClick={() => { setActiveSection('historial'); setSidebarOpen(false); }} className={`w-full text-left p-3 rounded-xl flex items-center gap-3 transition ${activeSection === 'historial' ? 'bg-[#e4c76a] text-black font-bold' : 'text-slate-400 hover:text-white hover:bg-white/5'}`}><TrendingUp size={18} /> Mi Progreso</button>
         </nav>
         <button onClick={() => { localStorage.removeItem('user'); navigate('/login'); }} className="text-red-400 flex items-center gap-2 text-sm font-bold px-2 py-3 hover:bg-white/5 rounded-xl transition">
           <LogOut size={16} /> Salir
         </button>
       </aside>
 
-      <main className="ml-64 flex-1 p-10">
+      <main className="ml-0 md:ml-64 flex-1 p-4 md:p-10 pt-16 md:pt-10">
         {/* SECCIÓN ENTRENAR */}
         {activeSection === 'entrenar' && (
           <div>
