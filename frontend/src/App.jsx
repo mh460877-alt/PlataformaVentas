@@ -690,8 +690,8 @@ function SuperAdmin() {
     <Plus className="mr-2 w-4 h-4" /> Nuevo Cliente
   </button>
 </header>
-        <div className="bg-slate-800 rounded-3xl border border-slate-700 overflow-hidden shadow-xl">
-          <table className="w-full text-left text-slate-300">
+        <div className="bg-slate-800 rounded-3xl border border-slate-700 overflow-hidden shadow-xl overflow-x-auto">
+          <table className="w-full text-left text-slate-300 min-w-[700px]">
             <thead className="bg-slate-900 text-xs uppercase font-bold text-slate-500">
               <tr>
                 <th className="p-5">Empresa</th>
@@ -923,8 +923,8 @@ function SuperAdmin() {
         </div>
       )}
 
-      <div className="bg-slate-800 rounded-3xl border border-slate-700 overflow-hidden shadow-xl">
-        <table className="w-full text-left text-slate-300 table-fixed">
+      <div className="bg-slate-800 rounded-3xl border border-slate-700 overflow-hidden shadow-xl overflow-x-auto">
+        <table className="w-full text-left text-slate-300 min-w-[600px]">
           <thead className="bg-slate-900 text-xs uppercase font-bold text-slate-500">
             <tr>
               <th className="px-5 py-4 w-[18%]">Perfil</th>
@@ -1186,8 +1186,8 @@ function SuperAdmin() {
             <button onClick={() => setModalCapsule(true)} className="bg-[#e17bd7] text-white px-4 py-2 rounded-xl font-bold flex items-center hover:opacity-90 shadow-lg"><Plus size={18} className="mr-2" /> Nueva Cápsula</button>
           </div>
         </div>
-        <div className="bg-slate-800 rounded-3xl border border-slate-700 overflow-hidden shadow-xl">
-          <table className="w-full text-left text-slate-300">
+        <div className="bg-slate-800 rounded-3xl border border-slate-700 overflow-hidden shadow-xl overflow-x-auto">
+          <table className="w-full text-left text-slate-300 min-w-[500px]">
             <thead className="bg-slate-900 text-xs uppercase font-bold text-slate-500">
               <tr><th className="p-6">ID</th><th className="p-6">Cápsula</th><th className="p-6 text-center">Acciones</th></tr>
             </thead>
@@ -1376,9 +1376,9 @@ function SuperAdmin() {
           <h1 className="text-2xl font-bold text-white">Super Admin</h1>
         </div>
         <nav className="space-y-3 flex-1">
-          <button onClick={() => setActiveTab('empresas')} className={`w-full text-left p-4 rounded-2xl transition-all duration-300 flex items-center ${activeTab === 'empresas' ? 'bg-[#e17bd7] text-white font-bold shadow-lg translate-x-2' : 'text-slate-400 hover:text-white hover:bg-white/5'}`}><Building className="mr-3 w-5 h-5" /> Clientes</button>
-          <button onClick={() => setActiveTab('capsulas')} className={`w-full text-left p-4 rounded-2xl transition-all duration-300 flex items-center ${activeTab === 'capsulas' ? 'bg-[#e4c76a] text-[#1a181d] font-bold shadow-lg translate-x-2' : 'text-slate-400 hover:text-white hover:bg-white/5'}`}><Folder className="mr-3 w-5 h-5" /> Contenidos</button>
-          <button onClick={() => setActiveTab('prototipos')} className={`w-full text-left p-4 rounded-2xl transition-all duration-300 flex items-center ${activeTab === 'prototipos' ? 'bg-[#6be1e3] text-[#1a181d] font-bold shadow-lg translate-x-2' : 'text-slate-400 hover:text-white hover:bg-white/5'}`}><Users className="mr-3 w-5 h-5" /> Prototipos</button>
+          <button onClick={() => { setActiveTab('empresas'); setSidebarOpen(false); }} className={`w-full text-left p-4 rounded-2xl transition-all duration-300 flex items-center ${activeTab === 'empresas' ? 'bg-[#e17bd7] text-white font-bold shadow-lg translate-x-2' : 'text-slate-400 hover:text-white hover:bg-white/5'}`}><Building className="mr-3 w-5 h-5" /> Clientes</button>
+          <button onClick={() => { setActiveTab('capsulas'); setSidebarOpen(false); }} className={`w-full text-left p-4 rounded-2xl transition-all duration-300 flex items-center ${activeTab === 'capsulas' ? 'bg-[#e4c76a] text-[#1a181d] font-bold shadow-lg translate-x-2' : 'text-slate-400 hover:text-white hover:bg-white/5'}`}><Folder className="mr-3 w-5 h-5" /> Contenidos</button>
+          <button onClick={() => { setActiveTab('prototipos'); setSidebarOpen(false); }} className={`w-full text-left p-4 rounded-2xl transition-all duration-300 flex items-center ${activeTab === 'prototipos' ? 'bg-[#6be1e3] text-[#1a181d] font-bold shadow-lg translate-x-2' : 'text-slate-400 hover:text-white hover:bg-white/5'}`}><Users className="mr-3 w-5 h-5" /> Prototipos</button>
         </nav>
         <button onClick={() => navigate('/login')} className="mt-12 text-red-400 text-sm flex items-center font-bold px-4 py-3 rounded-xl hover:bg-white/5 transition"><LogOut className="w-4 h-4 mr-3" /> Cerrar Sesión</button>
       </aside>
@@ -1569,8 +1569,8 @@ function BibliotecaView({ capsules }) {
             No hay cápsulas disponibles. El Super Admin debe crearlas.
           </div>
         ) : (
-          <div className="bg-white rounded-2xl border shadow-sm overflow-hidden">
-            <table className="w-full text-left">
+          <div className="bg-white rounded-2xl border shadow-sm overflow-hidden overflow-x-auto">
+            <table className="w-full text-left min-w-[550px]">
               <thead className="bg-slate-50 border-b text-xs uppercase font-bold text-slate-400 tracking-wider">
                 <tr>
                   <th className="px-6 py-4 w-12">#</th>
@@ -1680,8 +1680,8 @@ function BibliotecaView({ capsules }) {
           Carpeta vacía. El Super Admin puede agregar contenido.
         </div>
       ) : (
-        <div className="bg-white rounded-2xl border shadow-sm overflow-hidden">
-          <table className="w-full text-left">
+        <div className="bg-white rounded-2xl border shadow-sm overflow-hidden overflow-x-auto">
+          <table className="w-full text-left min-w-[500px]">
             <thead className="bg-slate-50 border-b text-xs uppercase font-bold text-slate-400 tracking-wider">
               <tr>
                 <th className="px-6 py-4 w-12">#</th>
@@ -1885,8 +1885,8 @@ function ProductsView({ products, newProd, setNewProd, addProduct, deleteProduct
             No hay productos configurados.
           </div>
         ) : (
-          <div className="bg-white rounded-2xl border shadow-sm overflow-hidden">
-            <table className="w-full text-left">
+          <div className="bg-white rounded-2xl border shadow-sm overflow-hidden overflow-x-auto">
+            <table className="w-full text-left min-w-[600px]">
               <thead className="bg-slate-50 border-b text-xs uppercase font-bold text-slate-400 tracking-wider">
                 <tr>
                   <th className="px-6 py-4 w-10">#</th>
@@ -2247,7 +2247,7 @@ function ProductsView({ products, newProd, setNewProd, addProduct, deleteProduct
       )}
 
       {/* Lista de prototipos */}
-      <div className="bg-white rounded-2xl border shadow-sm overflow-hidden">
+      <div className="bg-white rounded-2xl border shadow-sm overflow-hidden overflow-x-auto">
         <div className="px-6 py-4 border-b bg-slate-50 flex justify-between items-center">
           <h3 className="font-bold text-slate-700 flex items-center gap-2">
             <Users size={16} className="text-[#6be1e3]" /> Prototipos de Cliente
@@ -3352,8 +3352,8 @@ function ProductList({ products, onStartChat }) {
 
   // Vista lista de productos
   return (
-    <div className="bg-white rounded-2xl border shadow-sm overflow-hidden">
-      <table className="w-full text-left">
+    <div className="bg-white rounded-2xl border shadow-sm overflow-hidden overflow-x-auto">
+      <table className="w-full text-left min-w-[450px]">
         <thead className="text-xs uppercase font-bold text-slate-400 tracking-wider border-b bg-slate-50">
           <tr>
             <th className="px-6 py-3">Producto</th>
@@ -3578,8 +3578,8 @@ const stopRecording = () => {
   if (view === 'chat') {
     return (
       <div className="h-screen bg-slate-100 flex flex-col">
-        <header className="bg-white px-6 py-4 border-b flex justify-between items-center shadow-sm">
-          <div className="flex items-center gap-3">
+        <header className="bg-white px-3 md:px-6 py-3 md:py-4 border-b flex justify-between items-center shadow-sm gap-2">
+          <div className="flex items-center gap-2 md:gap-3 min-w-0">
             <button
                 onClick={async () => {
                     clearInterval(timerRef.current);
@@ -3595,22 +3595,22 @@ const stopRecording = () => {
                 <ArrowLeft size={18} />
             </button>
             <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
-            <div>
-              <p className="font-bold text-[#1a181d]">{agentName} — Cliente Virtual</p>
-              <p className="text-xs text-slate-400">Simulación en curso • {msgs.length - 1} intercambios</p>
+            <div className="min-w-0">
+              <p className="font-bold text-[#1a181d] text-sm md:text-base truncate">{agentName} — Cliente Virtual</p>
+              <p className="text-xs text-slate-400 hidden md:block">Simulación en curso • {msgs.length - 1} intercambios</p>
             </div>
             <ChatTimerDisplay seconds={elapsedSeconds} />
           </div>
           <button
             onClick={endSession}
             disabled={sending}
-            className="bg-red-50 text-red-500 px-4 py-2 rounded-xl font-bold hover:bg-red-100 transition disabled:opacity-50"
+            className="bg-red-50 text-red-500 px-2 md:px-4 py-2 rounded-xl font-bold hover:bg-red-100 transition disabled:opacity-50 text-xs md:text-sm flex-shrink-0"
           >
-            {sending ? 'Generando feedback...' : 'Terminar y Evaluar'}
+            {sending ? '...' : <span><span className="hidden md:inline">Terminar y </span>Evaluar</span>}
           </button>
         </header>
 
-        <div className="flex-1 overflow-y-auto p-6 space-y-4 max-w-4xl mx-auto w-full">
+        <div className="flex-1 overflow-y-auto p-3 md:p-6 space-y-4 max-w-4xl mx-auto w-full">
           {msgs.map((m, i) => {
             if (m.role === 'sale_closed') return (
               <div key={i} className="flex justify-center my-4">
@@ -3650,7 +3650,7 @@ const stopRecording = () => {
           <div ref={messagesEndRef} />
         </div>
 
-        <div className="bg-white border-t p-4 max-w-4xl mx-auto w-full">
+        <div className="bg-white border-t p-2 md:p-4 max-w-4xl mx-auto w-full">
           {/* Preview de archivo adjunto */}
           {attachPreview && (
             <div className="mb-3 flex items-center gap-2 bg-slate-50 border rounded-xl px-4 py-2">
