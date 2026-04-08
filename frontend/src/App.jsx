@@ -349,10 +349,7 @@ function LandingPage() {
             <span className={COLORS.gradient_text}>Entrenamiento Comercial</span>
           </h1>
           <p className="text-lg text-slate-600 max-w-3xl mx-auto mb-10 leading-relaxed">
-            ONE Commercial AI es la infraestructura tecnológica que tu empresa necesita para asegurar la calidad de cada interacción. 
-            Desde un panel de gestión centralizado, diseña productos y prototipos de clientes, audita conversaciones con métricas precisas 
-            y distribuye conocimiento estratégico. Ofrece a tu equipo un entrenamiento especializado con feedback instantáneo, diseñado 
-            para perfeccionar las habilidades.
+            ONE Commercial IA es una plataforma de entrenamiento comercial con IA diseñada para que las empresas capaciten, evalúen y potencien a sus equipos de ventas de forma práctica, medible y escalable. A través de simulaciones con clientes virtuales, feedback automático y cápsulas de conocimiento, cada vendedor puede entrenar conversaciones reales, perfeccionar su desempeño y convertir cada interacción en una oportunidad de mejora.
           </p>
           <button
             onClick={() => navigate('/login')}
@@ -374,13 +371,10 @@ function LandingPage() {
               </div>
               <h3 className="text-xl font-bold mb-3 text-[#1a181d]">Simulación de Escenarios</h3>
               <p className="text-sm text-slate-500 leading-relaxed mb-4 font-semibold">
-                Entrenamiento inmersivo con agentes de IA de última generación.
+                Entrenamiento inmersivo con clientes virtuales impulsados por IA.
               </p>
               <p className="text-sm text-slate-500 leading-relaxed">
-                Esta herramienta permite a su equipo interactuar con clientes virtuales que poseen personalidades dinámicas y objeciones complejas. 
-                A través de un entorno que replica situaciones reales de presión y negociación, el vendedor puede perfeccionar su discurso y manejo 
-                de objeciones. El sistema permite al administrador configurar perfiles de clientes específicos para cada producto, asegurando que el 
-                equipo esté preparado para cualquier desafío comercial que ocurra en la vida real.
+                Tus vendedores practican conversaciones comerciales en tiempo real con perfiles de clientes diseñados según producto, contexto, objeciones y estilo de comunicación. Cada simulación replica situaciones reales de venta, negociación y presión comercial para mejorar argumentación, escucha, manejo de objeciones y cierre.
               </p>
             </div>
           </div>
@@ -394,13 +388,10 @@ function LandingPage() {
               </div>
               <h3 className="text-xl font-bold mb-3 text-[#1a181d]">Cápsulas de Conocimiento</h3>
               <p className="text-sm text-slate-500 leading-relaxed mb-4 font-semibold">
-                Estandarización de técnicas y excelencia comercial.
+                Formación comercial personalizada para acompañar la mejora continua.
               </p>
               <p className="text-sm text-slate-500 leading-relaxed">
-                Potencia el aprendizaje continuo con una biblioteca digital estratégica. Las cápsulas permiten centralizar videoclases, materiales 
-                de estudio, manuales técnicos y guías de mejores prácticas comerciales. El administrador tiene el control total para habilitar 
-                contenidos específicos según las áreas de mejora detectadas en cada colaborador, garantizando que el equipo comercial cuente con 
-                las herramientas teóricas y metodológicas necesarias para dominar su mercado.
+                Centralizá videoclases, PDFs, materiales y recursos clave en una biblioteca de aprendizaje ordenada y accesible. La empresa puede habilitar contenidos específicos para cada vendedor según sus necesidades, acelerando su formación y reforzando habilidades comerciales de manera focalizada.
               </p>
             </div>
           </div>
