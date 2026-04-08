@@ -405,13 +405,10 @@ function LandingPage() {
               </div>
               <h3 className="text-xl font-bold mb-3 text-[#1a181d]">Analítica y Devolución</h3>
               <p className="text-sm text-slate-500 leading-relaxed mb-4 font-semibold">
-                Auditoría de desempeño y hoja de ruta para mejorar performance.
+                Evaluación automática con feedback accionable para vender mejor.
               </p>
               <p className="text-sm text-slate-500 leading-relaxed">
-                Transforma cada conversación en datos accionables para el crecimiento. Al finalizar cada sesión, el sistema genera un informe 
-                detallado que mide KPIs clave de la venta. Más allá de un simple puntaje, el colaborador y el evaluador reciben un análisis 
-                detallado del asesoramiento: qué puntos se resolvieron con éxito, qué áreas presentan debilidades y, fundamentalmente, recomendaciones 
-                personalizadas de técnicas de cierre y comunicación para elevar la efectividad comercial de forma inmediata.
+                Al finalizar cada sesión, la plataforma genera una devolución automática con puntuación, fortalezas, oportunidades de mejora y técnicas recomendadas. Así, cada entrenamiento se transforma en información útil para desarrollar vendedores más preparados, consistentes y efectivos.
               </p>
             </div>
           </div>
