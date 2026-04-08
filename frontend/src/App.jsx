@@ -327,7 +327,7 @@ function LandingPage() {
         <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-gradient-to-t from-[#6be1e3]/10 to-transparent rounded-full blur-[80px] translate-y-1/2 -translate-x-1/2 pointer-events-none"></div>
 
         {/* Nav */}
-      <nav className="flex justify-between items-center px-8 py-6 max-w-7xl mx-auto w-full relative z-20">
+      <nav className="flex justify-between items-center px-4 md:px-8 py-4 md:py-6 max-w-7xl mx-auto w-full relative z-20">
         <LogoOne />
         <button 
           onClick={() => navigate('/login')} 
@@ -341,14 +341,14 @@ function LandingPage() {
       {/* Hero Section */}
       <main className="flex-1 flex flex-col items-center justify-center px-4 relative z-10 w-full max-w-7xl mx-auto">
         <div className="text-center max-w-4xl mx-auto mb-16 mt-8">
-          <div className="inline-block px-3 py-1 mb-6 text-[10px] font-bold tracking-widest text-slate-400 uppercase border border-slate-200 rounded-full">
+          <div className="inline-block px-3 py-1 mb-4 md:mb-6 text-[10px] font-bold tracking-widest text-slate-400 uppercase border border-slate-200 rounded-full">
             Ecosistema ONE | Human-Tech
           </div>
-          <h1 className="text-5xl md:text-6xl font-extrabold mb-6 leading-tight text-[#1a181d]">
+          <h1 className="text-3xl md:text-5xl lg:text-6xl font-extrabold mb-6 leading-tight text-[#1a181d]">
             Sistema Integral de Inteligencia y<br />
             <span className={COLORS.gradient_text}>Entrenamiento Comercial</span>
           </h1>
-          <p className="text-lg text-slate-600 max-w-3xl mx-auto mb-10 leading-relaxed">
+          <p className="text-base md:text-lg text-slate-600 max-w-3xl mx-auto mb-8 md:mb-10 leading-relaxed px-2 md:px-0">
             ONE Commercial IA es una plataforma de entrenamiento comercial con IA diseñada para que las empresas capaciten, evalúen y potencien a sus equipos de ventas de forma práctica, medible y escalable. A través de simulaciones con clientes virtuales, feedback automático y cápsulas de conocimiento, cada vendedor puede entrenar conversaciones reales, perfeccionar su desempeño y convertir cada interacción en una oportunidad de mejora.
           </p>
           <button
@@ -361,7 +361,7 @@ function LandingPage() {
         </div>
 
         {/* Feature Cards */}
-        <div className="grid md:grid-cols-3 gap-8 w-full mb-16">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 w-full mb-10 md:mb-16 px-2 md:px-0">
           {/* Simulación */}
           <div className="bg-white p-8 rounded-3xl shadow-sm hover:shadow-xl transition duration-300 border border-slate-100 group relative overflow-hidden heartbeat">
             <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-[#6be1e3]/5 to-transparent rounded-full -translate-y-1/2 translate-x-1/2"></div>
