@@ -13,6 +13,13 @@ import logoIconNegro from './assets/Logo-negro.png';
 import logoIconBlanco from './assets/Logo-blanco.png';
 
 const APP_NAME = "ONE Commercial AI";
+// Ping para mantener el backend despierto
+useEffect(() => {
+  const ping = () => fetch(`${API_URL}/docs`).catch(() => {});
+  ping();
+  const interval = setInterval(ping, 4 * 60 * 1000); // cada 4 minutos
+  return () => clearInterval(interval);
+}, []);
 const COLORS = {
   black: "#1a181d", white: "#fefeff", pink: "#e17bd7",
   cyan: "#6be1e3", gold: "#e4c76a", gray: "#a4a8c0",
@@ -234,6 +241,12 @@ function RichTextEditor({ value, onChange, placeholder, minHeight = '120px' }) {
 function LandingPage() {
   const navigate = useNavigate();
   useEffect(() => { document.title = 'ONE Commercial IA'; }, []);
+  useEffect(() => {
+    const ping = () => fetch(`${API_URL}/docs`).catch(() => {});
+    ping();
+    const interval = setInterval(ping, 4 * 60 * 1000);
+    return () => clearInterval(interval);
+  }, []);
 
   const canvasRef = useRef(null);
   useEffect(() => {
