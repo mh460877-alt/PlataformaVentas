@@ -1176,6 +1176,7 @@ function SuperAdmin() {
 
   const CapsulesAdminView = () => {
     const visibleCapsules = capsules.filter(c => c.title.toLowerCase().includes(searchCapsule.toLowerCase()));
+    const isMobile = window.innerWidth < 768;
     if (!currentCapsule) return (
       <div>
         <div className="flex justify-between items-center mb-8 gap-4">
@@ -1189,7 +1190,8 @@ function SuperAdmin() {
           </div>
         </div>
         {/* Mobile: cards */}
-        <div className="md:hidden space-y-3">
+        {isMobile && (
+        <div className="space-y-3">
           {visibleCapsules.map(cap => (
             <div key={cap.id} className="bg-slate-800 border border-slate-700 rounded-2xl p-4 flex items-center justify-between cursor-pointer" onClick={() => setCurrentCapsule(cap)}>
               <div className="flex items-center gap-3 min-w-0">
@@ -1207,8 +1209,9 @@ function SuperAdmin() {
           ))}
           {visibleCapsules.length === 0 && <p className="text-center text-slate-500 py-6">No hay cápsulas todavía.</p>}
         </div>
+        )}
         {/* Desktop: tabla */}
-        <div className="hidden md:block bg-slate-800 rounded-3xl border border-slate-700 overflow-hidden shadow-xl">
+        {!isMobile && <div className="bg-slate-800 rounded-3xl border border-slate-700 overflow-hidden shadow-xl">
           <table className="w-full text-left text-slate-300">
             <thead className="bg-slate-900 text-xs uppercase font-bold text-slate-500">
               <tr><th className="p-6">ID</th><th className="p-6">Cápsula</th><th className="p-6 text-center">Acciones</th></tr>
@@ -1237,7 +1240,7 @@ function SuperAdmin() {
               {visibleCapsules.length === 0 && <tr><td colSpan={3} className="p-10 text-center text-slate-500">No hay cápsulas todavía.</td></tr>}
             </tbody>
           </table>
-        </div>
+        </div>}
       </div>
     );
 
