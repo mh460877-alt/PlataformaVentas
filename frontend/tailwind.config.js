@@ -10,6 +10,10 @@ export default {
     'md:block',
     'sm:inline',
     'sm:hidden',
+    'overflow-x-auto',
+    'min-w-[500px]',
+    'min-w-[600px]',
+    'min-w-[700px]',
   ],
   theme: {
     extend: {},

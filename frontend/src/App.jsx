@@ -1258,8 +1258,8 @@ function SuperAdmin() {
             Carpeta vacía. Subí el primer archivo.
           </div>
         ) : (
-          <div className="bg-slate-800 rounded-3xl border border-slate-700 overflow-hidden shadow-xl">
-            <table className="w-full text-left text-slate-300">
+          <div className="bg-slate-800 rounded-3xl border border-slate-700 overflow-hidden shadow-xl overflow-x-auto">
+            <table className="w-full text-left text-slate-300 min-w-[500px]">
               <thead className="bg-slate-900 text-xs uppercase font-bold text-slate-500">
                 <tr>
                   <th className="p-5 w-8">#</th>
