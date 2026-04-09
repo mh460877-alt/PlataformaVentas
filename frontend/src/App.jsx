@@ -1258,8 +1258,31 @@ function SuperAdmin() {
             Carpeta vacía. Subí el primer archivo.
           </div>
         ) : (
-          <div className="bg-slate-800 rounded-3xl border border-slate-700 overflow-hidden shadow-xl overflow-x-auto">
-            <table className="w-full text-left text-slate-300 min-w-[500px]">
+          <>
+          {/* Mobile: cards */}
+          <div className="md:hidden space-y-3">
+            {currentCapsule.contents.map((c, i) => (
+              <div key={c.id} className="bg-slate-800 border border-slate-700 rounded-2xl p-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3 min-w-0">
+                    <div className={`w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 ${c.type === 'video' ? 'bg-[#6be1e3]/10' : 'bg-[#e4c76a]/10'}`}>
+                      {c.type === 'video' ? <PlayCircle size={18} className="text-[#6be1e3]" /> : <FileText size={18} className="text-[#e4c76a]" />}
+                    </div>
+                    <div className="min-w-0">
+                      <p className="font-bold text-white text-sm truncate">{c.title}</p>
+                      <a href={c.url} target="_blank" rel="noreferrer" className={`text-xs hover:underline truncate block max-w-[220px] ${c.type === 'video' ? 'text-[#6be1e3]' : 'text-[#e4c76a]'}`}>{c.url}</a>
+                    </div>
+                  </div>
+                  <button onClick={() => deleteCont(c.id)} className="p-2 text-slate-600 hover:text-red-400 transition flex-shrink-0 ml-2">
+                    <Trash2 size={14} />
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+          {/* Desktop: tabla */}
+          <div className="hidden md:block bg-slate-800 rounded-3xl border border-slate-700 overflow-hidden shadow-xl">
+            <table className="w-full text-left text-slate-300">
               <thead className="bg-slate-900 text-xs uppercase font-bold text-slate-500">
                 <tr>
                   <th className="p-5 w-8">#</th>
@@ -1373,6 +1396,7 @@ function SuperAdmin() {
               </tbody>
             </table>
           </div>
+          </>
         )}
       </div>
     );
