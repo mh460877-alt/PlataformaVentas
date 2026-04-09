@@ -690,8 +690,30 @@ function SuperAdmin() {
     <Plus className="mr-2 w-4 h-4" /> Nuevo Cliente
   </button>
 </header>
-        <div className="bg-slate-800 rounded-3xl border border-slate-700 overflow-hidden shadow-xl overflow-x-auto">
-          <table className="w-full text-left text-slate-300 min-w-[700px]">
+        {/* Mobile: cards */}
+        <div className="md:hidden space-y-3">
+          {empresasFiltradas.map(emp => (
+            <div key={emp.id} className={`bg-slate-800 border border-slate-700 rounded-2xl p-4 ${!emp.is_active ? 'opacity-50' : ''}`}>
+              <div className="flex justify-between items-start mb-3">
+                <div>
+                  <p className="font-bold text-white">{emp.company_name}</p>
+                  <p className="text-xs text-slate-400">{emp.email}</p>
+                  {!emp.is_active && <span className="text-[10px] bg-red-500 px-2 py-0.5 rounded text-white">INACTIVO</span>}
+                </div>
+                <div className="flex gap-2">
+                  <button onClick={() => prepareEdit(emp)} className="p-2 bg-slate-700 text-slate-400 rounded-xl hover:bg-white hover:text-black transition"><Eye size={14} /></button>
+                  <button onClick={() => toggleStatus(emp.id, emp.is_active)} className={`p-2 rounded-xl transition ${emp.is_active ? 'bg-green-500/10 text-green-400' : 'bg-red-500/10 text-red-400'}`}><Power size={14} /></button>
+                  <button onClick={() => deleteCompany(emp.id)} className="p-2 bg-slate-700 text-slate-400 rounded-xl hover:bg-red-600 hover:text-white transition"><Trash2 size={14} /></button>
+                </div>
+              </div>
+              <p className="text-xs text-[#6be1e3]">{emp.phone || '—'}</p>
+            </div>
+          ))}
+          {empresasFiltradas.length === 0 && <p className="text-center text-slate-500 py-6">No se encontraron resultados.</p>}
+        </div>
+        {/* Desktop: tabla */}
+        <div className="hidden md:block bg-slate-800 rounded-3xl border border-slate-700 overflow-hidden shadow-xl">
+          <table className="w-full text-left text-slate-300">
             <thead className="bg-slate-900 text-xs uppercase font-bold text-slate-500">
               <tr>
                 <th className="p-5">Empresa</th>
@@ -718,18 +740,15 @@ function SuperAdmin() {
                   <td className="p-5 text-sm text-slate-400">{emp.email}</td>
                   <td className="p-5 text-sm text-[#6be1e3]">{emp.phone || '—'}</td>
                   <td className="p-5">
-                    <span
-                      className="font-mono text-sm cursor-pointer hover:text-white transition"
-                      onClick={() => setShowPass({ ...showPass, [emp.id]: !showPass[emp.id] })}
-                    >
+                    <span className="font-mono text-sm cursor-pointer hover:text-white transition" onClick={() => setShowPass({ ...showPass, [emp.id]: !showPass[emp.id] })}>
                       {showPass[emp.id] ? (emp.visible_password || '******') : '••••••'}
                     </span>
                   </td>
                   <td className="p-5">
                     <div className="flex gap-2 justify-center">
-                      <button onClick={() => prepareEdit(emp)} className="p-2 bg-slate-700 text-slate-400 rounded-xl hover:bg-white hover:text-black transition" title="Ver empresa"><Eye size={16} /></button>
-                      <button onClick={() => toggleStatus(emp.id, emp.is_active)} className={`p-2 rounded-xl transition ${emp.is_active ? 'bg-green-500/10 text-green-400 hover:bg-green-500 hover:text-white' : 'bg-red-500/10 text-red-400 hover:bg-red-500 hover:text-white'}`} title={emp.is_active ? "Deshabilitar" : "Habilitar"}><Power size={16} /></button>
-                      <button onClick={() => deleteCompany(emp.id)} className="p-2 bg-slate-700 text-slate-400 rounded-xl hover:bg-red-600 hover:text-white transition" title="Eliminar"><Trash2 size={16} /></button>
+                      <button onClick={() => prepareEdit(emp)} className="p-2 bg-slate-700 text-slate-400 rounded-xl hover:bg-white hover:text-black transition"><Eye size={16} /></button>
+                      <button onClick={() => toggleStatus(emp.id, emp.is_active)} className={`p-2 rounded-xl transition ${emp.is_active ? 'bg-green-500/10 text-green-400 hover:bg-green-500 hover:text-white' : 'bg-red-500/10 text-red-400 hover:bg-red-500 hover:text-white'}`}><Power size={16} /></button>
+                      <button onClick={() => deleteCompany(emp.id)} className="p-2 bg-slate-700 text-slate-400 rounded-xl hover:bg-red-600 hover:text-white transition"><Trash2 size={16} /></button>
                     </div>
                   </td>
                 </tr>
@@ -1569,65 +1588,95 @@ function BibliotecaView({ capsules }) {
             No hay cápsulas disponibles. El Super Admin debe crearlas.
           </div>
         ) : (
-          <div className="bg-white rounded-2xl border shadow-sm overflow-hidden overflow-x-auto">
-            <table className="w-full text-left min-w-[550px]">
-              <thead className="bg-slate-50 border-b text-xs uppercase font-bold text-slate-400 tracking-wider">
-                <tr>
-                  <th className="px-6 py-4 w-12">#</th>
-                  <th className="px-6 py-4">Cápsula</th>
-                  <th className="px-6 py-4 text-center w-40">Contenido</th>
-                  <th className="px-6 py-4 text-center w-36">Acción</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100">
-                {capsules.map((c, i) => {
-                  const videos = c.contents.filter(x => x.type === 'video').length;
-                  const pdfs   = c.contents.filter(x => x.type === 'pdf').length;
-                  return (
-                    <tr key={c.id} className="hover:bg-slate-50 transition group">
-                      <td className="px-6 py-4 text-slate-300 font-mono text-sm font-bold">{i + 1}</td>
-                      <td className="px-6 py-4">
-                        <div className="flex items-center gap-3">
-                          <div className="w-9 h-9 rounded-xl bg-[#e4c76a]/10 flex items-center justify-center flex-shrink-0">
-                            <Folder size={18} className="text-[#e4c76a]" />
-                          </div>
-                          <div className="min-w-0">
-                            <p className="font-bold text-slate-800">{c.title}</p>
-                            {c.description && <p className="text-xs text-slate-400 mt-0.5 truncate max-w-sm">{c.description}</p>}
-                          </div>
+          <>
+            {/* Mobile: cards */}
+            <div className="md:hidden space-y-3">
+              {capsules.map(c => {
+                const videos = c.contents.filter(x => x.type === 'video').length;
+                const pdfs = c.contents.filter(x => x.type === 'pdf').length;
+                return (
+                  <div key={c.id} className="bg-white border rounded-2xl p-4 flex items-center justify-between shadow-sm">
+                    <div className="flex items-center gap-3 min-w-0">
+                      <div className="w-9 h-9 rounded-xl bg-[#e4c76a]/10 flex items-center justify-center flex-shrink-0">
+                        <Folder size={18} className="text-[#e4c76a]" />
+                      </div>
+                      <div className="min-w-0">
+                        <p className="font-bold text-slate-800 text-sm truncate">{c.title}</p>
+                        <div className="flex gap-2 text-xs text-slate-400 mt-0.5">
+                          {videos > 0 && <span>{videos} clase{videos !== 1 ? 's' : ''}</span>}
+                          {pdfs > 0 && <span>{pdfs} material{pdfs !== 1 ? 'es' : ''}</span>}
+                          {c.contents.length === 0 && <span className="italic">Vacío</span>}
                         </div>
-                      </td>
-                      <td className="px-6 py-4 text-center">
-                        <div className="flex items-center justify-center gap-3 text-xs text-slate-500">
-                          {videos > 0 && (
-                            <span className="flex items-center gap-1">
-                              <PlayCircle size={12} className="text-[#6be1e3]" />
-                              {videos} clase{videos !== 1 ? 's' : ''}
-                            </span>
-                          )}
-                          {pdfs > 0 && (
-                            <span className="flex items-center gap-1">
-                              <FileText size={12} className="text-[#e4c76a]" />
-                              {pdfs} material{pdfs !== 1 ? 'es' : ''}
-                            </span>
-                          )}
-                          {c.contents.length === 0 && <span className="italic text-slate-300">Vacío</span>}
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 text-center">
-                        <button
-                          onClick={() => setOpenFolder(c)}
-                          className="inline-flex items-center gap-2 bg-[#1a181d] text-white text-xs font-bold px-4 py-2 rounded-lg hover:bg-[#e4c76a] hover:text-black transition"
-                        >
-                          Ingresar <ChevronRight size={14} />
-                        </button>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
+                      </div>
+                    </div>
+                    <button onClick={() => setOpenFolder(c)} className="bg-[#1a181d] text-white px-3 py-2 rounded-xl text-xs font-bold hover:opacity-80 flex-shrink-0 ml-2">
+                      Ingresar
+                    </button>
+                  </div>
+                );
+              })}
+            </div>
+            {/* Desktop: tabla */}
+            <div className="hidden md:block bg-white rounded-2xl border shadow-sm overflow-hidden">
+              <table className="w-full text-left">
+                <thead className="bg-slate-50 border-b text-xs uppercase font-bold text-slate-400 tracking-wider">
+                  <tr>
+                    <th className="px-6 py-4 w-12">#</th>
+                    <th className="px-6 py-4">Cápsula</th>
+                    <th className="px-6 py-4 text-center w-40">Contenido</th>
+                    <th className="px-6 py-4 text-center w-36">Acción</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100">
+                  {capsules.map((c, i) => {
+                    const videos = c.contents.filter(x => x.type === 'video').length;
+                    const pdfs   = c.contents.filter(x => x.type === 'pdf').length;
+                    return (
+                      <tr key={c.id} className="hover:bg-slate-50 transition group">
+                        <td className="px-6 py-4 text-slate-300 font-mono text-sm font-bold">{i + 1}</td>
+                        <td className="px-6 py-4">
+                          <div className="flex items-center gap-3">
+                            <div className="w-9 h-9 rounded-xl bg-[#e4c76a]/10 flex items-center justify-center flex-shrink-0">
+                              <Folder size={18} className="text-[#e4c76a]" />
+                            </div>
+                            <div className="min-w-0">
+                              <p className="font-bold text-slate-800">{c.title}</p>
+                              {c.description && <p className="text-xs text-slate-400 mt-0.5 truncate max-w-sm">{c.description}</p>}
+                            </div>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 text-center">
+                          <div className="flex items-center justify-center gap-3 text-xs text-slate-500">
+                            {videos > 0 && (
+                              <span className="flex items-center gap-1">
+                                <PlayCircle size={12} className="text-[#6be1e3]" />
+                                {videos} clase{videos !== 1 ? 's' : ''}
+                              </span>
+                            )}
+                            {pdfs > 0 && (
+                              <span className="flex items-center gap-1">
+                                <FileText size={12} className="text-[#e4c76a]" />
+                                {pdfs} material{pdfs !== 1 ? 'es' : ''}
+                              </span>
+                            )}
+                            {c.contents.length === 0 && <span className="italic text-slate-300">Vacío</span>}
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 text-center">
+                          <button
+                            onClick={() => setOpenFolder(c)}
+                            className="inline-flex items-center gap-2 bg-[#1a181d] text-white text-xs font-bold px-4 py-2 rounded-lg hover:bg-[#e4c76a] hover:text-black transition"
+                          >
+                            Ingresar <ChevronRight size={14} />
+                          </button>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </>
         )}
       </div>
     );
@@ -1885,61 +1934,84 @@ function ProductsView({ products, newProd, setNewProd, addProduct, deleteProduct
             No hay productos configurados.
           </div>
         ) : (
-          <div className="bg-white rounded-2xl border shadow-sm overflow-hidden overflow-x-auto">
-            <table className="w-full text-left min-w-[600px]">
-              <thead className="bg-slate-50 border-b text-xs uppercase font-bold text-slate-400 tracking-wider">
-                <tr>
-                  <th className="px-6 py-4 w-10">#</th>
-                  <th className="px-6 py-4">Producto</th>
-                  <th className="px-6 py-4 text-center w-44">Prototipos</th>
-                  <th className="px-6 py-4 text-center w-36">Acción</th>
-                  <th className="px-6 py-4 w-12"></th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100">
-                {products.map((p, i) => (
-                  <tr key={p.id} className="hover:bg-slate-50 transition group">
-                    <td className="px-6 py-4 text-slate-300 font-mono text-sm font-bold">{i + 1}</td>
-                    <td className="px-6 py-4">
-                      <div className="flex items-center gap-3">
-                        <div className="w-9 h-9 rounded-xl bg-[#6be1e3]/10 flex items-center justify-center flex-shrink-0">
-                          <Package size={17} className="text-[#6be1e3]" />
-                        </div>
-                        <div>
-                          <p className="font-bold text-slate-800">{p.name}</p>
-                          {p.info
-                            ? <p className="text-xs text-slate-400 mt-0.5 truncate max-w-[260px]">{p.info.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').trim()}</p>
-                            : <p className="text-xs text-slate-300 italic mt-0.5">Sin información del producto</p>
-                          }
-                        </div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 text-center">
-                      <span className={`text-xs font-bold px-3 py-1 rounded-full ${p.prototypes.length > 0 ? 'bg-[#6be1e3]/10 text-[#3abfc1]' : 'bg-slate-100 text-slate-400'}`}>
+          <>
+            {/* Mobile: cards */}
+            <div className="md:hidden space-y-3">
+              {products.map(p => (
+                <div key={p.id} className="bg-white border rounded-2xl p-4 flex items-center justify-between shadow-sm">
+                  <div className="flex items-center gap-3 min-w-0">
+                    <div className="w-9 h-9 rounded-xl bg-[#6be1e3]/10 flex items-center justify-center flex-shrink-0">
+                      <Package size={16} className="text-[#6be1e3]" />
+                    </div>
+                    <div className="min-w-0">
+                      <p className="font-bold text-slate-800 text-sm truncate">{p.name}</p>
+                      <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${p.prototypes.length > 0 ? 'bg-[#6be1e3]/10 text-[#3abfc1]' : 'bg-slate-100 text-slate-400'}`}>
                         {p.prototypes.length} prototipo{p.prototypes.length !== 1 ? 's' : ''}
                       </span>
-                    </td>
-                    <td className="px-6 py-4 text-center">
-                      <button
-                        onClick={() => enterProduct(p)}
-                        className="inline-flex items-center gap-2 bg-[#1a181d] text-white text-xs font-bold px-4 py-2 rounded-lg hover:bg-[#6be1e3] hover:text-black transition"
-                      >
-                        Ingresar <ChevronRight size={14} />
-                      </button>
-                    </td>
-                    <td className="px-6 py-4">
-                      <button
-                        onClick={() => deleteProduct(p.id)}
-                        className="p-1.5 text-slate-300 hover:text-red-500 hover:bg-red-50 rounded-lg transition"
-                      >
-                        <Trash2 size={15} />
-                      </button>
-                    </td>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2 flex-shrink-0 ml-2">
+                    <button onClick={() => enterProduct(p)} className="bg-[#1a181d] text-white px-3 py-2 rounded-xl text-xs font-bold hover:opacity-80">
+                      Ingresar
+                    </button>
+                    <button onClick={() => deleteProduct(p.id)} className="p-2 text-slate-300 hover:text-red-500 rounded-lg">
+                      <Trash2 size={15} />
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+            {/* Desktop: tabla */}
+            <div className="hidden md:block bg-white rounded-2xl border shadow-sm overflow-hidden">
+              <table className="w-full text-left">
+                <thead className="bg-slate-50 border-b text-xs uppercase font-bold text-slate-400 tracking-wider">
+                  <tr>
+                    <th className="px-6 py-4 w-10">#</th>
+                    <th className="px-6 py-4">Producto</th>
+                    <th className="px-6 py-4 text-center w-44">Prototipos</th>
+                    <th className="px-6 py-4 text-center w-36">Acción</th>
+                    <th className="px-6 py-4 w-12"></th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody className="divide-y divide-slate-100">
+                  {products.map((p, i) => (
+                    <tr key={p.id} className="hover:bg-slate-50 transition group">
+                      <td className="px-6 py-4 text-slate-300 font-mono text-sm font-bold">{i + 1}</td>
+                      <td className="px-6 py-4">
+                        <div className="flex items-center gap-3">
+                          <div className="w-9 h-9 rounded-xl bg-[#6be1e3]/10 flex items-center justify-center flex-shrink-0">
+                            <Package size={17} className="text-[#6be1e3]" />
+                          </div>
+                          <div>
+                            <p className="font-bold text-slate-800">{p.name}</p>
+                            {p.info
+                              ? <p className="text-xs text-slate-400 mt-0.5 truncate max-w-[260px]">{p.info.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').trim()}</p>
+                              : <p className="text-xs text-slate-300 italic mt-0.5">Sin información del producto</p>
+                            }
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 text-center">
+                        <span className={`text-xs font-bold px-3 py-1 rounded-full ${p.prototypes.length > 0 ? 'bg-[#6be1e3]/10 text-[#3abfc1]' : 'bg-slate-100 text-slate-400'}`}>
+                          {p.prototypes.length} prototipo{p.prototypes.length !== 1 ? 's' : ''}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 text-center">
+                        <button onClick={() => enterProduct(p)} className="inline-flex items-center gap-2 bg-[#1a181d] text-white text-xs font-bold px-4 py-2 rounded-lg hover:bg-[#6be1e3] hover:text-black transition">
+                          Ingresar <ChevronRight size={14} />
+                        </button>
+                      </td>
+                      <td className="px-6 py-4">
+                        <button onClick={() => deleteProduct(p.id)} className="p-1.5 text-slate-300 hover:text-red-500 hover:bg-red-50 rounded-lg transition">
+                          <Trash2 size={15} />
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </>
         )}
       </div>
     );
@@ -3352,44 +3424,65 @@ function ProductList({ products, onStartChat }) {
 
   // Vista lista de productos
   return (
-    <div className="bg-white rounded-2xl border shadow-sm overflow-hidden overflow-x-auto">
-      <table className="w-full text-left min-w-[450px]">
-        <thead className="text-xs uppercase font-bold text-slate-400 tracking-wider border-b bg-slate-50">
-          <tr>
-            <th className="px-6 py-3">Producto</th>
-            <th className="px-6 py-3">Perfiles disponibles</th>
-            <th className="px-6 py-3 text-center">Acción</th>
-          </tr>
-        </thead>
-        <tbody className="divide-y divide-slate-100">
-          {products.map(p => (
-            <tr key={p.id} className="hover:bg-slate-50 transition align-middle">
-              <td className="px-6 py-4">
-                <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#e17bd7]/20 to-[#6be1e3]/20 flex items-center justify-center flex-shrink-0">
-                    <Package size={16} className="text-[#e17bd7]" />
-                  </div>
-                  <p className="font-bold text-slate-800">{p.name}</p>
-                </div>
-              </td>
-              <td className="px-6 py-4">
-                <span className="text-xs bg-[#e17bd7]/10 text-[#e17bd7] px-3 py-1.5 rounded-full font-bold">
+    <>
+      {/* Vista mobile: cards */}
+      <div className="md:hidden space-y-3">
+        {products.map(p => (
+          <div key={p.id} className="bg-white border rounded-2xl p-4 flex items-center justify-between shadow-sm">
+            <div className="flex items-center gap-3 min-w-0">
+              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#e17bd7]/20 to-[#6be1e3]/20 flex items-center justify-center flex-shrink-0">
+                <Package size={16} className="text-[#e17bd7]" />
+              </div>
+              <div className="min-w-0">
+                <p className="font-bold text-slate-800 text-sm truncate">{p.name}</p>
+                <span className="text-xs bg-[#e17bd7]/10 text-[#e17bd7] px-2 py-0.5 rounded-full font-bold">
                   {p.prototypes?.length || 0} perfil{(p.prototypes?.length || 0) !== 1 ? 'es' : ''}
                 </span>
-              </td>
-              <td className="px-6 py-4 text-center">
-                <button
-                  onClick={() => setOpenProductId(p.id)}
-                  className="bg-[#1a181d] text-white px-4 py-2 rounded-xl text-sm font-bold hover:opacity-80 transition"
-                >
-                  Ingresar
-                </button>
-              </td>
+              </div>
+            </div>
+            <button onClick={() => setOpenProductId(p.id)} className="bg-[#1a181d] text-white px-3 py-2 rounded-xl text-xs font-bold hover:opacity-80 flex-shrink-0 ml-2">
+              Ingresar
+            </button>
+          </div>
+        ))}
+      </div>
+      {/* Vista desktop: tabla */}
+      <div className="hidden md:block bg-white rounded-2xl border shadow-sm overflow-hidden">
+        <table className="w-full text-left">
+          <thead className="text-xs uppercase font-bold text-slate-400 tracking-wider border-b bg-slate-50">
+            <tr>
+              <th className="px-6 py-3">Producto</th>
+              <th className="px-6 py-3">Perfiles disponibles</th>
+              <th className="px-6 py-3 text-center">Acción</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+          </thead>
+          <tbody className="divide-y divide-slate-100">
+            {products.map(p => (
+              <tr key={p.id} className="hover:bg-slate-50 transition align-middle">
+                <td className="px-6 py-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#e17bd7]/20 to-[#6be1e3]/20 flex items-center justify-center flex-shrink-0">
+                      <Package size={16} className="text-[#e17bd7]" />
+                    </div>
+                    <p className="font-bold text-slate-800">{p.name}</p>
+                  </div>
+                </td>
+                <td className="px-6 py-4">
+                  <span className="text-xs bg-[#e17bd7]/10 text-[#e17bd7] px-3 py-1.5 rounded-full font-bold">
+                    {p.prototypes?.length || 0} perfil{(p.prototypes?.length || 0) !== 1 ? 'es' : ''}
+                  </span>
+                </td>
+                <td className="px-6 py-4 text-center">
+                  <button onClick={() => setOpenProductId(p.id)} className="bg-[#1a181d] text-white px-4 py-2 rounded-xl text-sm font-bold hover:opacity-80 transition">
+                    Ingresar
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </>
   );
 }
 function ChatTimerDisplay({ seconds }) {
@@ -3577,7 +3670,7 @@ const stopRecording = () => {
   // PANTALLA DE CHAT
   if (view === 'chat') {
     return (
-      <div className="h-screen bg-slate-100 flex flex-col overflow-hidden">
+      <div className="flex flex-col bg-slate-100" style={{ height: '100dvh' }}>
         <header className="bg-white px-3 md:px-6 py-3 md:py-4 border-b flex justify-between items-center shadow-sm gap-2">
           <div className="flex items-center gap-2 md:gap-3 min-w-0">
             <button
@@ -3610,7 +3703,7 @@ const stopRecording = () => {
           </button>
         </header>
 
-        <div className="flex-1 overflow-y-auto p-3 md:p-6 space-y-4 max-w-4xl mx-auto w-full">
+        <div className="flex-1 overflow-y-auto p-3 md:p-6 space-y-4 max-w-4xl mx-auto w-full min-h-0">
           {msgs.map((m, i) => {
             if (m.role === 'sale_closed') return (
               <div key={i} className="flex justify-center my-4">
@@ -3650,7 +3743,7 @@ const stopRecording = () => {
           <div ref={messagesEndRef} />
         </div>
 
-        <div className="bg-white border-t p-2 md:p-4 max-w-4xl mx-auto w-full">
+        <div className="bg-white border-t p-2 md:p-4 max-w-4xl mx-auto w-full flex-shrink-0">
           {/* Preview de archivo adjunto */}
           {attachPreview && (
             <div className="mb-3 flex items-center gap-2 bg-slate-50 border rounded-xl px-4 py-2">
