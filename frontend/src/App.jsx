@@ -1563,7 +1563,7 @@ function BibliotecaView({ capsules }) {
   if (!openFolder) {
     return (
       <div>
-        <h2 className="text-3xl font-bold mb-8 text-[#1a181d]">Biblioteca de Entrenamiento</h2>
+        <h2 className="text-xl md:text-3xl font-bold mb-6 md:mb-8 text-[#1a181d]">Biblioteca de Entrenamiento</h2>
         {capsules.length === 0 ? (
           <div className="text-center p-12 text-slate-400 bg-white rounded-2xl border-2 border-dashed">
             No hay cápsulas disponibles. El Super Admin debe crearlas.
@@ -1863,7 +1863,7 @@ function ProductsView({ products, newProd, setNewProd, addProduct, deleteProduct
   if (!openProduct) {
     return (
       <div>
-        <h2 className="text-3xl font-bold mb-8 text-[#1a181d]">Configuración de Productos</h2>
+        <h2 className="text-xl md:text-3xl font-bold mb-6 md:mb-8 text-[#1a181d]">Configuración de Productos</h2>
 
         {/* Crear nuevo producto */}
         <div className="flex gap-3 mb-6">
@@ -2704,7 +2704,7 @@ function CompanyDashboard() {
         <span className="text-xl">☰</span>
       </button>
       <aside className={`w-72 bg-[#1a181d] text-white p-6 flex flex-col fixed h-full z-20 shadow-2xl transition-transform duration-300 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}`}>
-        <div className="mb-10"><LogoOneWhite small /></div>
+        <div className="mb-6"><LogoOneWhite small /></div>
         <div className="mb-8 px-2">
           <p className="text-xs text-slate-500 uppercase tracking-widest font-bold mb-1">Empresa</p>
           <p className="font-bold text-lg text-white truncate">{user.name}</p>
@@ -2726,7 +2726,7 @@ function CompanyDashboard() {
         {/* EQUIPO */}
         {tab === 'employees' && (
           <div>
-            <h2 className="text-3xl font-bold mb-8 text-[#1a181d]">Gestión de Equipo</h2>
+            <h2 className="text-xl md:text-3xl font-bold mb-6 md:mb-8 text-[#1a181d]">Gestión de Equipo</h2>
             <div className="grid md:grid-cols-3 gap-8">
               {/* Formulario nuevo vendedor */}
               <div className="bg-white p-6 rounded-2xl shadow-sm">
@@ -3577,7 +3577,7 @@ const stopRecording = () => {
   // PANTALLA DE CHAT
   if (view === 'chat') {
     return (
-      <div className="h-screen bg-slate-100 flex flex-col">
+      <div className="h-screen bg-slate-100 flex flex-col overflow-hidden">
         <header className="bg-white px-3 md:px-6 py-3 md:py-4 border-b flex justify-between items-center shadow-sm gap-2">
           <div className="flex items-center gap-2 md:gap-3 min-w-0">
             <button
@@ -3660,29 +3660,29 @@ const stopRecording = () => {
           )}
           <div className="flex gap-2 items-end">
             {/* Botón imagen */}
-            <label className="cursor-pointer p-3 bg-slate-100 rounded-xl hover:bg-slate-200 transition flex-shrink-0" title="Adjuntar imagen">
+            <label className="cursor-pointer p-2 md:p-3 bg-slate-100 rounded-xl hover:bg-slate-200 transition flex-shrink-0" title="Adjuntar imagen">
               <input type="file" accept="image/*" className="hidden" onChange={e => handleFileSelect(e, 'image')} />
-              <ImageIcon size={20} className="text-slate-500" />
+              <ImageIcon size={18} className="text-slate-500" />
             </label>
             {/* Botón PDF */}
-            <label className="cursor-pointer p-3 bg-slate-100 rounded-xl hover:bg-slate-200 transition flex-shrink-0" title="Adjuntar PDF">
+            <label className="cursor-pointer p-2 md:p-3 bg-slate-100 rounded-xl hover:bg-slate-200 transition flex-shrink-0" title="Adjuntar PDF">
               <input type="file" accept=".pdf" className="hidden" onChange={e => handleFileSelect(e, 'pdf')} />
-              <FileText size={20} className="text-slate-500" />
+              <FileText size={18} className="text-slate-500" />
             </label>
             {/* Botón audio */}
             <button
               onMouseDown={startRecording} onMouseUp={stopRecording} onTouchStart={startRecording} onTouchEnd={stopRecording}
-              className={`p-3 rounded-xl transition flex-shrink-0 ${recording ? 'bg-red-500 text-white animate-pulse' : 'bg-slate-100 text-slate-500 hover:bg-slate-200'}`}
+              className={`p-2 md:p-3 rounded-xl transition flex-shrink-0 ${recording ? 'bg-red-500 text-white animate-pulse' : 'bg-slate-100 text-slate-500 hover:bg-slate-200'}`}
               title="Mantené presionado para grabar"
             >
-              <Mic size={20} />
+              <Mic size={18} />
             </button>
             {/* Botón emoji */}
             <div style={{ position: 'relative' }}>
               <button
                 type="button"
                 onClick={() => setShowChatEmoji(v => !v)}
-                className="p-3 bg-slate-100 rounded-xl hover:bg-slate-200 transition flex-shrink-0 text-base"
+                className="p-2 md:p-3 bg-slate-100 rounded-xl hover:bg-slate-200 transition flex-shrink-0 text-sm md:text-base"
                 title="Insertar emoji"
               >
                 😊
@@ -3706,7 +3706,7 @@ const stopRecording = () => {
               )}
             </div>
             <textarea
-              className="flex-1 p-4 rounded-xl border bg-slate-50 outline-none focus:ring-2 focus:ring-[#6be1e3] text-sm resize-none"
+              className="flex-1 p-3 rounded-xl border bg-slate-50 outline-none focus:ring-2 focus:ring-[#6be1e3] text-sm resize-none min-w-0"
               value={input}
               placeholder={recording ? '🎙 Grabando...' : 'Escribí tu respuesta como vendedor...'}
               onChange={e => setInput(e.target.value)}
@@ -3848,7 +3848,7 @@ const stopRecording = () => {
         <span className="text-xl">☰</span>
       </button>
       <aside className={`w-64 bg-[#1a181d] text-white p-6 flex flex-col fixed h-full z-20 transition-transform duration-300 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}`}>
-        <div className="mb-10"><LogoOneWhite small /></div>
+        <div className="mb-4"><LogoOneWhite small /></div>
         <div className="mb-6 px-2">
           <p className="text-xs text-slate-500 uppercase tracking-widest font-bold mb-1">Vendedor</p>
           <p className="font-bold text-white">{user.name}</p>
