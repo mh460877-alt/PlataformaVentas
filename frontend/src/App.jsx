@@ -942,8 +942,27 @@ function SuperAdmin() {
         </div>
       )}
 
-      <div className="bg-slate-800 rounded-3xl border border-slate-700 overflow-hidden shadow-xl overflow-x-auto">
-        <table className="w-full text-left text-slate-300 min-w-[600px]">
+      {/* Mobile: cards */}
+      <div className="md:hidden space-y-3">
+        {filtered.map(p => (
+          <div key={p.id} className="bg-slate-800 border border-slate-700 rounded-2xl p-4">
+            <div className="flex justify-between items-start mb-2">
+              <p className="font-bold text-white text-sm flex-1 mr-2">{p.name}</p>
+              <div className="flex gap-2 flex-shrink-0">
+                <button onClick={() => openViewModal(p)} className="p-1.5 bg-cyan-500/10 text-cyan-400 rounded-xl hover:bg-cyan-500 hover:text-white transition"><Eye size={14} /></button>
+                <button onClick={() => openEditModal(p)} className="p-1.5 bg-blue-500/10 text-blue-400 rounded-xl hover:bg-blue-500 hover:text-white transition"><Edit2 size={14} /></button>
+                <button onClick={() => handleDelete(p.id)} className="p-1.5 bg-slate-700 text-slate-400 rounded-xl hover:bg-red-600 hover:text-white transition"><Trash2 size={14} /></button>
+              </div>
+            </div>
+            <p className="text-xs text-slate-400 mb-2 line-clamp-2">{p.description}</p>
+            <span className="text-xs text-red-400 bg-red-900/20 px-2 py-1 rounded-lg inline-block">{p.objection}</span>
+          </div>
+        ))}
+        {filtered.length === 0 && <p className="text-center text-slate-500 py-6">No hay prototipos globales todavía.</p>}
+      </div>
+      {/* Desktop: tabla */}
+      <div className="hidden md:block bg-slate-800 rounded-3xl border border-slate-700 overflow-hidden shadow-xl">
+        <table className="w-full text-left text-slate-300">
           <thead className="bg-slate-900 text-xs uppercase font-bold text-slate-500">
             <tr>
               <th className="px-5 py-4 w-[18%]">Perfil</th>
@@ -956,61 +975,25 @@ function SuperAdmin() {
             {filtered.map(p => (
               <tr key={p.id} className="h-24 hover:bg-slate-700/40 transition align-middle">
                 <td className="px-5 py-4 align-middle">
-                  <p className="font-bold text-white text-sm line-clamp-2 overflow-hidden">
-                    {p.name}
-                  </p>
+                  <p className="font-bold text-white text-sm line-clamp-2">{p.name}</p>
                 </td>
-
                 <td className="px-5 py-4 align-middle">
-                  <p className="text-sm text-slate-400 line-clamp-2 overflow-hidden">
-                    {p.description}
-                  </p>
+                  <p className="text-sm text-slate-400 line-clamp-2">{p.description}</p>
                 </td>
-
                 <td className="px-5 py-4 align-middle">
-                  <div className="line-clamp-2 overflow-hidden">
-                    <span className="text-xs text-red-400 bg-red-900/20 px-2 py-1 rounded-lg inline-block">
-                      {p.objection}
-                    </span>
-                  </div>
+                  <span className="text-xs text-red-400 bg-red-900/20 px-2 py-1 rounded-lg inline-block">{p.objection}</span>
                 </td>
-
                 <td className="px-5 py-4 align-middle">
                   <div className="flex items-center justify-center gap-2">
-                    <button
-                      onClick={() => openViewModal(p)}
-                      className="p-2 bg-cyan-500/10 text-cyan-400 rounded-xl hover:bg-cyan-500 hover:text-white transition"
-                      title="Ver"
-                    >
-                      <Eye size={16} />
-                    </button>
-
-                    <button
-                      onClick={() => openEditModal(p)}
-                      className="p-2 bg-blue-500/10 text-blue-400 rounded-xl hover:bg-blue-500 hover:text-white transition"
-                      title="Editar"
-                    >
-                      <Edit2 size={16} />
-                    </button>
-
-                    <button
-                      onClick={() => handleDelete(p.id)}
-                      className="p-2 bg-slate-700 text-slate-400 rounded-xl hover:bg-red-600 hover:text-white transition"
-                      title="Eliminar"
-                    >
-                      <Trash2 size={16} />
-                    </button>
+                    <button onClick={() => openViewModal(p)} className="p-2 bg-cyan-500/10 text-cyan-400 rounded-xl hover:bg-cyan-500 hover:text-white transition"><Eye size={16} /></button>
+                    <button onClick={() => openEditModal(p)} className="p-2 bg-blue-500/10 text-blue-400 rounded-xl hover:bg-blue-500 hover:text-white transition"><Edit2 size={16} /></button>
+                    <button onClick={() => handleDelete(p.id)} className="p-2 bg-slate-700 text-slate-400 rounded-xl hover:bg-red-600 hover:text-white transition"><Trash2 size={16} /></button>
                   </div>
                 </td>
               </tr>
             ))}
-
             {filtered.length === 0 && (
-              <tr>
-                <td colSpan={4} className="p-10 text-center text-slate-500">
-                  No hay prototipos globales todavía.
-                </td>
-              </tr>
+              <tr><td colSpan={4} className="p-10 text-center text-slate-500">No hay prototipos globales todavía.</td></tr>
             )}
           </tbody>
         </table>
@@ -1937,14 +1920,14 @@ function ProductsView({ products, newProd, setNewProd, addProduct, deleteProduct
         {/* Crear nuevo producto */}
         <div className="flex gap-3 mb-6">
           <input
-            className="flex-1 border p-3 rounded-xl bg-white text-sm outline-none focus:ring-2 focus:ring-[#6be1e3]"
+            className="flex-1 min-w-0 border p-3 rounded-xl bg-white text-sm outline-none focus:ring-2 focus:ring-[#6be1e3]"
             placeholder="Nombre del nuevo producto..."
             value={newProd.name}
             onChange={e => setNewProd({ name: e.target.value })}
             onKeyPress={e => e.key === 'Enter' && addProduct()}
           />
-          <button onClick={addProduct} className="bg-[#1a181d] text-white p-3 px-5 rounded-xl hover:opacity-90 flex items-center gap-2 font-bold">
-            <Plus size={16} /> Agregar
+          <button onClick={addProduct} className="bg-[#1a181d] text-white p-3 px-4 rounded-xl hover:opacity-90 flex items-center gap-2 font-bold flex-shrink-0 text-sm">
+            <Plus size={16} /> <span className="hidden sm:inline">Agregar</span><span className="sm:hidden">+</span>
           </button>
         </div>
 
@@ -3449,7 +3432,7 @@ function ProductList({ products, onStartChat }) {
       <div className="md:hidden space-y-3">
         {products.map(p => (
           <div key={p.id} className="bg-white border rounded-2xl p-4 flex items-center justify-between shadow-sm">
-            <div className="flex items-center gap-3 min-w-0">
+            <div className="flex items-center gap-3 min-w-0 flex-1">
               <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#e17bd7]/20 to-[#6be1e3]/20 flex items-center justify-center flex-shrink-0">
                 <Package size={16} className="text-[#e17bd7]" />
               </div>
@@ -3460,8 +3443,8 @@ function ProductList({ products, onStartChat }) {
                 </span>
               </div>
             </div>
-            <button onClick={() => setOpenProductId(p.id)} className="bg-[#1a181d] text-white px-3 py-2 rounded-xl text-xs font-bold hover:opacity-80 flex-shrink-0 ml-2">
-              Ingresar
+            <button onClick={() => setOpenProductId(p.id)} className="bg-[#1a181d] text-white px-3 py-2 rounded-xl text-xs font-bold hover:opacity-80 flex-shrink-0 ml-3">
+              Entrar
             </button>
           </div>
         ))}
