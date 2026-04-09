@@ -2824,7 +2824,7 @@ function CompanyDashboard() {
         </button>
       </aside>
 
-      <main className="ml-0 md:ml-72 flex-1 p-4 md:p-10 pt-16 md:pt-10">
+      <main className="ml-0 md:ml-72 flex-1 p-4 md:p-10 pt-16 md:pt-10 overflow-x-hidden w-full">
         {/* EQUIPO */}
         {tab === 'employees' && (
           <div>
