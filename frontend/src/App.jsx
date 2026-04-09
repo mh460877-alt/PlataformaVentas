@@ -3671,7 +3671,7 @@ const stopRecording = () => {
   if (view === 'chat') {
     return (
       <div className="flex flex-col bg-slate-100 fixed inset-0">
-        <header className="bg-white px-3 md:px-6 py-3 md:py-4 border-b flex justify-between items-center shadow-sm gap-2">
+        <header className="bg-white px-3 md:px-6 py-3 md:py-4 border-b flex justify-between items-center shadow-sm gap-2 sticky top-0 z-10">
           <div className="flex items-center gap-2 md:gap-3 min-w-0">
             <button
                 onClick={async () => {
