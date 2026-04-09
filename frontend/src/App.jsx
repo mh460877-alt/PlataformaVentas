@@ -3670,7 +3670,7 @@ const stopRecording = () => {
   // PANTALLA DE CHAT
   if (view === 'chat') {
     return (
-      <div className="flex flex-col bg-slate-100" style={{ height: '100dvh' }}>
+      <div className="flex flex-col bg-slate-100 fixed inset-0">
         <header className="bg-white px-3 md:px-6 py-3 md:py-4 border-b flex justify-between items-center shadow-sm gap-2">
           <div className="flex items-center gap-2 md:gap-3 min-w-0">
             <button
@@ -3703,7 +3703,7 @@ const stopRecording = () => {
           </button>
         </header>
 
-        <div className="flex-1 overflow-y-auto p-3 md:p-6 space-y-4 max-w-4xl mx-auto w-full min-h-0">
+        <div className="flex-1 overflow-y-auto p-3 md:p-6 space-y-4 max-w-4xl mx-auto w-full min-h-0" style={{ overscrollBehavior: 'contain' }}>
           {msgs.map((m, i) => {
             if (m.role === 'sale_closed') return (
               <div key={i} className="flex justify-center my-4">
@@ -3743,7 +3743,7 @@ const stopRecording = () => {
           <div ref={messagesEndRef} />
         </div>
 
-        <div className="bg-white border-t p-2 md:p-4 max-w-4xl mx-auto w-full flex-shrink-0">
+        <div className="bg-white border-t p-2 md:p-4 max-w-4xl mx-auto w-full flex-shrink-0 sticky bottom-0">
           {/* Preview de archivo adjunto */}
           {attachPreview && (
             <div className="mb-3 flex items-center gap-2 bg-slate-50 border rounded-xl px-4 py-2">
