@@ -2052,31 +2052,33 @@ function ProductsView({ products, newProd, setNewProd, addProduct, deleteProduct
   return (
     <div>
       {/* Header */}
-      <div className="flex items-center gap-4 mb-8">
-        <button
-          onClick={() => { setOpenProduct(null); setShowProtoForm(false); setEditingInfo(false); }}
-          className="p-2.5 bg-white border rounded-xl hover:bg-slate-50 transition shadow-sm"
-        >
-          <ArrowLeft size={18} />
-        </button>
-        <div>
-          <p className="text-xs text-slate-400 uppercase tracking-widest font-bold">Productos</p>
-          <h2 className="text-2xl font-bold text-[#1a181d] flex items-center gap-2">
-            <Package size={20} className="text-[#6be1e3]" /> {p.name}
-          </h2>
+      <div className="flex flex-col md:flex-row md:items-center gap-3 mb-8">
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => { setOpenProduct(null); setShowProtoForm(false); setEditingInfo(false); }}
+            className="p-2.5 bg-white border rounded-xl hover:bg-slate-50 transition shadow-sm flex-shrink-0"
+          >
+            <ArrowLeft size={18} />
+          </button>
+          <div className="min-w-0">
+            <p className="text-xs text-slate-400 uppercase tracking-widest font-bold">Productos</p>
+            <h2 className="text-lg md:text-2xl font-bold text-[#1a181d] flex items-center gap-2 truncate">
+              <Package size={18} className="text-[#6be1e3] flex-shrink-0" /> {p.name}
+            </h2>
+          </div>
         </div>
-        <div className="ml-auto flex items-center gap-2">
+        <div className="flex items-center gap-2 md:ml-auto flex-wrap">
           <button
             onClick={() => { setShowGlobalList(!showGlobalList); setShowProtoForm(false); setEditingInfo(false); }}
-            className="flex items-center gap-2 bg-slate-100 border border-slate-300 text-slate-700 text-sm font-bold px-4 py-2.5 rounded-xl hover:bg-slate-200 transition"
+            className="flex items-center gap-2 bg-slate-100 border border-slate-300 text-slate-700 text-xs md:text-sm font-bold px-3 py-2 rounded-xl hover:bg-slate-200 transition"
           >
-            <Users size={15} /> Usar Prototipo Global
+            <Users size={14} /> Usar Prototipo Global
           </button>
           <button
             onClick={() => { setShowProtoForm(!showProtoForm); setShowGlobalList(false); setEditingInfo(false); }}
-            className="flex items-center gap-2 bg-[#6be1e3] text-black text-sm font-bold px-4 py-2.5 rounded-xl hover:opacity-80 transition"
+            className="flex items-center gap-2 bg-[#6be1e3] text-black text-xs md:text-sm font-bold px-3 py-2 rounded-xl hover:opacity-80 transition"
           >
-            <Plus size={15} /> Prototipo Cliente
+            <Plus size={14} /> Prototipo Cliente
           </button>
         </div>
       </div>
