@@ -1194,11 +1194,11 @@ function SuperAdmin() {
         <div className="space-y-3">
           {visibleCapsules.map(cap => (
             <div key={cap.id} className="bg-slate-800 border border-slate-700 rounded-2xl p-4 flex items-center justify-between cursor-pointer" onClick={() => setCurrentCapsule(cap)}>
-              <div className="flex items-center gap-3 min-w-0 flex-1 overflow-hidden">
+              <div style={{display:'flex', alignItems:'center', gap:'12px', minWidth:0, flex:1, overflow:'hidden'}}>
                 <Folder className="text-[#e4c76a] flex-shrink-0" size={18} />
-                <div className="min-w-0 overflow-hidden">
-                  <p className="font-bold text-white text-sm truncate">{cap.title}</p>
-                  <p className="text-xs text-slate-500 truncate">{cap.description}</p>
+                <div style={{minWidth:0, overflow:'hidden'}}>
+                  <p style={{fontWeight:'bold', color:'white', fontSize:'14px', whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis'}}>{cap.title}</p>
+                  <p style={{fontSize:'12px', color:'#64748b', whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis'}}>{cap.description}</p>
                 </div>
               </div>
               <div className="flex gap-2 flex-shrink-0 ml-2">
