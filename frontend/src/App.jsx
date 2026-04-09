@@ -1431,7 +1431,7 @@ function SuperAdmin() {
         </nav>
         <button onClick={() => navigate('/login')} className="mt-12 text-red-400 text-sm flex items-center font-bold px-4 py-3 rounded-xl hover:bg-white/5 transition"><LogOut className="w-4 h-4 mr-3" /> Cerrar Sesión</button>
       </aside>
-      <main className="flex-1 ml-0 md:ml-80 p-4 md:p-12 pt-16 md:pt-12">
+      <main className="flex-1 ml-0 md:ml-80 p-4 md:p-12 pt-16 md:pt-12 overflow-x-hidden w-full">
         <h2 className="text-4xl font-bold mb-10 tracking-tight">
           {activeTab === 'empresas' ? 'Gestión de Clientes' : activeTab === 'capsulas' ? 'Biblioteca Global' : 'Prototipos Globales'}
         </h2>
