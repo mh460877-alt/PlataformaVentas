@@ -4,6 +4,13 @@ export default {
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
+  safelist: [
+    'md:hidden',
+    'hidden',
+    'md:block',
+    'sm:inline',
+    'sm:hidden',
+  ],
   theme: {
     extend: {},
   },
