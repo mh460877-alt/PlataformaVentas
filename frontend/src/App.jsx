@@ -3752,49 +3752,33 @@ const stopRecording = () => {
             </div>
           )}
           <div className="flex gap-2 items-end">
-            {/* Botón imagen */}
-            <label className="cursor-pointer p-2 md:p-3 bg-slate-100 rounded-xl hover:bg-slate-200 transition flex-shrink-0" title="Adjuntar imagen">
-              <input type="file" accept="image/*" className="hidden" onChange={e => handleFileSelect(e, 'image')} />
-              <ImageIcon size={18} className="text-slate-500" />
-            </label>
-            {/* Botón PDF */}
-            <label className="cursor-pointer p-2 md:p-3 bg-slate-100 rounded-xl hover:bg-slate-200 transition flex-shrink-0" title="Adjuntar PDF">
-              <input type="file" accept=".pdf" className="hidden" onChange={e => handleFileSelect(e, 'pdf')} />
-              <FileText size={18} className="text-slate-500" />
-            </label>
-            {/* Botón audio */}
-            <button
-              onMouseDown={startRecording} onMouseUp={stopRecording} onTouchStart={startRecording} onTouchEnd={stopRecording}
-              className={`p-2 md:p-3 rounded-xl transition flex-shrink-0 ${recording ? 'bg-red-500 text-white animate-pulse' : 'bg-slate-100 text-slate-500 hover:bg-slate-200'}`}
-              title="Mantené presionado para grabar"
-            >
-              <Mic size={18} />
-            </button>
-            {/* Botón emoji */}
+            {/* Botón adjuntar */}
             <div style={{ position: 'relative' }}>
               <button
                 type="button"
                 onClick={() => setShowChatEmoji(v => !v)}
-                className="p-2 md:p-3 bg-slate-100 rounded-xl hover:bg-slate-200 transition flex-shrink-0 text-sm md:text-base"
-                title="Insertar emoji"
+                className="p-2 bg-slate-100 rounded-xl hover:bg-slate-200 transition flex-shrink-0"
               >
-                😊
+                <span className="text-lg">📎</span>
               </button>
               {showChatEmoji && (
-                <div
-                  style={{ position: 'absolute', bottom: '48px', left: 0, zIndex: 9999 }}
-                  className="bg-white border rounded-xl shadow-2xl p-3 grid grid-cols-8 gap-1 w-56"
-                >
-                  {EMOJI_LIST.map((em, i) => (
-                    <button
-                      key={i}
-                      type="button"
-                      className="w-6 h-6 text-sm hover:scale-125 transition flex items-center justify-center rounded"
-                      onClick={() => { setInput(prev => prev + em); setShowChatEmoji(false); }}
-                    >
-                      {em}
-                    </button>
-                  ))}
+                <div style={{ position: 'absolute', bottom: '48px', left: 0, zIndex: 9999 }}
+                  className="bg-white border rounded-2xl shadow-2xl p-3 flex flex-col gap-1 w-44">
+                  <label className="cursor-pointer flex items-center gap-3 p-2 hover:bg-slate-50 rounded-xl text-sm font-bold text-slate-700">
+                    <ImageIcon size={16} className="text-[#e17bd7]" /> Imagen
+                    <input type="file" accept="image/*" className="hidden" onChange={e => { handleFileSelect(e, 'image'); setShowChatEmoji(false); }} />
+                  </label>
+                  <label className="cursor-pointer flex items-center gap-3 p-2 hover:bg-slate-50 rounded-xl text-sm font-bold text-slate-700">
+                    <FileText size={16} className="text-[#e4c76a]" /> PDF
+                    <input type="file" accept=".pdf" className="hidden" onChange={e => { handleFileSelect(e, 'pdf'); setShowChatEmoji(false); }} />
+                  </label>
+                  <button
+                    onMouseDown={startRecording} onMouseUp={stopRecording} onTouchStart={startRecording} onTouchEnd={stopRecording}
+                    className={`flex items-center gap-3 p-2 rounded-xl text-sm font-bold text-slate-700 hover:bg-slate-50 ${recording ? 'text-red-500' : ''}`}
+                  >
+                    <Mic size={16} className={recording ? 'text-red-500 animate-pulse' : 'text-[#6be1e3]'} />
+                    {recording ? 'Grabando...' : 'Audio'}
+                  </button>
                 </div>
               )}
             </div>
