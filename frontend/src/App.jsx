@@ -3520,6 +3520,22 @@ function EmployeePortal() {
   const [showChatEmoji, setShowChatEmoji] = useState(false);
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
   const timerRef = useRef(null);
+  const chatContainerRef = useRef(null);
+
+  useEffect(() => {
+    const handleViewport = () => {
+      if (chatContainerRef.current && window.visualViewport) {
+        chatContainerRef.current.style.height = window.visualViewport.height + 'px';
+        chatContainerRef.current.style.top = window.visualViewport.offsetTop + 'px';
+      }
+    };
+    window.visualViewport?.addEventListener('resize', handleViewport);
+    window.visualViewport?.addEventListener('scroll', handleViewport);
+    return () => {
+      window.visualViewport?.removeEventListener('resize', handleViewport);
+      window.visualViewport?.removeEventListener('scroll', handleViewport);
+    };
+  }, []);
 
   useEffect(() => {
     if (!user.id) { navigate('/login'); return; }
@@ -3670,7 +3686,7 @@ const stopRecording = () => {
   // PANTALLA DE CHAT
   if (view === 'chat') {
     return (
-      <div className="flex flex-col bg-slate-100 fixed inset-0">
+      <div ref={chatContainerRef} className="flex flex-col bg-slate-100 fixed inset-0">
         <header className="bg-white px-3 md:px-6 py-3 md:py-4 border-b flex justify-between items-center shadow-sm gap-2 flex-shrink-0">
           <div className="flex items-center gap-2 md:gap-3 min-w-0">
             <button
