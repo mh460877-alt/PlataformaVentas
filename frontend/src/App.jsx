@@ -1196,7 +1196,7 @@ function SuperAdmin() {
             <div key={cap.id} className="bg-slate-800 border border-slate-700 rounded-2xl p-4 flex items-center justify-between cursor-pointer" onClick={() => setCurrentCapsule(cap)}>
               <div className="flex items-center gap-3 min-w-0">
                 <Folder className="text-[#e4c76a] flex-shrink-0" size={18} />
-                <div className="min-w-0">
+                <div className="min-w-0 overflow-hidden">
                   <p className="font-bold text-white text-sm truncate">{cap.title}</p>
                   <p className="text-xs text-slate-500 truncate">{cap.description}</p>
                 </div>
