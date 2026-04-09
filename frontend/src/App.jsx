@@ -1205,8 +1205,28 @@ function SuperAdmin() {
             <button onClick={() => setModalCapsule(true)} className="bg-[#e17bd7] text-white px-4 py-2 rounded-xl font-bold flex items-center hover:opacity-90 shadow-lg"><Plus size={18} className="mr-2" /> Nueva Cápsula</button>
           </div>
         </div>
-        <div className="bg-slate-800 rounded-3xl border border-slate-700 overflow-hidden shadow-xl overflow-x-auto">
-          <table className="w-full text-left text-slate-300 min-w-[500px]">
+        {/* Mobile: cards */}
+        <div className="md:hidden space-y-3">
+          {visibleCapsules.map(cap => (
+            <div key={cap.id} className="bg-slate-800 border border-slate-700 rounded-2xl p-4 flex items-center justify-between cursor-pointer" onClick={() => setCurrentCapsule(cap)}>
+              <div className="flex items-center gap-3 min-w-0">
+                <Folder className="text-[#e4c76a] flex-shrink-0" size={18} />
+                <div className="min-w-0">
+                  <p className="font-bold text-white text-sm truncate">{cap.title}</p>
+                  <p className="text-xs text-slate-500 truncate">{cap.description}</p>
+                </div>
+              </div>
+              <div className="flex gap-2 flex-shrink-0 ml-2">
+                <button onClick={(e) => { e.stopPropagation(); setEditingCap(cap); setEditCapForm({ title: cap.title, description: cap.description }); }} className="p-2 bg-blue-500/10 text-blue-400 rounded-xl hover:bg-blue-500 hover:text-white transition"><Edit2 size={14} /></button>
+                <button onClick={(e) => { e.stopPropagation(); deleteCap(cap.id); }} className="p-2 bg-red-500/20 text-red-400 rounded-xl hover:bg-red-500 hover:text-white transition"><Trash2 size={14} /></button>
+              </div>
+            </div>
+          ))}
+          {visibleCapsules.length === 0 && <p className="text-center text-slate-500 py-6">No hay cápsulas todavía.</p>}
+        </div>
+        {/* Desktop: tabla */}
+        <div className="hidden md:block bg-slate-800 rounded-3xl border border-slate-700 overflow-hidden shadow-xl">
+          <table className="w-full text-left text-slate-300">
             <thead className="bg-slate-900 text-xs uppercase font-bold text-slate-500">
               <tr><th className="p-6">ID</th><th className="p-6">Cápsula</th><th className="p-6 text-center">Acciones</th></tr>
             </thead>
